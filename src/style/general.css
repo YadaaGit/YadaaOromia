@@ -10,3 +10,6 @@
 .mar_b_20{
     margin-bottom: 20px;
 }
+.bg-indigo-500 {
+    background-color: var(--color-indigo-500) !important;
+}

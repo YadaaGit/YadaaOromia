@@ -53,13 +53,19 @@ function Courses() {
     },
   ];
 
-  const user = {
-    name: "Abebe Kebede",
-    age: "23",
-    currentCourse: "1",
-    currentModule: "1",
-    currentSection: "3",
-  };
+   const [user, setUser] = useState({
+    name: 'Abebe Kebede',
+    xp: 134679,
+    email: 'Abebe@example.com',
+    username: 'Abebe_1',
+    country: 'Ethiopia',
+    joined: 'January 2023',
+    Current_course: 'January 2023',
+    Current_module: 'January 2023',
+    Current_section: 'January 2023',
+    avatar: avatar,
+    role: "user",
+  });
 
   return (
     <>

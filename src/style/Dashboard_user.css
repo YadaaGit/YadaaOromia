@@ -62,7 +62,6 @@
   flex-direction: row;
   overflow-x: scroll;
   gap: 12px;
-  scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }
 #course_card {
