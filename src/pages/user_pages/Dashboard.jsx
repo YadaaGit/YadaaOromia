@@ -63,7 +63,7 @@ function Courses() {
     Current_course: 'January 2023',
     Current_module: 'January 2023',
     Current_section: 'January 2023',
-    avatar: avatar,
+    avatar: "avatar",
     role: "user",
   });
 
