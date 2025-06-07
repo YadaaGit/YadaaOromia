@@ -5,12 +5,56 @@ import avatar from "@/assets/images/portrait.jpg"
 
 const tabs = ['Info', 'Scores'];
 
+const translations = {
+  en: {
+    Info: 'Info',
+    Scores: 'Scores',
+    Name: 'Name',
+    Email: 'Email',
+    Country: 'Country',
+    Username: 'Username',
+    Joined: 'Joined',
+    Edit: 'Edit',
+    Save: 'Save',
+    Cancel: 'Cancel',
+  },
+  am: {
+    Info: 'መረጃ',
+    Scores: 'ውጤቶች',
+    Name: 'ስም',
+    Email: 'ኢሜይል',
+    Country: 'አገር',
+    Username: 'የተጠቃሚ ስም',
+    Joined: 'ቀን ተቀላቀለ',
+    Edit: 'አርትዕ',
+    Save: 'አስቀምጥ',
+    Cancel: 'ይቅር',
+  },
+  om: {
+    Info: 'Odeeffannoo',
+    Scores: 'Bu\'aa',
+    Name: 'Maqaa',
+    Email: 'Imeelii',
+    Country: 'Biyya',
+    Username: 'Maqaa fayyadamtoota',
+    Joined: 'Guyyaa Makamu',
+    Edit: 'Gulaali',
+    Save: 'Oolchi',
+    Cancel: 'Haqi',
+  }
+};
+
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('Info');
   const [editMode, setEditMode] = useState(false);
+  const [language, setLanguage] = useState('en');
 
+  const t = (key) => {
+    const dict = translations[language];
+    return dict && dict[key] ? dict[key] : key;
+  };
 
-   const [user, setUser] = useState({
+  const [user, setUser] = useState({
     name: 'Abebe Kebede',
     xp: 134679,
     email: 'Abebe@example.com',
@@ -35,6 +79,19 @@ export default function ProfilePage() {
 
   return (
     <div className="flex flex-col items-center px-4 py-6 pb-28 bg-gray-50 min-h-screen text-center text-gray-800" style={{borderRadius: 10}}>
+      {/* Top Right Buttons */}
+      <div className="flex gap-2 lang-toggle">
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          className="text-sm border rounded px-2 py-1 shadow"
+        >
+          <option value="en">English</option>
+          <option value="am">አማርኛ</option>
+          <option value="om">Afaan Oromo</option>
+        </select>
+      </div>
+
       {/* Avatar */}
       <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-white mb-4">
         <img
@@ -49,16 +106,16 @@ export default function ProfilePage() {
       <p className="text-gray-500 text-sm mb-6">{user.xp.toLocaleString()} XP</p>
 
       {/* Tab Switcher */}
-      <div className="flex justify-center gap-2 bg-white rounded-full shadow mb-4" style={{padding: 12}}>
+      <div className="flex justify-center gap-2 bg-white shadow mb-4" style={{padding: 12, borderRadius: 10}}>
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-1 rounded-full text-sm font-medium ${
-              activeTab === tab ? 'bg-indigo-500 text-indigo border border-indigo-500' : 'text-gray-500 border border-transparent'
+            className={`px-4 py-1 rounded-full text-sm font-medium border transition-all duration-200 ${
+              activeTab === tab ? 'bg-indigo-500 text-white border-indigo-500' : 'text-gray-500 border-transparent'
             }`}
           >
-            {tab}
+            {t(tab)}
           </button>
         ))}
       </div>
@@ -67,25 +124,25 @@ export default function ProfilePage() {
       {activeTab === 'Info' && (
         <div className="w-full max-w-md text-left bg-white rounded-xl shadow px-6 py-5 space-y-4">
           <EditableField
-            label="Name"
+            label={t("Name")}
             value={user.name}
             editable={editMode}
             onChange={(v) => handleChange('name', v)}
           />
           <EditableField
-            label="Email"
+            label={t("Email")}
             value={user.email}
             editable={editMode}
             onChange={(v) => handleChange('email', v)}
           />
           <EditableField
-            label="Country"
+            label={t("Country")}
             value={user.country}
             editable={editMode}
             onChange={(v) => handleChange('country', v)}
           />
-          <InfoRow label="Username" value={user.username} />
-          <InfoRow label="Joined" value={user.joined} />
+          <InfoRow label={t("Username")} value={user.username} />
+          <InfoRow label={t("Joined")} value={user.joined} />
 
           <div className="flex justify-end gap-2 pt-2">
             {editMode ? (
@@ -94,13 +151,13 @@ export default function ProfilePage() {
                   onClick={() => setEditMode(false)}
                   className="text-sm text-gray-500 px-3 py-1 border rounded"
                 >
-                  Cancel
+                  {t("Cancel")}
                 </button>
                 <button
                   onClick={handleSave}
                   className="text-sm bg-indigo-500 text-white px-3 py-1 rounded"
                 >
-                  Save
+                  {t("Save")}
                 </button>
               </>
             ) : (
@@ -108,7 +165,7 @@ export default function ProfilePage() {
                 onClick={() => setEditMode(true)}
                 className="text-sm bg-indigo-100 text-indigo-600 px-3 py-1 rounded"
               >
-                Edit
+                {t("Edit")}
               </button>
             )}
           </div>
@@ -117,7 +174,7 @@ export default function ProfilePage() {
 
       {activeTab !== 'Info' && (
         <div className="text-center text-gray-400 text-sm mt-8">
-          No content yet for <strong>{activeTab}</strong>.
+          No content yet for <strong>{t(activeTab)}</strong>.
         </div>
       )}
     </div>
