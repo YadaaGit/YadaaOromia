@@ -131,7 +131,7 @@ export default function Register() {
 
         {/* Submit Button */}
         <button
-          type="submit"
+          type="button"
           className="w-full bg-indigo-500 text-white py-3 rounded-full font-semibold shadow-md hover:bg-indigo-700 transition"
           onClick={() => navigate("/courses")}
         >
