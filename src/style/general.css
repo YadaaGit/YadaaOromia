@@ -11,11 +11,47 @@
   margin-bottom: 20px;
 }
 .bg-indigo-500 {
-  background-color: var(--color-indigo-500) !important;
+  background-color: #19384C !important;
 }
 .lang-toggle {
   margin: 0px 0px 16px 0px;
   display: flex;
   justify-content: flex-end;
   width: 100%;
+}
+.input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid gray;
+  border-radius: 0.5rem;
+  background: white;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #19384C;
+  color: white;
+}
+
+.btn-active {
+  background: #19384C;
+  color: white;
+}
+.color_main{
+  background-color: #19384C !important;
+}
+.border_main_1{
+  border: 1px solid #19384C !important;
+}
+.txt_color_main{
+  color: #19384C !important;
+}
+.rounded-full{
+  border-radius: calc(infinity * 1px) !important;
 }

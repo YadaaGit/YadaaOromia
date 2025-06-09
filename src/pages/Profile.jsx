@@ -111,7 +111,7 @@ export default function ProfilePage() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-1 rounded-full text-sm font-medium border transition-all duration-200 ${
+            className={`px-4 py-1 text-sm font-medium border transition-all duration-200 ${
               activeTab === tab ? 'bg-indigo-500 text-white border-indigo-500' : 'text-gray-500 border-transparent'
             }`}
           >
@@ -163,7 +163,7 @@ export default function ProfilePage() {
             ) : (
               <button
                 onClick={() => setEditMode(true)}
-                className="text-sm bg-indigo-100 text-indigo-600 px-3 py-1 rounded"
+                className="text-sm txt_color_main bg-indigo-100 text-indigo-600 px-3 py-1 rounded"
               >
                 {t("Edit")}
               </button>

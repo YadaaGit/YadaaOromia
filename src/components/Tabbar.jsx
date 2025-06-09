@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import "@/style/tabbar.css";
+import "@/style/general.css";
 import {
   HomeIcon as HomeSolid,
   BookOpenIcon as BookSolid,
@@ -47,7 +48,7 @@ export default function TabBar() {
                 }}
                 transition={{ duration: 0.1 }}
                 className={`flex flex-col items-center ${
-                  isActive ? "text-indigo-600 font-semibold" : "text-gray-400"
+                  isActive ? "txt_color_main font-semibold" : "text-gray-400"
                 }`}
               >
                 <Icon className="w-6 h-6" />
