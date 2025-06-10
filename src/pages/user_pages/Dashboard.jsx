@@ -1,14 +1,22 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ill1 from "@/assets/images/illstration_2.jpg";
 import ill2 from "@/assets/images/illstration_1.jpg";
 import "@/style/Dashboard_user.css";
 import "@/style/general.css";
 
 function Courses() {
-
+  const navigate = useNavigate();
+  const openCourse = (courseId) => {
+    navigate(`/courses/${courseId}`, {
+      state: {
+        background: { pathname: location.pathname, search: location.search },
+      },
+    });
+  };
   const courses = [
     {
-      course_id: 0,
+      course_id: "bio-101",
       title: "Biology & The Scientific Method",
       lessons: "3 lessons",
       image: ill1,
@@ -30,7 +38,7 @@ function Courses() {
       ],
     },
     {
-      course_id: 2,
+      course_id: "bio-102",
       title: "Biology & The Scientific Method",
       lessons: "3 lessons",
       image: ill1,
@@ -53,16 +61,16 @@ function Courses() {
     },
   ];
 
-   const [user, setUser] = useState({
-    name: 'Abebe Kebede',
+  const [user, setUser] = useState({
+    name: "Abebe Kebede",
     xp: 134679,
-    email: 'Abebe@example.com',
-    username: 'Abebe_1',
-    country: 'Ethiopia',
-    joined: 'January 2023',
-    Current_course: 'January 2023',
-    Current_module: 'January 2023',
-    Current_section: 'January 2023',
+    email: "Abebe@example.com",
+    username: "Abebe_1",
+    country: "Ethiopia",
+    joined: "January 2023",
+    Current_course: "January 2023",
+    Current_module: "January 2023",
+    Current_section: "January 2023",
     avatar: "avatar",
     role: "user",
   });
@@ -85,6 +93,8 @@ function Courses() {
               id="course_card"
               className={`course_card_id_${index}`}
               key={course.course_id}
+              onClick={() => openCourse(course.course_id)}
+              style={{ cursor: "pointer" }}
             >
               <div id="course_img">
                 <img src={course.image} />
@@ -97,7 +107,6 @@ function Courses() {
           ))}
         </div>
       </section>
-      
     </>
   );
 }

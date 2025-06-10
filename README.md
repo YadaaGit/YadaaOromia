@@ -10,3 +10,56 @@ Currently, two official plugins are available:
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+# File Structure (06/10/2025)
+
+Webapp
+├── README.md
+├── eslint.config.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── public
+│   └── vite.svg
+├── src
+│   ├── assets
+│   │   └── images
+│   │       ├── illstration_1.jpg
+│   │       ├── illstration_2.jpg
+│   │       ├── portrait.jpg
+│   │       └── welcome.jpg
+│   ├── components
+│   │   ├── Tabbar.jsx
+│   │   ├── basic_ui
+│   │   │   ├── button.jsx
+│   │   │   ├── card.jsx
+│   │   │   └── input.jsx
+│   │   └── sections
+│   │       ├── Quiz.jsx
+│   │       └── Section_viewer.jsx
+│   ├── hooks
+│   │   ├── get_course_data.js
+│   │   ├── get_course_data_test.js
+│   │   └── get_tg_data.js
+│   ├── main.jsx
+│   ├── pages
+│   │   ├── Profile.jsx
+│   │   ├── admin_pages
+│   │   │   ├── Dashboard_admin.jsx
+│   │   │   └── Data_center.jsx
+│   │   ├── auth_pages
+│   │   │   ├── login.jsx
+│   │   │   ├── register.jsx
+│   │   │   └── welcome_page.jsx
+│   │   └── user_pages
+│   │       ├── Course_modal.jsx
+│   │       └── Dashboard.jsx
+│   ├── style
+│   │   ├── Dashboard_user.css
+│   │   ├── general.css
+│   │   ├── index.css
+│   │   └── tabbar.css
+│   └── utils
+│       ├── auth_service.js
+│       └── validate.js
+└── vite.config.js

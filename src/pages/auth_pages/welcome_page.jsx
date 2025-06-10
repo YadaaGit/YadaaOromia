@@ -10,7 +10,7 @@ export default function Welcome() {
       <img src={welcomeImg} alt="Welcome" className="w-60 mb-6" />
       <h1 className="text-2xl font-bold text-gray-800 mb-2">Hello</h1>
       <p className="text-gray-500 text-sm text-center mb-8">
-        Welcome to our platform, where you manage your daily tasks.
+        Welcome to our platform, where you learn something new daily.
       </p>
       <div className="flex flex-col w-full max-w-sm gap-4">
         <button
