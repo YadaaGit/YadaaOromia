@@ -27,6 +27,7 @@ In this section, you will learn the core characteristics that define life and ex
               "Stars and planets",
             ],
             answer: 2,
+            explanation: "The mitochondria produce ATP, the main energy currency of the cell."
           },
           {
             question:
@@ -38,6 +39,7 @@ In this section, you will learn the core characteristics that define life and ex
               "Guesswork",
             ],
             answer: 3,
+            explanation: "The mitochondria produce ATP, the main energy currency of the cell."
           },
         ],
       },
@@ -62,6 +64,7 @@ A good scientific hypothesis is testable and falsifiable.`,
               "Analyze results",
             ],
             answer: 2,
+            explanation: "The mitochondria produce ATP, the main energy currency of the cell."
           },
           {
             question: "Why must a hypothesis be falsifiable?",
@@ -72,6 +75,7 @@ A good scientific hypothesis is testable and falsifiable.`,
               "To ensure it aligns with existing theories",
             ],
             answer: 2,
+            explanation: "The mitochondria produce ATP, the main energy currency of the cell."
           },
         ],
       },
@@ -91,6 +95,7 @@ A good scientific hypothesis is testable and falsifiable.`,
             "A government-mandated procedure",
           ],
           answer: 1,
+          explanation: "The mitochondria produce ATP, the main energy currency of the cell."
         },
         {
           question:
@@ -102,11 +107,13 @@ A good scientific hypothesis is testable and falsifiable.`,
             "Evolution",
           ],
           answer: 2,
+          explanation: "The mitochondria produce ATP, the main energy currency of the cell."
         },
         {
           question: "True or False: A hypothesis must always be correct.",
           options: ["True", "False"],
           answer: 1,
+          explanation: "The mitochondria produce ATP, the main energy currency of the cell."
         },
       ],
     },
@@ -143,6 +150,7 @@ In this section, you will learn the core characteristics that define life and ex
               "Stars and planets",
             ],
             answer: 2,
+            explanation: "The mitochondria produce ATP, the main energy currency of the cell."
           },
           {
             question:
@@ -154,6 +162,7 @@ In this section, you will learn the core characteristics that define life and ex
               "Guesswork",
             ],
             answer: 3,
+            explanation: "The mitochondria produce ATP, the main energy currency of the cell."
           },
         ],
       },
@@ -178,6 +187,7 @@ A good scientific hypothesis is testable and falsifiable.`,
               "Analyze results",
             ],
             answer: 2,
+            explanation: "The mitochondria produce ATP, the main energy currency of the cell."
           },
           {
             question: "Why must a hypothesis be falsifiable?",
@@ -188,6 +198,7 @@ A good scientific hypothesis is testable and falsifiable.`,
               "To ensure it aligns with existing theories",
             ],
             answer: 2,
+            explanation: "The mitochondria produce ATP, the main energy currency of the cell."
           },
         ],
       },
@@ -207,6 +218,7 @@ A good scientific hypothesis is testable and falsifiable.`,
             "A government-mandated procedure",
           ],
           answer: 1,
+          explanation: "The mitochondria produce ATP, the main energy currency of the cell."
         },
         {
           question:
@@ -218,11 +230,13 @@ A good scientific hypothesis is testable and falsifiable.`,
             "Evolution",
           ],
           answer: 2,
+          explanation: "The mitochondria produce ATP, the main energy currency of the cell."
         },
         {
           question: "True or False: A hypothesis must always be correct.",
           options: ["True", "False"],
           answer: 1,
+          explanation: "The mitochondria produce ATP, the main energy currency of the cell."
         },
       ],
     },

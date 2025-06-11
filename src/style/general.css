@@ -55,3 +55,16 @@
 .rounded-full{
   border-radius: calc(infinity * 1px) !important;
 }
+
+.bg-red-100 {
+    background-color: #ffe2e2 !important;
+}
+.border-red-500 {
+    border-color: #fb2c36 !important;
+}
+.bg-green-100 {
+    background-color: #dcfce7 !important;
+}
+.border-green-500 {
+    border-color: #00c951 !important;
+}
