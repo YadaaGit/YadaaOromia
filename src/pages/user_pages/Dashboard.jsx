@@ -1,65 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ill1 from "@/assets/images/illstration_2.jpg";
-import ill2 from "@/assets/images/illstration_1.jpg";
+import dummyCourses from "@/hooks/get_course_data_test.js";
 import "@/style/Dashboard_user.css";
 import "@/style/general.css";
 
 function Courses() {
   const navigate = useNavigate();
-  const openCourse = (courseId) => {
+  const openModule = (courseId) => {
     navigate(`/courses/${courseId}`, {
       state: {
         background: { pathname: location.pathname, search: location.search },
       },
     });
   };
-  const courses = [
-    {
-      course_id: "bio-101",
-      title: "Biology & The Scientific Method",
-      lessons: "3 lessons",
-      image: ill1,
-      modules: [
-        { title: "Biology_001", module_id: "1" },
-        { title: "Biology_002", module_id: "2" },
-        { title: "Biology_003", module_id: "3" },
-      ],
-    },
-    {
-      course_id: 1,
-      title: "Earth & Climate",
-      lessons: "3 lessons",
-      image: ill2,
-      modules: [
-        { title: "Earth_001", module_id: "1" },
-        { title: "Earth_002", module_id: "2" },
-        { title: "Earth_003", module_id: "3" },
-      ],
-    },
-    {
-      course_id: "bio-102",
-      title: "Biology & The Scientific Method",
-      lessons: "3 lessons",
-      image: ill1,
-      modules: [
-        { title: "Biology_001", module_id: "1" },
-        { title: "Biology_002", module_id: "2" },
-        { title: "Biology_003", module_id: "3" },
-      ],
-    },
-    {
-      course_id: 3,
-      title: "Biology & The Scientific Method",
-      lessons: "3 lessons",
-      image: ill2,
-      modules: [
-        { title: "Biology_001", module_id: "1" },
-        { title: "Biology_002", module_id: "2" },
-        { title: "Biology_003", module_id: "3" },
-      ],
-    },
-  ];
+
+  const course_data = [...dummyCourses];
 
   const [user, setUser] = useState({
     name: "Abebe Kebede",
@@ -86,26 +41,45 @@ function Courses() {
         </div>
       </section>
       <section id="courses">
-        <h2>Courses</h2>
-        <div id="course_list">
-          {courses.map((course, index) => (
+        {course_data.map((course, index) => (
+          <div key={index} style={{marginTop: 40}}>
             <div
-              id="course_card"
-              className={`course_card_id_${index}`}
-              key={course.course_id}
-              onClick={() => openCourse(course.course_id)}
-              style={{ cursor: "pointer" }}
+              style={
+                {
+                  // borderTop: "2px solid #a8a8a8",
+                  // borderBottom: "2px solid #a8a8a8",
+                  // padding: 10,
+                }
+              }
             >
-              <div id="course_img">
-                <img src={course.image} />
-              </div>
-              <div id="course_info">
-                <h3>{course.title}</h3>
-                <span>{course.lessons}</span>
-              </div>
+              <h2 style={{ fontWeight: "bold" }}>{course.title}</h2>
             </div>
-          ))}
-        </div>
+            <div id="module_list">
+              {course.modules.map((module, index) => (
+                <div
+                  id="module_card"
+                  className={`module_card_id_${index}`}
+                  key={index}
+                  onClick={() => {
+                    openModule(module.module_id);
+                    console.log(module.module_id);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div id="module_img">
+                    <img src={module.image} />
+                  </div>
+                  <div id="module_info">
+                    <h3>{module.title}</h3>
+                    <span>{module.lessons}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+          
+        ))}
       </section>
     </>
   );

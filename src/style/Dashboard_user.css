@@ -51,7 +51,7 @@
   align-items: flex-start;
 }
 
-#course_list {
+#module_list {
   width: 101%;
   padding: 10px;
   padding-left: 20px;
@@ -64,7 +64,7 @@
   gap: 12px;
   -webkit-overflow-scrolling: touch;
 }
-#course_card {
+#module_card {
   min-width: 260px;
   height: auto;
   border-radius: 15px;
@@ -76,7 +76,7 @@
   padding: 0px;
 }
 
-#course_card:hover {
+#module_card:hover {
   filter: drop-shadow(0 0 0.2em #181a3baa);
 }
 
@@ -84,46 +84,47 @@
 ::-webkit-scrollbar {
  display: none;
 }
-#course_list::-webkit-scrollbar {
+#module_list::-webkit-scrollbar {
   width: 8px;
   height: 8px;
   display: block;
 }
 
-#course_list::-webkit-scrollbar-track {
+#module_list::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
 }
 
-#course_list::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom right, #6366f1, #9333ea);
+#module_list::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom right, #b6b7f875, #caa6eca2);
   border-radius: 10px;
+  
   border: 2px solid #f1f1f1;
 }
 
-#course_list::-webkit-scrollbar-thumb:hover {
+#module_list::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom right, #4f46e5, #7e22ce);
 }
 
-#course_img{
+#module_img{
   max-width: 100%;
   height: 200px;
   border-radius: 15px 15px 0px 0px;
 }
-#course_img img{
+#module_img img{
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 15px 15px 0px 0px;
 }
-#course_info{
+#module_info{
   max-width: 100%;
   height: auto;
   padding: 15px;
   border-radius: 0px 0px 15px 15px;
 }
 
-#course_info h3{
+#module_info h3{
   margin: 0;
   border-radius: 0px 0px 15px 15px;
 }
