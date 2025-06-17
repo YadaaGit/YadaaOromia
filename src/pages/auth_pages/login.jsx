@@ -45,12 +45,7 @@ export default function Login() {
           <LockClosedIcon className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
         </div>
 
-        {/* Remember Me */}
-        <div className="flex justify-between items-center text-sm text-gray-500">
-          <label className="flex items-center gap-2">
-            <input type="checkbox" className="form-checkbox" /> Remember me next time
-          </label>
-        </div>
+        
 
         {/* Submit Button */}
         <button

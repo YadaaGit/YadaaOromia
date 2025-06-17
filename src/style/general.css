@@ -32,6 +32,11 @@
   border-radius: 0.5rem;
   background: white;
   cursor: pointer;
+  color: #19384C;
+}
+
+.btn_disabled{
+  opacity: 0.3;
 }
 
 .btn-primary {

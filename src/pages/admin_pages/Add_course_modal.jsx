@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useModuleData } from "@/hooks/get_course_data_test.js";
-import SectionViewer from "@/components/sections/Section_viewer.jsx";
+import Add_course_modal from "@/components/admin_components/Add_course.jsx";
 
 export default function CourseModal() {
   const headerRef = useRef(null);
@@ -64,11 +64,7 @@ export default function CourseModal() {
             ref={modalRef}
           >
             <div
-              className={
-                !loading && module
-                  ? "fixed top-0 left-0 right-0 bg-white z-50 shadow-md px-4 py-3"
-                  : "absolute top-0 left-0 right-0 bg-white z-50 shadow-md px-4 py-3"
-              }
+              className="absolute top-0 left-0 right-0 bg-white z-50 shadow-md px-4 py-3"
               ref={headerRef}
             >
               <button
@@ -77,32 +73,10 @@ export default function CourseModal() {
               >
                 ✕
               </button>
-              {/* Conditional content inside header */}
-              {loading && (
-                <h2 className="text-2xl font-semibold">Loading...</h2>
-              )}
-              {!loading && !module && (
-                <h2 className="text-2xl font-semibold">Module not found</h2>
-              )}
-              {!loading && module && (
-                <h2 className="text-2xl font-semibold">{module.title}</h2>
-              )}
+              <h2 className="text-2xl font-semibold">📚 Add New Course</h2>
             </div>
             <div style={{ paddingTop: `${headerHeight}px` }}>
-              {/* Conditional content inside modal */}
-              {loading && <div className="p-4 text-center">Loading...</div>}
-              {!loading && !module && (
-                <div className="p-4 text-center">Module not found</div>
-              )}
-              {!loading && module && (
-                <>
-                  <SectionViewer
-                    scrollRef={modalRef}
-                    sections={module.sections}
-                    finalQuiz={module.final_quiz}
-                  />
-                </>
-              )}
+              <Add_course_modal />
             </div>
           </motion.div>
         </motion.div>

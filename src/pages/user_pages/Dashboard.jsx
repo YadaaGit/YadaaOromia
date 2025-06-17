@@ -6,8 +6,8 @@ import "@/style/general.css";
 
 function Courses() {
   const navigate = useNavigate();
-  const openModule = (courseId) => {
-    navigate(`/courses/${courseId}`, {
+  const openModule = (courseId, moduleId) => {
+    navigate(`/courses/${courseId}/${moduleId}`, {
       state: {
         background: { pathname: location.pathname, search: location.search },
       },
@@ -61,8 +61,7 @@ function Courses() {
                   className={`module_card_id_${index}`}
                   key={index}
                   onClick={() => {
-                    openModule(module.module_id);
-                    console.log(module.module_id);
+                    openModule(course.course_id, module.module_id);
                   }}
                   style={{ cursor: "pointer" }}
                 >

@@ -143,6 +143,7 @@ export default function ProfilePage() {
           />
           <InfoRow label={t("Username")} value={user.username} />
           <InfoRow label={t("Joined")} value={user.joined} />
+          <InfoRow label={t("Role")} value={user.role} />
 
           <div className="flex justify-end gap-2 pt-2">
             {editMode ? (

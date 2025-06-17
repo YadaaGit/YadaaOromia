@@ -14,19 +14,29 @@ const dummyCourses = [
     modules: [
       {
         title: "Introduction to biology",
-        module_id: "1",
+        module_id: "bio-101_1",
         image: ill1,
         sections: [
           {
             id: "sec-1",
             title: "Introduction to Biology",
-            content: {
-              text: `Biology is the study of life. It is a broad field that covers the structure, function, growth, origin, evolution, and distribution of living organisms.
+            content: [
+              {
+                media: ill1,
+                text: `Biology is the study of life. It is a broad field that covers the structure, function, growth, origin, evolution, and distribution of living organisms.
 As a science, biology relies on the scientific method to answer questions about life and living organisms. This includes careful observation, hypothesis formulation, experimentation, and data analysis.
 
 In this section, you will learn the core characteristics that define life and explore why biology is such a crucial field in understanding our natural world.`,
-              media: "https://example.com/images/biology_intro.jpg",
-            },
+              },
+              {
+                media: ill2,
+                header: "what does this mean?",
+                text: `Biology is the study of life. It is a broad field that covers the structure, function, growth, origin, evolution, and distribution of living organisms.
+As a science, biology relies on the scientific method to answer questions about life and living organisms. This includes careful observation, hypothesis formulation, experimentation, and data analysis.
+
+In this section, you will learn the core characteristics that define life and explore why biology is such a crucial field in understanding our natural world.`,
+              },
+            ],
             quiz: [
               {
                 question: "What is biology the study of?",
@@ -58,14 +68,16 @@ In this section, you will learn the core characteristics that define life and ex
           {
             id: "sec-2",
             title: "The Scientific Method",
-            content: {
-              text: `The scientific method is a systematic process for learning about the world around us and answering questions.
+            content: [
+              {
+                text: `The scientific method is a systematic process for learning about the world around us and answering questions.
 It typically involves making observations, forming a hypothesis, conducting experiments, and drawing conclusions based on the results.
 
 This process allows scientists to test ideas and refine their understanding through repeatable and measurable results.
 A good scientific hypothesis is testable and falsifiable.`,
-              media: "https://example.com/images/scientific_method.jpg",
-            },
+                media: "https://example.com/images/scientific_method.jpg",
+              },
+            ],
             quiz: [
               {
                 question: "What is the first step in the scientific method?",
@@ -96,8 +108,7 @@ A good scientific hypothesis is testable and falsifiable.`,
         ],
         final_quiz: {
           title: "Biology 102 Final Evaluation",
-          description:
-            "A comprehensive quiz to assess your understanding of Biology and the Scientific Method.",
+          description: "Let's review what you have learned so far!!",
           questions: [
             {
               question:
@@ -109,6 +120,55 @@ A good scientific hypothesis is testable and falsifiable.`,
                 "A government-mandated procedure",
               ],
               answer: 1,
+              explanation:
+                "The mitochondria produce ATP, the main energy currency of the cell.",
+            },
+            {
+              question: "What is biology the study of?",
+              options: [
+                "Rocks and minerals",
+                "The Earth’s atmosphere",
+                "Life and living organisms",
+                "Stars and planets",
+              ],
+              answer: 2,
+              explanation:
+                "The mitochondria produce ATP, the main energy currency of the cell.",
+            },
+            {
+              question: "What is the first step in the scientific method?",
+              options: [
+                "Form a hypothesis",
+                "Conduct an experiment",
+                "Make an observation",
+                "Analyze results",
+              ],
+              answer: 2,
+              explanation:
+                "The mitochondria produce ATP, the main energy currency of the cell.",
+            },
+            {
+              question: "Why must a hypothesis be falsifiable?",
+              options: [
+                "To make it sound scientific",
+                "So it can be proven true",
+                "So it can be tested and possibly disproven",
+                "To ensure it aligns with existing theories",
+              ],
+              answer: 2,
+              explanation:
+                "The mitochondria produce ATP, the main energy currency of the cell.",
+            },
+            {
+              question:
+                "Which of the following is NOT a step in the scientific method?",
+              options: [
+                "Observation",
+                "Hypothesis",
+                "Experimentation",
+                "Guesswork",
+              ],
+              answer: 3,
               explanation:
                 "The mitochondria produce ATP, the main energy currency of the cell.",
             },
@@ -149,13 +209,15 @@ A good scientific hypothesis is testable and falsifiable.`,
           {
             id: "sec-1",
             title: "Introduction to Biology",
-            content: {
-              text: `Biology is the study of life. It is a broad field that covers the structure, function, growth, origin, evolution, and distribution of living organisms.
+            content: [
+              {
+                text: `Biology is the study of life. It is a broad field that covers the structure, function, growth, origin, evolution, and distribution of living organisms.
 As a science, biology relies on the scientific method to answer questions about life and living organisms. This includes careful observation, hypothesis formulation, experimentation, and data analysis.
 
 In this section, you will learn the core characteristics that define life and explore why biology is such a crucial field in understanding our natural world.`,
-              media: "https://example.com/images/biology_intro.jpg",
-            },
+                media: "https://example.com/images/biology_intro.jpg",
+              },
+            ],
             quiz: [
               {
                 question: "What is biology the study of?",
@@ -187,14 +249,16 @@ In this section, you will learn the core characteristics that define life and ex
           {
             id: "sec-2",
             title: "The Scientific Method",
-            content: {
-              text: `The scientific method is a systematic process for learning about the world around us and answering questions.
+            content: [
+              {
+                text: `The scientific method is a systematic process for learning about the world around us and answering questions.
 It typically involves making observations, forming a hypothesis, conducting experiments, and drawing conclusions based on the results.
 
 This process allows scientists to test ideas and refine their understanding through repeatable and measurable results.
 A good scientific hypothesis is testable and falsifiable.`,
-              media: "https://example.com/images/scientific_method.jpg",
-            },
+                media: "https://example.com/images/scientific_method.jpg",
+              },
+            ],
             quiz: [
               {
                 question: "What is the first step in the scientific method?",
@@ -287,13 +351,15 @@ A good scientific hypothesis is testable and falsifiable.`,
           {
             id: "sec-1",
             title: "Introduction to Biology",
-            content: {
-              text: `Biology is the study of life. It is a broad field that covers the structure, function, growth, origin, evolution, and distribution of living organisms.
+            content: [
+              {
+                text: `Biology is the study of life. It is a broad field that covers the structure, function, growth, origin, evolution, and distribution of living organisms.
 As a science, biology relies on the scientific method to answer questions about life and living organisms. This includes careful observation, hypothesis formulation, experimentation, and data analysis.
 
 In this section, you will learn the core characteristics that define life and explore why biology is such a crucial field in understanding our natural world.`,
-              media: "https://example.com/images/biology_intro.jpg",
-            },
+                media: "https://example.com/images/biology_intro.jpg",
+              },
+            ],
             quiz: [
               {
                 question: "What is biology the study of?",
@@ -325,14 +391,16 @@ In this section, you will learn the core characteristics that define life and ex
           {
             id: "sec-2",
             title: "The Scientific Method",
-            content: {
-              text: `The scientific method is a systematic process for learning about the world around us and answering questions.
+            content: [
+              {
+                text: `The scientific method is a systematic process for learning about the world around us and answering questions.
 It typically involves making observations, forming a hypothesis, conducting experiments, and drawing conclusions based on the results.
 
 This process allows scientists to test ideas and refine their understanding through repeatable and measurable results.
 A good scientific hypothesis is testable and falsifiable.`,
-              media: "https://example.com/images/scientific_method.jpg",
-            },
+                media: "https://example.com/images/scientific_method.jpg",
+              },
+            ],
             quiz: [
               {
                 question: "What is the first step in the scientific method?",
@@ -416,13 +484,15 @@ A good scientific hypothesis is testable and falsifiable.`,
           {
             id: "sec-1",
             title: "Introduction to Biology",
-            content: {
-              text: `Biology is the study of life. It is a broad field that covers the structure, function, growth, origin, evolution, and distribution of living organisms.
+            content: [
+              {
+                text: `Biology is the study of life. It is a broad field that covers the structure, function, growth, origin, evolution, and distribution of living organisms.
 As a science, biology relies on the scientific method to answer questions about life and living organisms. This includes careful observation, hypothesis formulation, experimentation, and data analysis.
 
 In this section, you will learn the core characteristics that define life and explore why biology is such a crucial field in understanding our natural world.`,
-              media: "https://example.com/images/biology_intro.jpg",
-            },
+                media: "https://example.com/images/biology_intro.jpg",
+              },
+            ],
             quiz: [
               {
                 question: "What is biology the study of?",
@@ -454,14 +524,16 @@ In this section, you will learn the core characteristics that define life and ex
           {
             id: "sec-2",
             title: "The Scientific Method",
-            content: {
-              text: `The scientific method is a systematic process for learning about the world around us and answering questions.
+            content: [
+              {
+                text: `The scientific method is a systematic process for learning about the world around us and answering questions.
 It typically involves making observations, forming a hypothesis, conducting experiments, and drawing conclusions based on the results.
 
 This process allows scientists to test ideas and refine their understanding through repeatable and measurable results.
 A good scientific hypothesis is testable and falsifiable.`,
-              media: "https://example.com/images/scientific_method.jpg",
-            },
+                media: "https://example.com/images/scientific_method.jpg",
+              },
+            ],
             quiz: [
               {
                 question: "What is the first step in the scientific method?",
@@ -545,13 +617,15 @@ A good scientific hypothesis is testable and falsifiable.`,
           {
             id: "sec-1",
             title: "Introduction to Biology",
-            content: {
-              text: `Biology is the study of life. It is a broad field that covers the structure, function, growth, origin, evolution, and distribution of living organisms.
+            content: [
+              {
+                text: `Biology is the study of life. It is a broad field that covers the structure, function, growth, origin, evolution, and distribution of living organisms.
 As a science, biology relies on the scientific method to answer questions about life and living organisms. This includes careful observation, hypothesis formulation, experimentation, and data analysis.
 
 In this section, you will learn the core characteristics that define life and explore why biology is such a crucial field in understanding our natural world.`,
-              media: "https://example.com/images/biology_intro.jpg",
-            },
+                media: "https://example.com/images/biology_intro.jpg",
+              },
+            ],
             quiz: [
               {
                 question: "What is biology the study of?",
@@ -583,14 +657,16 @@ In this section, you will learn the core characteristics that define life and ex
           {
             id: "sec-2",
             title: "The Scientific Method",
-            content: {
-              text: `The scientific method is a systematic process for learning about the world around us and answering questions.
+            content: [
+              {
+                text: `The scientific method is a systematic process for learning about the world around us and answering questions.
 It typically involves making observations, forming a hypothesis, conducting experiments, and drawing conclusions based on the results.
 
 This process allows scientists to test ideas and refine their understanding through repeatable and measurable results.
 A good scientific hypothesis is testable and falsifiable.`,
-              media: "https://example.com/images/scientific_method.jpg",
-            },
+                media: "https://example.com/images/scientific_method.jpg",
+              },
+            ],
             quiz: [
               {
                 question: "What is the first step in the scientific method?",
@@ -670,19 +746,22 @@ A good scientific hypothesis is testable and falsifiable.`,
   },
 ];
 
-export const useCourseData = (courseId) => {
-  const [course, setCourse] = useState(null);
+export const useModuleData = (courseId, moduleId) => {
+  const [module, setModule] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const course = dummyCourses.find((c) => c.course_id === courseId);
-    setTimeout(() => {
-      setCourse(course || null);
-      setLoading(false);
-    }, 500); // simulate loading delay
-  }, [courseId]);
+    if(course) {
+      const module_read = course.modules.find((m) => m.module_id === moduleId);
+      setTimeout(() => {
+        setModule(module_read || null);
+        setLoading(false);
+      }, 500); // simulate loading delay
+    }
+  }, [courseId, moduleId]);
 
-  return { course, loading };
+  return { module, loading };
 };
 
 export default dummyCourses;
