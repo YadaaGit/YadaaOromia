@@ -1,7 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid";
+import PopUp from "../basic_ui/pop_up.jsx";
 
 export default function AdminCourseDashboard() {
+  const navigate = useNavigate();
+
+  const [showCongrats, setShowCongrats] = useState(false);
+
   const [courses, setCourses] = useState([]);
   const [newCourse, setNewCourse] = useState({
     course_id: "",
@@ -82,7 +88,7 @@ export default function AdminCourseDashboard() {
   const handleSaveCourse = () => {
     setCourses((prev) => [...prev, newCourse]);
     console.log("Course Added", newCourse);
-    alert("✅ Course saved!");
+    setShowCongrats(true)
   };
 
   return (
@@ -120,7 +126,9 @@ export default function AdminCourseDashboard() {
               className="input mb-2"
               placeholder="Module Title"
               value={mod.title}
-              onChange={(e) => updateCourse(["modules", modIdx, "title"], e.target.value)}
+              onChange={(e) =>
+                updateCourse(["modules", modIdx, "title"], e.target.value)
+              }
             />
 
             <h4 className="text-md font-semibold mt-2">📊 Metadata</h4>
@@ -130,7 +138,12 @@ export default function AdminCourseDashboard() {
                 className="input mb-1"
                 placeholder={key.replace("_", " ").toUpperCase()}
                 value={mod.metadata[key]}
-                onChange={(e) => updateCourse(["modules", modIdx, "metadata", key], e.target.value)}
+                onChange={(e) =>
+                  updateCourse(
+                    ["modules", modIdx, "metadata", key],
+                    e.target.value
+                  )
+                }
               />
             ))}
 
@@ -139,16 +152,29 @@ export default function AdminCourseDashboard() {
               className="input mb-1"
               placeholder="Final Quiz Title"
               value={mod.final_quiz.title}
-              onChange={(e) => updateCourse(["modules", modIdx, "final_quiz", "title"], e.target.value)}
+              onChange={(e) =>
+                updateCourse(
+                  ["modules", modIdx, "final_quiz", "title"],
+                  e.target.value
+                )
+              }
             />
             <textarea
               className="input mb-2"
               placeholder="Final Quiz Description"
               value={mod.final_quiz.description}
-              onChange={(e) => updateCourse(["modules", modIdx, "final_quiz", "description"], e.target.value)}
+              onChange={(e) =>
+                updateCourse(
+                  ["modules", modIdx, "final_quiz", "description"],
+                  e.target.value
+                )
+              }
             />
 
-            <button className="btn-sm mb-2" onClick={() => handleAddSection(modIdx)}>
+            <button
+              className="btn-sm mb-2"
+              onClick={() => handleAddSection(modIdx)}
+            >
               ➕ Add Section
             </button>
 
@@ -158,7 +184,12 @@ export default function AdminCourseDashboard() {
                   className="input mb-1"
                   placeholder="Section Title"
                   value={sec.title}
-                  onChange={(e) => updateCourse(["modules", modIdx, "sections", secIdx, "title"], e.target.value)}
+                  onChange={(e) =>
+                    updateCourse(
+                      ["modules", modIdx, "sections", secIdx, "title"],
+                      e.target.value
+                    )
+                  }
                 />
 
                 <button
@@ -174,19 +205,58 @@ export default function AdminCourseDashboard() {
                       className="input mb-1"
                       placeholder="Media URL"
                       value={block.media}
-                      onChange={(e) => updateCourse(["modules", modIdx, "sections", secIdx, "content", blockIdx, "media"], e.target.value)}
+                      onChange={(e) =>
+                        updateCourse(
+                          [
+                            "modules",
+                            modIdx,
+                            "sections",
+                            secIdx,
+                            "content",
+                            blockIdx,
+                            "media",
+                          ],
+                          e.target.value
+                        )
+                      }
                     />
                     <input
                       className="input mb-1"
                       placeholder="Header (optional)"
                       value={block.header || ""}
-                      onChange={(e) => updateCourse(["modules", modIdx, "sections", secIdx, "content", blockIdx, "header"], e.target.value)}
+                      onChange={(e) =>
+                        updateCourse(
+                          [
+                            "modules",
+                            modIdx,
+                            "sections",
+                            secIdx,
+                            "content",
+                            blockIdx,
+                            "header",
+                          ],
+                          e.target.value
+                        )
+                      }
                     />
                     <textarea
                       className="input"
                       placeholder="Text"
                       value={block.text}
-                      onChange={(e) => updateCourse(["modules", modIdx, "sections", secIdx, "content", blockIdx, "text"], e.target.value)}
+                      onChange={(e) =>
+                        updateCourse(
+                          [
+                            "modules",
+                            modIdx,
+                            "sections",
+                            secIdx,
+                            "content",
+                            blockIdx,
+                            "text",
+                          ],
+                          e.target.value
+                        )
+                      }
                     />
                   </div>
                 ))}
@@ -199,12 +269,28 @@ export default function AdminCourseDashboard() {
                 </button>
 
                 {sec.quiz.map((quiz, qIdx) => (
-                  <div key={qIdx} className="p-2 mt-2 bg-gray-50 border rounded">
+                  <div
+                    key={qIdx}
+                    className="p-2 mt-2 bg-gray-50 border rounded"
+                  >
                     <input
                       className="input mb-1"
                       placeholder="Question"
                       value={quiz.question}
-                      onChange={(e) => updateCourse(["modules", modIdx, "sections", secIdx, "quiz", qIdx, "question"], e.target.value)}
+                      onChange={(e) =>
+                        updateCourse(
+                          [
+                            "modules",
+                            modIdx,
+                            "sections",
+                            secIdx,
+                            "quiz",
+                            qIdx,
+                            "question",
+                          ],
+                          e.target.value
+                        )
+                      }
                     />
                     {quiz.options.map((opt, optIdx) => (
                       <input
@@ -214,7 +300,9 @@ export default function AdminCourseDashboard() {
                         value={opt}
                         onChange={(e) => {
                           const modules = [...newCourse.modules];
-                          modules[modIdx].sections[secIdx].quiz[qIdx].options[optIdx] = e.target.value;
+                          modules[modIdx].sections[secIdx].quiz[qIdx].options[
+                            optIdx
+                          ] = e.target.value;
                           setNewCourse({ ...newCourse, modules });
                         }}
                       />
@@ -224,13 +312,39 @@ export default function AdminCourseDashboard() {
                       placeholder="Correct Answer Index (0-3)"
                       type="number"
                       value={quiz.answer}
-                      onChange={(e) => updateCourse(["modules", modIdx, "sections", secIdx, "quiz", qIdx, "answer"], parseInt(e.target.value))}
+                      onChange={(e) =>
+                        updateCourse(
+                          [
+                            "modules",
+                            modIdx,
+                            "sections",
+                            secIdx,
+                            "quiz",
+                            qIdx,
+                            "answer",
+                          ],
+                          parseInt(e.target.value)
+                        )
+                      }
                     />
                     <textarea
                       className="input"
                       placeholder="Explanation"
                       value={quiz.explanation}
-                      onChange={(e) => updateCourse(["modules", modIdx, "sections", secIdx, "quiz", qIdx, "explanation"], e.target.value)}
+                      onChange={(e) =>
+                        updateCourse(
+                          [
+                            "modules",
+                            modIdx,
+                            "sections",
+                            secIdx,
+                            "quiz",
+                            qIdx,
+                            "explanation",
+                          ],
+                          e.target.value
+                        )
+                      }
                     />
                   </div>
                 ))}
@@ -246,6 +360,15 @@ export default function AdminCourseDashboard() {
       <button className="btn btn-primary mt-4" onClick={handleSaveCourse}>
         💾 Save Course
       </button>
+      <PopUp
+        show={showCongrats}
+        onClose={() => {
+          setShowCongrats(false);
+          navigate("/courses_admin");
+        }}
+        message="Course saved succesfully"
+        type="success"
+      />
     </div>
   );
 }

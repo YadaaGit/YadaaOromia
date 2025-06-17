@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Quiz from "./Quiz";
+import PopUp from "../basic_ui/pop_up.jsx";
 
 export default function SectionViewer({
   sections = [],
@@ -11,7 +12,7 @@ export default function SectionViewer({
 
   const [current, setCurrent] = useState(0);
   const [passedQuiz, setPassedQuiz] = useState(false);
-
+  const [showCongrats, setShowCongrats] = useState(false);
   const isFinal = current === sections.length;
   const content = isFinal ? null : sections[current];
 
@@ -39,8 +40,7 @@ export default function SectionViewer({
 
   const handleNext = () => {
     if (isFinal) {
-      alert("🎉 You passed the final test!")
-      navigate(`/courses`);
+      setShowCongrats(true);
     } else {
       setCurrent((prev) => prev + 1);
       setPassedQuiz(false);
@@ -92,17 +92,38 @@ export default function SectionViewer({
       )}
 
       <div className="flex justify-between mt-8">
-        <button onClick={handlePrev} disabled={current === 0} className={current === 0 ? "btn btn_disabled" : "btn"}>
+        <button
+          onClick={handlePrev}
+          disabled={current === 0}
+          className={current === 0 ? "btn btn_disabled" : "btn"}
+        >
           Previous
         </button>
         <button
           onClick={handleNext}
           disabled={!passedQuiz}
-          className={ isFinal ? !passedQuiz ? "btn-primary btn_disabled" : "btn-primary" : !passedQuiz ? "btn btn_disabled" : "btn"}
+          className={
+            isFinal
+              ? !passedQuiz
+                ? "btn-primary btn_disabled"
+                : "btn-primary"
+              : !passedQuiz
+              ? "btn btn_disabled"
+              : "btn"
+          }
         >
           {isFinal ? "Completed" : "Next"}
         </button>
       </div>
+      <PopUp
+        show={showCongrats}
+        onClose={() => {
+          setShowCongrats(false);
+          navigate("/courses");
+        }}
+        message="🎉 You passed the final test!"
+        type="success"
+      />
     </div>
   );
 }

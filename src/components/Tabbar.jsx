@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import "@/style/tabbar.css";
 import "@/style/general.css";
+import useUserData from "@/hooks/get_user_data.js";
 import {
   HomeIcon as HomeSolid,
   BookOpenIcon as BookSolid,
@@ -41,86 +42,45 @@ const admin_tabs = [
 ];
 
 export default function TabBar() {
-  const [user, setUser] = useState({
-    name: "Abebe Kebede",
-    xp: 134679,
-    email: "Abebe@example.com",
-    username: "Abebe_1",
-    country: "Ethiopia",
-    joined: "January 2023",
-    Current_course: "January 2023",
-    Current_module: "January 2023",
-    Current_section: "January 2023",
-    avatar: "avatar",
-    role: "user",
-  });
+  const { user, loading, error } = useUserData(); // ✅ call the hook properly
+
+  if (loading) return null; // or <p>Loading...</p>
+  if (error) return <p className="text-red-500">{error}</p>;
+  if (!user) return null;
+
+  const currentTabs = user.role === "admin" ? admin_tabs : tabs;
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-lg px-6 py-3 flex justify-around rounded-t-2xl z-50">
-      {user.role == "user"
-        ? tabs.map(({ name, path, icon }) => (
-            <NavLink
-              to={path}
-              key={name}
-              end={path === "/"}
-              className="flex flex-col items-center text-xs relative"
-            >
-              {({ isActive }) => {
-                const Icon = isActive ? icon.active : icon.inactive;
+      {currentTabs.map(({ name, path, icon }) => (
+        <NavLink
+          to={path}
+          key={name}
+          end={path === "/"}
+          className="flex flex-col items-center text-xs relative"
+        >
+          {({ isActive }) => {
+            const Icon = isActive ? icon.active : icon.inactive;
 
-                return (
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0.6 }}
-                    animate={{
-                      scale: isActive ? 1.2 : 1,
-                      opacity: isActive ? 1 : 0.6,
-                    }}
-                    transition={{ duration: 0.1 }}
-                    className={`flex flex-col items-center ${
-                      isActive
-                        ? "txt_color_main font-semibold"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    <Icon className="w-6 h-6" />
-                    <span className="mt-1">{name}</span>
-                  </motion.div>
-                );
-              }}
-            </NavLink>
-          ))
-        : user.role == "admin"
-        ? admin_tabs.map(({ name, path, icon }) => (
-            <NavLink
-              to={path}
-              key={name}
-              end={path === "/"}
-              className="flex flex-col items-center text-xs relative"
-            >
-              {({ isActive }) => {
-                const Icon = isActive ? icon.active : icon.inactive;
-
-                return (
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0.6 }}
-                    animate={{
-                      scale: isActive ? 1.2 : 1,
-                      opacity: isActive ? 1 : 0.6,
-                    }}
-                    transition={{ duration: 0.1 }}
-                    className={`flex flex-col items-center ${
-                      isActive
-                        ? "txt_color_main font-semibold"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    <Icon className="w-6 h-6" />
-                    <span className="mt-1">{name}</span>
-                  </motion.div>
-                );
-              }}
-            </NavLink>
-          ))
-        : null}
+            return (
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0.6 }}
+                animate={{
+                  scale: isActive ? 1.2 : 1,
+                  opacity: isActive ? 1 : 0.6,
+                }}
+                transition={{ duration: 0.1 }}
+                className={`flex flex-col items-center ${
+                  isActive ? "txt_color_main font-semibold" : "text-gray-400"
+                }`}
+              >
+                <Icon className="w-6 h-6" />
+                <span className="mt-1">{name}</span>
+              </motion.div>
+            );
+          }}
+        </NavLink>
+      ))}
     </nav>
   );
 }

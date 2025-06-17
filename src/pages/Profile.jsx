@@ -1,72 +1,78 @@
 import "@/style/Dashboard_user.css";
 import "@/style/general.css";
-import React, { useState } from 'react';
-import avatar from "@/assets/images/portrait.jpg"
+import React, { useState } from "react";
+import avatar from "@/assets/images/portrait.jpg";
+import useUserData from "@/hooks/get_user_data.js";
 
-const tabs = ['Info', 'Scores'];
+const tabs = ["Info", "Scores"];
 
 const translations = {
   en: {
-    Info: 'Info',
-    Scores: 'Scores',
-    Name: 'Name',
-    Email: 'Email',
-    Country: 'Country',
-    Username: 'Username',
-    Joined: 'Joined',
-    Edit: 'Edit',
-    Save: 'Save',
-    Cancel: 'Cancel',
+    Info: "Info",
+    Scores: "Scores",
+    Name: "Name",
+    Email: "Email",
+    Country: "Country",
+    Username: "Username",
+    Joined: "Joined",
+    Edit: "Edit",
+    Save: "Save",
+    Cancel: "Cancel",
   },
   am: {
-    Info: 'መረጃ',
-    Scores: 'ውጤቶች',
-    Name: 'ስም',
-    Email: 'ኢሜይል',
-    Country: 'አገር',
-    Username: 'የተጠቃሚ ስም',
-    Joined: 'ቀን ተቀላቀለ',
-    Edit: 'አርትዕ',
-    Save: 'አስቀምጥ',
-    Cancel: 'ይቅር',
+    Info: "መረጃ",
+    Scores: "ውጤቶች",
+    Name: "ስም",
+    Email: "ኢሜይል",
+    Country: "አገር",
+    Username: "የተጠቃሚ ስም",
+    Joined: "ቀን ተቀላቀለ",
+    Edit: "አርትዕ",
+    Save: "አስቀምጥ",
+    Cancel: "ይቅር",
   },
   om: {
-    Info: 'Odeeffannoo',
-    Scores: 'Bu\'aa',
-    Name: 'Maqaa',
-    Email: 'Imeelii',
-    Country: 'Biyya',
-    Username: 'Maqaa fayyadamtoota',
-    Joined: 'Guyyaa Makamu',
-    Edit: 'Gulaali',
-    Save: 'Oolchi',
-    Cancel: 'Haqi',
-  }
+    Info: "Odeeffannoo",
+    Scores: "Bu'aa",
+    Name: "Maqaa",
+    Email: "Imeelii",
+    Country: "Biyya",
+    Username: "Maqaa fayyadamtoota",
+    Joined: "Guyyaa Makamu",
+    Edit: "Gulaali",
+    Save: "Oolchi",
+    Cancel: "Haqi",
+  },
 };
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState('Info');
+  const [activeTab, setActiveTab] = useState("Info");
   const [editMode, setEditMode] = useState(false);
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState("en");
 
+  const { user, loading, error } = useUserData();
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+
+  // const [user, setUser] = useState({
+  //   name: "Abebe Kebede",
+  //   xp: 134679,
+  //   email: "Abebe@example.com",
+  //   username: "Abebe_1",
+  //   country: "Ethiopia",
+  //   joined: "January 2023",
+  //   Current_course: "bio_1",
+  //   Current_module: "2",
+  //   Current_section: "1",
+  //   avatar: "avatar",
+  //   role: "admin",
+  //   lang: "en",
+  // });
   const t = (key) => {
     const dict = translations[language];
     return dict && dict[key] ? dict[key] : key;
   };
-
-  const [user, setUser] = useState({
-    name: 'Abebe Kebede',
-    xp: 134679,
-    email: 'Abebe@example.com',
-    username: 'Abebe_1',
-    country: 'Ethiopia',
-    joined: 'January 2023',
-    Current_course: 'January 2023',
-    Current_module: 'January 2023',
-    Current_section: 'January 2023',
-    avatar: avatar,
-    role: "user",
-  });
 
   const handleChange = (field, value) => {
     setUser((prev) => ({ ...prev, [field]: value }));
@@ -74,11 +80,14 @@ export default function ProfilePage() {
 
   const handleSave = () => {
     setEditMode(false);
-    console.log('Saved user data:', user); // Replace with API call
+    console.log("Saved user data:", user); // Replace with API call
   };
 
   return (
-    <div className="flex flex-col items-center px-4 py-6 pb-28 bg-gray-50 min-h-screen text-center text-gray-800" style={{borderRadius: 10}}>
+    <div
+      className="flex flex-col items-center px-4 py-6 pb-28 bg-gray-50 min-h-screen text-center text-gray-800"
+      style={{ borderRadius: 10 }}
+    >
       {/* Top Right Buttons */}
       <div className="flex gap-2 lang-toggle">
         <select
@@ -103,16 +112,23 @@ export default function ProfilePage() {
 
       {/* Name & XP */}
       <h2 className="text-xl font-bold">{user.name}</h2>
-      <p className="text-gray-500 text-sm mb-6">{user.xp.toLocaleString()} XP</p>
+      <p className="text-gray-500 text-sm mb-6">
+        {user.xp.toLocaleString()} XP
+      </p>
 
       {/* Tab Switcher */}
-      <div className="flex justify-center gap-2 bg-white shadow mb-4" style={{padding: 12, borderRadius: 10}}>
+      <div
+        className="flex justify-center gap-2 bg-white shadow mb-4"
+        style={{ padding: 12, borderRadius: 10 }}
+      >
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-1 text-sm font-medium border transition-all duration-200 ${
-              activeTab === tab ? 'bg-indigo-500 text-white border-indigo-500' : 'text-gray-500 border-transparent'
+              activeTab === tab
+                ? "bg-indigo-500 text-white border-indigo-500"
+                : "text-gray-500 border-transparent"
             }`}
           >
             {t(tab)}
@@ -121,25 +137,25 @@ export default function ProfilePage() {
       </div>
 
       {/* Info Tab */}
-      {activeTab === 'Info' && (
+      {activeTab === "Info" && (
         <div className="w-full max-w-md text-left bg-white rounded-xl shadow px-6 py-5 space-y-4">
           <EditableField
             label={t("Name")}
             value={user.name}
             editable={editMode}
-            onChange={(v) => handleChange('name', v)}
+            onChange={(v) => handleChange("name", v)}
           />
           <EditableField
             label={t("Email")}
             value={user.email}
             editable={editMode}
-            onChange={(v) => handleChange('email', v)}
+            onChange={(v) => handleChange("email", v)}
           />
           <EditableField
             label={t("Country")}
             value={user.country}
             editable={editMode}
-            onChange={(v) => handleChange('country', v)}
+            onChange={(v) => handleChange("country", v)}
           />
           <InfoRow label={t("Username")} value={user.username} />
           <InfoRow label={t("Joined")} value={user.joined} />
@@ -173,7 +189,7 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {activeTab !== 'Info' && (
+      {activeTab !== "Info" && (
         <div className="text-center text-gray-400 text-sm mt-8">
           No content yet for <strong>{t(activeTab)}</strong>.
         </div>

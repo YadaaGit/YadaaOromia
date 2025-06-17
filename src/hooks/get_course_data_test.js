@@ -110,55 +110,55 @@ A good scientific hypothesis is testable and falsifiable.`,
           title: "Biology 102 Final Evaluation",
           description: "Let's review what you have learned so far!!",
           questions: [
-            {
-              question:
-                "Which of the following best describes the scientific method?",
-              options: [
-                "A set of beliefs that explain life",
-                "A way to test ideas using observation and experimentation",
-                "An unchanging list of facts",
-                "A government-mandated procedure",
-              ],
-              answer: 1,
-              explanation:
-                "The mitochondria produce ATP, the main energy currency of the cell.",
-            },
-            {
-              question: "What is biology the study of?",
-              options: [
-                "Rocks and minerals",
-                "The Earth’s atmosphere",
-                "Life and living organisms",
-                "Stars and planets",
-              ],
-              answer: 2,
-              explanation:
-                "The mitochondria produce ATP, the main energy currency of the cell.",
-            },
-            {
-              question: "What is the first step in the scientific method?",
-              options: [
-                "Form a hypothesis",
-                "Conduct an experiment",
-                "Make an observation",
-                "Analyze results",
-              ],
-              answer: 2,
-              explanation:
-                "The mitochondria produce ATP, the main energy currency of the cell.",
-            },
-            {
-              question: "Why must a hypothesis be falsifiable?",
-              options: [
-                "To make it sound scientific",
-                "So it can be proven true",
-                "So it can be tested and possibly disproven",
-                "To ensure it aligns with existing theories",
-              ],
-              answer: 2,
-              explanation:
-                "The mitochondria produce ATP, the main energy currency of the cell.",
-            },
+            // {
+            //   question:
+            //     "Which of the following best describes the scientific method?",
+            //   options: [
+            //     "A set of beliefs that explain life",
+            //     "A way to test ideas using observation and experimentation",
+            //     "An unchanging list of facts",
+            //     "A government-mandated procedure",
+            //   ],
+            //   answer: 1,
+            //   explanation:
+            //     "The mitochondria produce ATP, the main energy currency of the cell.",
+            // },
+            // {
+            //   question: "What is biology the study of?",
+            //   options: [
+            //     "Rocks and minerals",
+            //     "The Earth’s atmosphere",
+            //     "Life and living organisms",
+            //     "Stars and planets",
+            //   ],
+            //   answer: 2,
+            //   explanation:
+            //     "The mitochondria produce ATP, the main energy currency of the cell.",
+            // },
+            // {
+            //   question: "What is the first step in the scientific method?",
+            //   options: [
+            //     "Form a hypothesis",
+            //     "Conduct an experiment",
+            //     "Make an observation",
+            //     "Analyze results",
+            //   ],
+            //   answer: 2,
+            //   explanation:
+            //     "The mitochondria produce ATP, the main energy currency of the cell.",
+            // },
+            // {
+            //   question: "Why must a hypothesis be falsifiable?",
+            //   options: [
+            //     "To make it sound scientific",
+            //     "So it can be proven true",
+            //     "So it can be tested and possibly disproven",
+            //     "To ensure it aligns with existing theories",
+            //   ],
+            //   answer: 2,
+            //   explanation:
+            //     "The mitochondria produce ATP, the main energy currency of the cell.",
+            // },
             {
               question:
                 "Which of the following is NOT a step in the scientific method?",
@@ -752,7 +752,7 @@ export const useModuleData = (courseId, moduleId) => {
 
   useEffect(() => {
     const course = dummyCourses.find((c) => c.course_id === courseId);
-    if(course) {
+    if (course) {
       const module_read = course.modules.find((m) => m.module_id === moduleId);
       setTimeout(() => {
         setModule(module_read || null);

@@ -6,7 +6,7 @@ export default function Welcome() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-white px-6" style={{borderRadius: 13}}>
+    <div className="min-h-screen flex flex-col justify-center items-center bg-white px-6" style={{borderRadius: 13, paddingBottom: 25}}>
       <img src={welcomeImg} alt="Welcome" className="w-60 mb-6" />
       <h1 className="text-2xl font-bold text-gray-800 mb-2">Hello</h1>
       <p className="text-gray-500 text-sm text-center mb-8">

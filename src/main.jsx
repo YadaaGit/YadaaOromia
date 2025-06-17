@@ -4,10 +4,12 @@ import {
   Route,
   useLocation,
   Navigate,
+  matchPath,
 } from "react-router-dom";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./style/index.css";
+import useUserData from "@/hooks/get_user_data.js";
 
 import TabBar from "./components/Tabbar.jsx";
 import Welcome from "./pages/auth_pages/welcome_page.jsx";
@@ -21,26 +23,40 @@ import CourseModal from "./pages/user_pages/Course_modal.jsx";
 
 function AppRoutes() {
   const location = useLocation();
-  const hideTabBarRoutes = [
+  const { user, loading, error } = useUserData();
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+
+  const authenticated = user.authenticated;
+
+  // Check if we should hide the tab bar for the current route
+  const shouldHideTabBar = [
     "/auth",
     "/login",
     "/register",
-    "/courses/:courseId",
-    "/courses_admin/add_course",
     "/",
-  ];
-  const shouldHideTabBar = hideTabBarRoutes.includes(location.pathname);
-  const authenticated = false;
-  const background = location.state?.background
-  ? { pathname: location.state.background.pathname, search: location.state.background.search }
-  : null;
+  ].some((path) => matchPath({ path, end: true }, location.pathname)) ||
+    matchPath("/courses/:courseId/:moduleId", location.pathname) ||
+    matchPath("/courses_admin/:add_course", location.pathname);
+
+  const background = location.state?.background || null;
+
   return (
     <div className={shouldHideTabBar ? "" : "pb-16"}>
       <Routes location={background || location}>
         <Route
           path="/"
           element={
-            authenticated ? <Navigate to="/courses" /> : <Navigate to="/auth" />
+            authenticated ? (
+              user.role == "user" ? (
+                <Navigate to="/courses" />
+              ) : (
+                <Navigate to="/courses_admin" />
+              )
+            ) : (
+              <Navigate to="/auth" />
+            )
           }
         />
         <Route path="/auth" element={<Welcome />} />
@@ -51,15 +67,21 @@ function AppRoutes() {
         <Route path="/courses_admin" element={<CoursesAdmin />} />
       </Routes>
 
-      {/* Modal Route */}
+      {/* Modal Routes */}
       {background && (
         <Routes>
-          <Route path="/courses/:courseId/:moduleId" element={<CourseModal />} />
-          <Route path="/courses_admin/:add_course" element={<AddModal />} />
+          <Route
+            path="/courses/:courseId/:moduleId"
+            element={<CourseModal />}
+          />
+          <Route
+            path="/courses_admin/:add_course"
+            element={<AddModal />}
+          />
         </Routes>
       )}
 
-      {/* Show TabBar only on main pages */}
+      {/* Show TabBar only if it should not be hidden */}
       {!shouldHideTabBar && <TabBar />}
     </div>
   );

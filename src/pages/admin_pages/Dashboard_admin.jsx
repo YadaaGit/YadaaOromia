@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import dummyCourses from "@/hooks/get_course_data_test.js";
 import "@/style/Dashboard_user.css";
 import "@/style/general.css";
+import useUserData from "@/hooks/get_user_data.js";
 
 function Courses() {
+  const { user, loading, error } = useUserData();
   const navigate = useNavigate();
   const openModule = (courseId, moduleId) => {
     navigate(`/courses/${courseId}/${moduleId}`, {
@@ -16,19 +18,6 @@ function Courses() {
 
   const course_data = [...dummyCourses];
 
-  const [user, setUser] = useState({
-    name: "Abebe Kebede",
-    xp: 134679,
-    email: "Abebe@example.com",
-    username: "Abebe_1",
-    country: "Ethiopia",
-    joined: "January 2023",
-    Current_course: "January 2023",
-    Current_module: "January 2023",
-    Current_section: "January 2023",
-    avatar: "avatar",
-    role: "user",
-  });
   const handleAddCourse = () => {
     navigate(`/courses_admin/add_course`, {
       state: {
@@ -36,6 +25,8 @@ function Courses() {
       },
     });
   };
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <>
