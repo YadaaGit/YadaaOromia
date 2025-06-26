@@ -10,7 +10,7 @@ export default function PopUp({ show, onClose, message, type = "info" }) {
 
   return (
     <AnimatePresence>
-      {show && (
+      {show && !message=="" && (
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -24,6 +24,7 @@ export default function PopUp({ show, onClose, message, type = "info" }) {
             <button
               onClick={onClose}
               className="btn"
+              type="button"
               style={{
                 fontWeight: 900,
                 background: "transparent",

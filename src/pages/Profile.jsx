@@ -1,8 +1,15 @@
 import "@/style/Dashboard_user.css";
 import "@/style/general.css";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import avatar from "@/assets/images/portrait.jpg";
 import useUserData from "@/hooks/get_user_data.js";
+import Dropdown from "@/components/basic_ui/options.jsx";
+import PopUp from "@/components/basic_ui/pop_up.jsx";
+import Loading from "@/components/basic_ui/Loading.jsx";
+import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
+import ConfirmModal from "@/components/basic_ui/confirm_modal.jsx";
+import { handleLogout } from "@/utils/auth_service";
 
 const tabs = ["Info", "Scores"];
 
@@ -46,41 +53,42 @@ const translations = {
 };
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Info");
   const [editMode, setEditMode] = useState(false);
   const [language, setLanguage] = useState("en");
 
   const { user, loading, error } = useUserData();
 
+  const [loadingLogout, setLoadingLogout] = useState(false);
+  const [errorLogout, setErrorLogout] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [lang, setLang] = useState("English");
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
-  // const [user, setUser] = useState({
-  //   name: "Abebe Kebede",
-  //   xp: 134679,
-  //   email: "Abebe@example.com",
-  //   username: "Abebe_1",
-  //   country: "Ethiopia",
-  //   joined: "January 2023",
-  //   Current_course: "bio_1",
-  //   Current_module: "2",
-  //   Current_section: "1",
-  //   avatar: "avatar",
-  //   role: "admin",
-  //   lang: "en",
-  // });
   const t = (key) => {
     const dict = translations[language];
     return dict && dict[key] ? dict[key] : key;
   };
 
   const handleChange = (field, value) => {
-    setUser((prev) => ({ ...prev, [field]: value }));
+    setUserEdit((user) => ({ ...user, [field]: value }));
   };
 
   const handleSave = () => {
     setEditMode(false);
-    console.log("Saved user data:", user); // Replace with API call
+    console.log("Saved user data:", userEdit); // Replace with API call
+  };
+
+  const confirmLogout = () => {
+    handleLogout({
+      loading: setLoadingLogout,
+      error: setErrorLogout,
+      navigate: navigate,
+      redirectTo: "/ww",
+    });
   };
 
   return (
@@ -90,15 +98,13 @@ export default function ProfilePage() {
     >
       {/* Top Right Buttons */}
       <div className="flex gap-2 lang-toggle">
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className="text-sm border rounded px-2 py-1 shadow"
-        >
-          <option value="en">English</option>
-          <option value="am">አማርኛ</option>
-          <option value="om">Afaan Oromo</option>
-        </select>
+        <LanguageDropdown
+          options={["English", "Amharic", "Oromifa"]}
+          value={lang}
+          onChange={setLang}
+          placeholder="Choose Language"
+          style_pass={{ width: 120 }}
+        />
       </div>
 
       {/* Avatar */}
@@ -138,55 +144,73 @@ export default function ProfilePage() {
 
       {/* Info Tab */}
       {activeTab === "Info" && (
-        <div className="w-full max-w-md text-left bg-white rounded-xl shadow px-6 py-5 space-y-4">
-          <EditableField
-            label={t("Name")}
-            value={user.name}
-            editable={editMode}
-            onChange={(v) => handleChange("name", v)}
-          />
-          <EditableField
-            label={t("Email")}
-            value={user.email}
-            editable={editMode}
-            onChange={(v) => handleChange("email", v)}
-          />
-          <EditableField
-            label={t("Country")}
-            value={user.country}
-            editable={editMode}
-            onChange={(v) => handleChange("country", v)}
-          />
-          <InfoRow label={t("Username")} value={user.username} />
-          <InfoRow label={t("Joined")} value={user.joined} />
-          <InfoRow label={t("Role")} value={user.role} />
+        <>
+          <div className="w-full max-w-md text-left bg-white rounded-xl shadow px-6 py-5 space-y-4">
+            <EditableField
+              label={t("Name")}
+              value={user.name}
+              editable={editMode}
+              onChange={(v) => handleChange("name", v)}
+            />
+            <EditableField
+              label={t("Email")}
+              value={user.email}
+              editable={editMode}
+              onChange={(v) => handleChange("email", v)}
+            />
+            <EditableField
+              label={t("Country")}
+              value={user.country}
+              editable={editMode}
+              onChange={(v) => handleChange("country", v)}
+            />
+            <InfoRow label={t("Username")} value={user.username} />
+            <InfoRow label={t("Joined")} value={user.joined} />
+            <InfoRow label={t("Role")} value={user.role} />
 
-          <div className="flex justify-end gap-2 pt-2">
-            {editMode ? (
-              <>
+            <div className="flex justify-end gap-2 pt-2">
+              {editMode ? (
+                <>
+                  <button
+                    onClick={() => setEditMode(false)}
+                    className="text-sm text-gray-500 px-3 py-1 border rounded"
+                  >
+                    {t("Cancel")}
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    className="text-sm bg-indigo-500 text-white px-3 py-1 rounded"
+                  >
+                    {t("Save")}
+                  </button>
+                </>
+              ) : (
                 <button
-                  onClick={() => setEditMode(false)}
-                  className="text-sm text-gray-500 px-3 py-1 border rounded"
+                  onClick={() => setEditMode(true)}
+                  className="text-sm txt_color_main bg-indigo-100 text-indigo-600 px-3 py-1 rounded"
                 >
-                  {t("Cancel")}
+                  {t("Edit")}
                 </button>
-                <button
-                  onClick={handleSave}
-                  className="text-sm bg-indigo-500 text-white px-3 py-1 rounded"
-                >
-                  {t("Save")}
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => setEditMode(true)}
-                className="text-sm txt_color_main bg-indigo-100 text-indigo-600 px-3 py-1 rounded"
-              >
-                {t("Edit")}
-              </button>
-            )}
+              )}
+            </div>
           </div>
-        </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="w-full max-w-md text-sm bg-indigo-500 text-white px-3 py-1 rounded"
+            style={{marginTop: 35}}
+          >
+            Log Out
+          </button>
+
+          <ConfirmModal
+            show={showModal}
+            onClose={() => setShowModal(false)}
+            onConfirm={confirmLogout}
+            message="Are you sure you want to logout?"
+            confirmText="Log Out"
+            cancelText="Cancel"
+          />
+        </>
       )}
 
       {activeTab !== "Info" && (
@@ -211,7 +235,12 @@ function EditableField({ label, value, editable, onChange }) {
           className="border border-gray-300 rounded px-3 py-1 text-sm"
         />
       ) : (
-        <span className="text-gray-700 text-sm font-medium">{value}</span>
+        <span
+          className="text-gray-700 text-sm font-medium"
+          style={{ overflow: "scroll" }}
+        >
+          {value}
+        </span>
       )}
     </div>
   );
@@ -222,7 +251,12 @@ function InfoRow({ label, value }) {
   return (
     <div className="flex justify-between border-b border-gray-100 pb-2">
       <span className="text-gray-500 text-sm">{label}</span>
-      <span className="text-gray-700 text-sm font-medium">{value}</span>
+      <span
+        className="text-gray-700 text-sm font-medium"
+        style={{ width: 100, textAlign: "right", overflow: "scroll" }}
+      >
+        {value}
+      </span>
     </div>
   );
 }

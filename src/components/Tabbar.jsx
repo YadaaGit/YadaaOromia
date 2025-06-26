@@ -7,13 +7,16 @@ import {
   HomeIcon as HomeSolid,
   BookOpenIcon as BookSolid,
   UserIcon as UserSolid,
+  DocumentChartBarIcon as DataSolid
 } from "@heroicons/react/24/solid";
 import {
   HomeIcon as HomeOutline,
   BookOpenIcon as BookOutline,
   UserIcon as UserOutline,
+  DocumentChartBarIcon as DataOutline
 } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
+
 
 const tabs = [
   {
@@ -29,6 +32,11 @@ const tabs = [
 ];
 
 const admin_tabs = [
+  {
+    name: "User data",
+    path: "/user_data",
+    icon: { active: DataSolid, inactive: DataOutline },
+  },
   {
     name: "Courses Admin",
     path: "/courses_admin",

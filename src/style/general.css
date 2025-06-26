@@ -11,7 +11,7 @@
   margin-bottom: 20px;
 }
 .bg-indigo-500 {
-  background-color: #19384C !important;
+  background-color: #19384c !important;
 }
 .lang-toggle {
   margin: 0px 0px 16px 0px;
@@ -32,44 +32,58 @@
   border-radius: 0.5rem;
   background: white;
   cursor: pointer;
-  color: #19384C;
+  color: #19384c;
 }
 
-.btn_disabled{
+.btn_disabled {
   opacity: 0.3;
 }
 
 .btn-primary {
-  background: #19384C;
+  background: #19384c;
   color: white;
 }
 
 .btn-active {
-  background: #19384C;
+  background: #19384c;
   color: white;
 }
-.color_main{
-  background-color: #19384C !important;
+.color_main {
+  background-color: #19384c !important;
 }
-.border_main_1{
-  border: 1px solid #19384C !important;
+.border_main_1 {
+  border: 1px solid #19384c !important;
 }
-.txt_color_main{
-  color: #19384C !important;
+.txt_color_main {
+  color: #19384c !important;
 }
-.rounded-full{
+.rounded-full {
   border-radius: calc(infinity * 1px) !important;
 }
 
 .bg-red-100 {
-    background-color: #ffe2e2 !important;
+  background-color: #ffe2e2 !important;
 }
 .border-red-500 {
-    border-color: #fb2c36 !important;
+  border-color: #fb2c36 !important;
 }
 .bg-green-100 {
-    background-color: #dcfce7 !important;
+  background-color: #dcfce7 !important;
 }
 .border-green-500 {
-    border-color: #00c951 !important;
+  border-color: #00c951 !important;
+}
+.animate_bounce_2{
+  animation: bounce_2 1s infinite;
+}
+@keyframes bounce_2 {
+  0%,
+  100% {
+    transform: translateY(-50%) ;
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
 }

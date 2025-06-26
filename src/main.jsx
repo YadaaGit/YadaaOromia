@@ -11,6 +11,7 @@ import { createRoot } from "react-dom/client";
 import "./style/index.css";
 import useUserData from "@/hooks/get_user_data.js";
 
+import SplashScreen from "./components/SplashScreen.jsx";
 import TabBar from "./components/Tabbar.jsx";
 import Welcome from "./pages/auth_pages/welcome_page.jsx";
 import Login from "./pages/auth_pages/login.jsx";
@@ -20,23 +21,22 @@ import Courses from "./pages/user_pages/Dashboard.jsx";
 import CoursesAdmin from "./pages/admin_pages/Dashboard_admin.jsx";
 import AddModal from "./pages/admin_pages/Add_course_modal.jsx";
 import CourseModal from "./pages/user_pages/Course_modal.jsx";
+import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 
 function AppRoutes() {
   const location = useLocation();
   const { user, loading, error } = useUserData();
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <SplashScreen />;
   if (error) return <p className="text-red-500">{error}</p>;
 
   const authenticated = user.authenticated;
 
   // Check if we should hide the tab bar for the current route
-  const shouldHideTabBar = [
-    "/auth",
-    "/login",
-    "/register",
-    "/",
-  ].some((path) => matchPath({ path, end: true }, location.pathname)) ||
+  const shouldHideTabBar =
+    ["/auth", "/login", "/register", "/verify_email", "/"].some((path) =>
+      matchPath({ path, end: true }, location.pathname)
+    ) ||
     matchPath("/courses/:courseId/:moduleId", location.pathname) ||
     matchPath("/courses_admin/:add_course", location.pathname);
 
@@ -49,22 +49,85 @@ function AppRoutes() {
           path="/"
           element={
             authenticated ? (
-              user.role == "user" ? (
-                <Navigate to="/courses" />
+              user.emailVerified ? (
+                user.role == "user" ? (
+                  <Navigate to="/courses" />
+                ) : (
+                  <Navigate to="/courses_admin" />
+                )
               ) : (
-                <Navigate to="/courses_admin" />
+                <Navigate to="/verify_email" />
               )
             ) : (
               <Navigate to="/auth" />
             )
           }
         />
-        <Route path="/auth" element={<Welcome />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/courses" element={<Courses />} />
-        <Route path="/courses_admin" element={<CoursesAdmin />} />
+        <Route
+          path="/auth"
+          element={
+            !authenticated ? (
+              <Welcome />
+            ) : user.role == "user" ? (
+              <Navigate to="/courses" />
+            ) : (
+              <Navigate to="/courses_admin" />
+            )
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            !authenticated ? (
+              <Login />
+            ) : user.role == "user" ? (
+              <Navigate to="/courses" />
+            ) : (
+              <Navigate to="/courses_admin" />
+            )
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            !authenticated ? (
+              <Register />
+            ) : user.role == "user" ? (
+              <Navigate to="/courses" />
+            ) : (
+              <Navigate to="/courses_admin" />
+            )
+          }
+        />
+        <Route path="/verify_email" element={<VerifyEmail />} />
+        <Route
+          path="/profile"
+          element={!authenticated ? <Navigate to="/auth" /> : <Profile />}
+        />
+        <Route
+          path="/courses"
+          element={
+            !authenticated ? (
+              <Navigate to ="/auth" />
+            ) : user.role == "user" ? (
+              <Courses />
+            ) : (
+              <Navigate to ="/courses_admin" />
+            )
+          }
+        />
+        <Route
+          path="/courses_admin"
+          element={
+            !authenticated ? (
+              <Navigate to ="/auth" />
+            ) : user.role == "user" ? (
+              <Navigate to="/courses" />
+            ) : (
+              <CoursesAdmin />
+            )
+          }
+        />
       </Routes>
 
       {/* Modal Routes */}
@@ -74,10 +137,7 @@ function AppRoutes() {
             path="/courses/:courseId/:moduleId"
             element={<CourseModal />}
           />
-          <Route
-            path="/courses_admin/:add_course"
-            element={<AddModal />}
-          />
+          <Route path="/courses_admin/:add_course" element={<AddModal />} />
         </Routes>
       )}
 
