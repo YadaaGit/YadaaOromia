@@ -75,7 +75,6 @@ export const handleSignUp = async ({
     // Step 3: Store user data in Firestore
     const userData = {
       name,
-      xp: 0,
       age: ageNumber,
       lang: langValue[lang],
       gender: sex,
@@ -84,9 +83,6 @@ export const handleSignUp = async ({
       uuid: user.uid,
       joined: serverTimestamp(),
       role: role || "user", // fallback to "user"
-      current_course: 0,
-      current_module: 0,
-      current_section: 0,
     };
 
     await setDoc(doc(db, "users", user.uid), userData);

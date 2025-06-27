@@ -6,9 +6,15 @@
 
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, Timestamp } from "firebase/firestore";
+import {
+  doc,
+  onSnapshot,
+  collection,
+  getDocs,
+  Timestamp,
+} from "firebase/firestore";
 import { auth, db } from "#/firebase-config.js";
-import avatar from "@/assets/images/portrait.jpg"; // fallback avatar
+import avatar from "@/assets/images/portrait.jpg";
 
 function formatTimestampToDateString(timestamp) {
   if (!timestamp || !(timestamp instanceof Timestamp)) return "";
@@ -23,46 +29,71 @@ export default function useUserData() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       if (!firebaseUser) {
         setUser({ authenticated: false });
         setLoading(false);
         return;
       }
 
-      try {
-        setLoading(true);
+      const userDocRef = doc(db, "users", firebaseUser.uid);
 
-        const userDocRef = doc(db, "users", firebaseUser.uid);
-        const userSnapshot = await getDoc(userDocRef);
+      // 🔄 Set up real-time listener on user document
+      const unsubscribeUser = onSnapshot(
+        userDocRef,
+        async (userSnapshot) => {
+          try {
+            if (!userSnapshot.exists()) {
+              throw new Error("User data not found in Firestore");
+            }
 
-        if (!userSnapshot.exists()) {
-          throw new Error("User data not found in Firestore");
+            const userData = userSnapshot.data();
+            const formattedJoined = formatTimestampToDateString(userData.joined);
+
+            // ⏬ Fetch user's course progress (one-time)
+            const courseProgressRef = collection(
+              db,
+              "users",
+              firebaseUser.uid,
+              "courses"
+            );
+            const courseSnapshots = await getDocs(courseProgressRef);
+
+            const courseProgress = {};
+            courseSnapshots.forEach((docSnap) => {
+              courseProgress[docSnap.id] = docSnap.data();
+            });
+
+            setUser({
+              authenticated: true,
+              uuid: firebaseUser.uid,
+              email: firebaseUser.email,
+              emailVerified: firebaseUser.emailVerified,
+              ...userData,
+              joined: formattedJoined,
+              avatar: userData.avatar || avatar,
+              course_progress: courseProgress,
+            });
+
+            setError(null);
+          } catch (err) {
+            console.error("Error loading user snapshot:", err);
+            setError("Failed to load user data");
+          } finally {
+            setLoading(false);
+          }
+        },
+        (err) => {
+          console.error("Snapshot error:", err);
+          setError("Failed to listen to user data");
+          setLoading(false);
         }
+      );
 
-        const userData = userSnapshot.data();
-
-        // Format the joined date
-        const formattedJoined = formatTimestampToDateString(userData.joined);
-
-        setUser({
-          authenticated: true,
-          uuid: firebaseUser.uid,
-          email: firebaseUser.email,
-          emailVerified: firebaseUser.emailVerified,
-          ...userData,
-          joined: formattedJoined,
-          avatar: userData.avatar || avatar,
-        });
-      } catch (err) {
-        console.error("Error fetching user data:", err);
-        setError("Failed to load user data");
-      } finally {
-        setLoading(false);
-      }
+      return () => unsubscribeUser(); // 🔁 Clean up real-time listener
     });
 
-    return () => unsubscribe(); // cleanup on unmount
+    return () => unsubscribeAuth(); // 🔁 Clean up auth listener
   }, []);
 
   return { user, loading, error };

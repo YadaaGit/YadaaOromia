@@ -20,17 +20,18 @@ import Profile from "./pages/Profile.jsx";
 import Courses from "./pages/user_pages/Dashboard.jsx";
 import CoursesAdmin from "./pages/admin_pages/Dashboard_admin.jsx";
 import AddModal from "./pages/admin_pages/Add_course_modal.jsx";
+import DataCenter from "./pages/admin_pages/Data_center.jsx";
 import CourseModal from "./pages/user_pages/Course_modal.jsx";
 import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 
 function AppRoutes() {
   const location = useLocation();
   const { user, loading, error } = useUserData();
-
+  
   if (loading) return <SplashScreen />;
   if (error) return <p className="text-red-500">{error}</p>;
-
-  const authenticated = user.authenticated;
+  
+  const authenticated = !loading && !error ? user.authenticated : null;
 
   // Check if we should hide the tab bar for the current route
   const shouldHideTabBar =
@@ -125,6 +126,18 @@ function AppRoutes() {
               <Navigate to="/courses" />
             ) : (
               <CoursesAdmin />
+            )
+          }
+        />
+        <Route
+          path="/user_data"
+          element={
+            !authenticated ? (
+              <Navigate to ="/auth" />
+            ) : user.role == "user" ? (
+              <Navigate to="/courses" />
+            ) : (
+              <DataCenter />
             )
           }
         />

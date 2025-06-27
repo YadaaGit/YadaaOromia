@@ -6,7 +6,7 @@ import ill4 from "@/assets/images/illu4.jpg";
 import ill5 from "@/assets/images/illu5.jpg";
 const dummyCourses = [
   {
-    course_id: "bio-101",
+    course_id: "bio_101",
     title: "Biology",
     description:
       "An introductory course to biology, focusing on the fundamentals of life and how scientific inquiry works.",
@@ -337,7 +337,7 @@ A good scientific hypothesis is testable and falsifiable.`,
     ],
   },
   {
-    course_id: "bio-102",
+    course_id: "scientific_method",
     title: "The Scientific Method",
     description:
       "An introductory course to biology, focusing on the fundamentals of life and how scientific inquiry works.",

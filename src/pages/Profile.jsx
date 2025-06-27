@@ -118,8 +118,8 @@ export default function ProfilePage() {
 
       {/* Name & XP */}
       <h2 className="text-xl font-bold">{user.name}</h2>
-      <p className="text-gray-500 text-sm mb-6">
-        {user.xp.toLocaleString()} XP
+      <p className="text-gray-500 text-sm mb-6" style={{overflow: "scroll", maxWidth: 230}}>
+        {user.email}
       </p>
 
       {/* Tab Switcher */}
