@@ -60,6 +60,14 @@ Webapp
 │   │   ├── index.css
 │   │   └── tabbar.css
 │   └── utils
-│       ├── auth_service.js
+│       ├── auth_services.js
 │       └── validate.js
+├── server
+|   ├── models
+|   |   └── Course.js
+|   ├── .env
+|   ├── .gitignore
+|   ├── index.js
+|   ├── package-lock.json
+|   └── package.json
 └── vite.config.js

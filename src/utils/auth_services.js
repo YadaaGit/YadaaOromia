@@ -146,8 +146,8 @@ export const handleSignIn = async ({
     // 1. Sign In
     await signInWithEmailAndPassword(auth, email, password);
 
-    // 2. Navigate to courses
-    navigate("/courses");
+    // 2. Let main.jsx handle navigation
+    navigate("/");
   } catch (err) {
     console.error(err);
     switch (err.code) {

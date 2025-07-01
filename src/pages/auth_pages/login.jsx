@@ -7,7 +7,7 @@ import {
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import login_illustration from "@/assets/images/login.jpg";
-import { handleSignIn, handleForgotPassword } from "@/utils/auth_service.js";
+import { handleSignIn, handleForgotPassword } from "@/utils/auth_services.js";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
 

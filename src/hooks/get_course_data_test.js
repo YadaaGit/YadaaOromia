@@ -8,13 +8,13 @@ const dummyCourses = [
   {
     course_id: "bio_101",
     title: "Biology",
-    description:
-      "An introductory course to biology, focusing on the fundamentals of life and how scientific inquiry works.",
+    description: "An introductory course to biology, focusing on the fundamentals of life.",
     no_of_lessons: 1,
     modules: [
       {
         title: "Introduction to biology",
-        module_id: "bio-101_1",
+        module_id: "bio_101_1",
+        course_id: "bio_101",
         image: ill1,
         sections: [
           {
@@ -194,12 +194,6 @@ A good scientific hypothesis is testable and falsifiable.`,
             },
           ],
         },
-        metadata: {
-          estimated_time: "45 minutes",
-          level: "Beginner",
-          author: "Novage Learning Team",
-          release_date: "2025-06-01",
-        },
       },
       {
         title: "What is biology?",
@@ -340,7 +334,7 @@ A good scientific hypothesis is testable and falsifiable.`,
     course_id: "scientific_method",
     title: "The Scientific Method",
     description:
-      "An introductory course to biology, focusing on the fundamentals of life and how scientific inquiry works.",
+      "An introductory course to the scientific method, focusing on how scientific inquiry works.",
     no_of_lessons: 1,
     modules: [
       {

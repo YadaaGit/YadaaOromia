@@ -9,7 +9,7 @@ import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 import ConfirmModal from "@/components/basic_ui/confirm_modal.jsx";
-import { handleLogout } from "@/utils/auth_service";
+import { handleLogout } from "@/utils/auth_services";
 
 const tabs = ["Info", "Scores"];
 

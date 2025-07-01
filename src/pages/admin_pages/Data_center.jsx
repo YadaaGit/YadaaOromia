@@ -8,12 +8,11 @@ import {
 } from "ag-grid-community";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import useUserData from "@/hooks/get_user_data.js";
+import useAllUsers from "@/hooks/get_all_user.js";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function UserDashboard() {
-  const [rowData, setRowData] = useState([]);
 
   const columnDefs = useMemo(
     () => [
@@ -28,16 +27,11 @@ export default function UserDashboard() {
     ],
     []
   );
-  const { user, loading, error } = useUserData();
+  const { users, loading, error } = useAllUsers({ includeCourses: true });
 
-  useEffect(() => {
-    if (!user?.authenticated) return;
-    // Wrap single user as array for grid
-    setRowData([{ ...user }]);
-  }, [user]);
 
   const exportToExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(rowData);
+    const ws = XLSX.utils.json_to_sheet(users);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Users");
     const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
@@ -45,20 +39,20 @@ export default function UserDashboard() {
   };
 
   const getSummary = () => {
-    const total = rowData.length;
-    const male = rowData.filter((u) => u.gender === "Male").length;
-    const female = rowData.filter((u) => u.gender === "Female").length;
+    const total = users.length;
+    const male = users.filter((u) => u.gender === "Male").length;
+    const female = users.filter((u) => u.gender === "Female").length;
     const avgAge =
       total > 0
         ? Math.round(
-            rowData.reduce((sum, u) => sum + (parseInt(u.age) || 0), 0) / total
+            users.reduce((sum, u) => sum + (parseInt(u.age) || 0), 0) / total
           )
         : 0;
 
     const startedCourses = {};
     const finishedCourses = {};
 
-    rowData.forEach((user) => {
+    users.forEach((user) => {
       const courseProgress = user.course_progress || {};
 
       Object.entries(courseProgress).forEach(([courseId, progress]) => {
@@ -85,7 +79,7 @@ export default function UserDashboard() {
     return { total, male, female, avgAge, mostStarted, mostFinished };
   };
 
-  const summary = getSummary();
+  const summary = !loading && getSummary();
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -120,7 +114,7 @@ export default function UserDashboard() {
 
       <div style={{ height: 500 }}>
         <AgGridReact
-          rowData={rowData}
+          rowData={loading? null : users}
           columnDefs={columnDefs}
           pagination={true}
           theme={themeQuartz}
