@@ -3,7 +3,7 @@
 
 A modern Telegram bot integrated with a web-based Telegram Mini App built with **React**, **Vite**, and **Express.js**, featuring Firebase integration, dynamic admin/user dashboards, multi-language support, and more.
 
-To visit out bot **[ClickHere]**(https://t.me/yadaa_oromia_bot)
+To visit out bot [ClickHere](https://t.me/yadaa_oromia_bot)
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/YadaaGit/YadaaOromia)
 ![GitHub last commit](https://img.shields.io/github/last-commit/YadaaGit/YadaaOromia)
