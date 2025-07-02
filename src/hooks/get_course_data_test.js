@@ -13,7 +13,7 @@ const dummyCourses = [
     no_of_lessons: 1,
     modules: [
       {
-        title: " Finding and Structuring Your Personal Story",
+        title: "Finding and Structuring Your Personal Story",
         image: ill3,
         module_id: "1",
         sections: [
@@ -420,7 +420,7 @@ A good scientific hypothesis is testable and falsifiable.`,
     no_of_lessons: 1,
     modules: [
       {
-        title: "Introduction to course",
+        title: "Finding and Structuring Your Personal Story",
         module_id: "bio_101_1",
         course_id: "bio_101",
         image: ill1,
@@ -604,7 +604,7 @@ A good scientific hypothesis is testable and falsifiable.`,
         },
       },
       {
-        title: "What is course?",
+        title: "Recording and Editing with Your Phone",
         module_id: "2",
         image: ill2,
         sections: [
