@@ -28,7 +28,7 @@ function Courses() {
     <>
       <section id="welcome" className="mar_b_20">
         <div className="width_100p">
-          <h1 className="mar_0 width_100p " style={{fontWeight: 600}}>{t("hi", { name: user.name.split(" ")[0] })}</h1>
+          <h1 className="mar_0 width_100p " style={{fontWeight: 600}}>{t("hi")}{user.name.split(" ")[0]}</h1>
           <h3 className="mar_0 width_100p ">
             {t("welcome_message_home")}
           </h3>

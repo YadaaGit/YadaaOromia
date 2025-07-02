@@ -43,7 +43,7 @@
 
   "courses": "Courses",
   "courses_admin": "Courses Admin",
-  "data_center": "User Data",
+  "user_data": "User Data",
   "profile": "Profile",
   "loading": "Loading...",
   "module_not_found": "Module not found",

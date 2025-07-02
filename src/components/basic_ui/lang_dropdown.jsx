@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { auth, db } from "#/firebase-config";
 import { doc, updateDoc } from "firebase/firestore";
+import { useLanguage } from "@/LanguageContext.jsx";
 
-// Map language codes to display labels
 const LANGUAGE_LABELS = {
   en: "English",
   am: "Amharic",
@@ -12,12 +12,11 @@ const LANGUAGE_LABELS = {
 
 export default function LanguageDropdown({
   options = ["en", "am", "or"],
-  value,
-  onChange,
   style_pass,
   placeholder = "Select Language",
   onUpdateStateChange,
 }) {
+  const { lang, setLang } = useLanguage(); // use context
   const [open, setOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState(null);
@@ -29,21 +28,24 @@ export default function LanguageDropdown({
 
   const handleSelect = async (langCode) => {
     setOpen(false);
-    onChange?.(langCode);
+    setLang(langCode); // update local language immediately
     setUpdating(true);
     setError(null);
     onUpdateStateChange?.({ updating: true, error: null });
 
     try {
       const user = auth.currentUser;
-      if (!user) throw new Error("User not logged in");
-
-      const userRef = doc(db, "users", user.uid);
-      await updateDoc(userRef, { lang: langCode });
+      if (user) {
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { lang: langCode });
+      }
     } catch (err) {
-      console.error("Error updating lang:", err.message);
-      setError("Failed to update language");
-      onUpdateStateChange?.({ updating: false, error: "Failed to update language" });
+      console.error("Error updating language in Firestore:", err.message);
+      setError("Failed to update language online");
+      onUpdateStateChange?.({
+        updating: false,
+        error: "Failed to update language online",
+      });
     } finally {
       setUpdating(false);
       if (!error) onUpdateStateChange?.({ updating: false, error: null });
@@ -73,8 +75,7 @@ export default function LanguageDropdown({
         onClick={toggleDropdown}
         className="w-full border rounded-full px-6 py-3 text-sm text-left bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 flex justify-between items-center"
       >
-        <span>{LANGUAGE_LABELS[value] || placeholder}</span>
-
+        <span>{LANGUAGE_LABELS[lang] || placeholder}</span>
         {updating ? (
           <div className="ml-2 w-5 h-5 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin" />
         ) : (
@@ -89,7 +90,7 @@ export default function LanguageDropdown({
               key={langCode}
               onClick={() => handleSelect(langCode)}
               className={`px-4 py-2 hover:bg-indigo-100 cursor-pointer ${
-                langCode === value ? "bg-indigo-50 font-medium" : ""
+                langCode === lang ? "bg-indigo-50 font-medium" : ""
               }`}
             >
               {LANGUAGE_LABELS[langCode]}

@@ -16,16 +16,18 @@ import {
   DocumentChartBarIcon as DataOutline
 } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/hooks/useTranslation.js";
+
 
 
 const tabs = [
   {
-    name: "Courses",
+    name: "courses",
     path: "/courses",
     icon: { active: BookSolid, inactive: BookOutline },
   },
   {
-    name: "Profile",
+    name: "profile",
     path: "/profile",
     icon: { active: UserSolid, inactive: UserOutline },
   },
@@ -33,23 +35,24 @@ const tabs = [
 
 const admin_tabs = [
   {
-    name: "User data",
+    name: "user_data",
     path: "/user_data",
     icon: { active: DataSolid, inactive: DataOutline },
   },
   {
-    name: "Courses Admin",
+    name: "courses_admin",
     path: "/courses_admin",
     icon: { active: BookSolid, inactive: BookOutline },
   },
   {
-    name: "Profile",
+    name: "profile",
     path: "/profile",
     icon: { active: UserSolid, inactive: UserOutline },
   },
 ];
 
 export default function TabBar() {
+  const { t } = useTranslation();
   const { user, loading, error } = useUserData(); // ✅ call the hook properly
 
   if (loading) return null; // or <p>Loading...</p>
@@ -83,7 +86,7 @@ export default function TabBar() {
                 }`}
               >
                 <Icon className="w-6 h-6" />
-                <span className="mt-1">{name}</span>
+                <span className="mt-1">{t(name)}</span>
               </motion.div>
             );
           }}

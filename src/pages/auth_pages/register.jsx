@@ -16,11 +16,17 @@ import Dropdown from "@/components/basic_ui/options.jsx";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
 import { useTranslation } from "@/hooks/useTranslation.js";
+import { useLanguage } from "@/LanguageContext.jsx";
+import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 
 export default function Register() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-
+  const { dict, lang } = useLanguage();
+  const [updateState, setUpdateState] = useState({
+    updating: false,
+    error: null,
+  });
   const [loadingHere, setLoading] = useState(false);
   const [errorHere, setError] = useState("");
   const [showError, setShowError] = useState(false);
@@ -87,6 +93,14 @@ export default function Register() {
       className="min-h-screen flex flex-col justify-center items-center px-6 bg-white"
       style={{ borderRadius: 13, paddingBottom: "20px" }}
     >
+      {/* Top Right Buttons */}
+      <div className="flex gap-2 lang-toggle">
+        <LanguageDropdown
+          onUpdateStateChange={(state) => setUpdateState(state)}
+          style_pass={{maxWidth: 200, marginTop: 20}}
+        />
+      </div>
+
       <div className="mb-6">
         <img
           src={registration_illustration}
@@ -124,7 +138,7 @@ export default function Register() {
           value={formData.sex}
           onChange={handleChange}
           placeholder={t("select_gender")}
-          options={[t("male"), t("Female")]}
+          options={[t("male"), t("female")]}
         />
         <InputField
           name="email"
@@ -190,7 +204,7 @@ export default function Register() {
         </button>
 
         <p className="text-center text-sm text-gray-500">
-          {t("had_acc")} {" "}
+          {t("had_acc")}{" "}
           <span
             className="txt_color_main font-medium cursor-pointer"
             onClick={() => navigate("/login")}

@@ -1,79 +1,29 @@
-import "@/style/Dashboard_user.css";
-import "@/style/general.css";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { handleLogout } from "@/utils/auth_services";
+import { useTranslation } from "@/hooks/useTranslation.js";
+import { useLanguage } from "@/LanguageContext.jsx";
 import avatar from "@/assets/images/portrait.jpg";
 import useUserData from "@/hooks/get_user_data.js";
 import Dropdown from "@/components/basic_ui/options.jsx";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
-import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 import ConfirmModal from "@/components/basic_ui/confirm_modal.jsx";
-import { handleLogout } from "@/utils/auth_services";
-import { useTranslation } from "@/hooks/useTranslation.js";
+import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
+import "@/style/Dashboard_user.css";
+import "@/style/general.css";
 
-const tabs = ["Info", "Scores"];
+const tabs = ["info", "scores"];
 
-const translations = {
-  en: {
-    Info: "Info",
-    Scores: "Scores",
-    Name: "Name",
-    Email: "Email",
-    Country: "Country",
-    Username: "Username",
-    Joined: "Joined",
-    Edit: "Edit",
-    Save: "Save",
-    Cancel: "Cancel",
-    Role: "Role",
-    loading: "Loading...",
-    logout: "Log Out",
-    logout_confirm: "Are you sure you want to log out?",
-    no_content_yet_for: "No content yet for {{tab}}.",
-  },
-  am: {
-    Info: "መረጃ",
-    Scores: "ውጤቶች",
-    Name: "ስም",
-    Email: "ኢሜይል",
-    Country: "አገር",
-    Username: "የተጠቃሚ ስም",
-    Joined: "ቀን ተቀላቀለ",
-    Edit: "አርትዕ",
-    Save: "አስቀምጥ",
-    Cancel: "ይቅር",
-    Role: "Role",
-    loading: "Loading...",
-    logout: "Log Out",
-    logout_confirm: "Are you sure you want to log out?",
-    no_content_yet_for: "No content yet for {{tab}}.",
-  },
-  om: {
-    Info: "Odeeffannoo",
-    Scores: "Bu'aa",
-    Name: "Maqaa",
-    Email: "Imeelii",
-    Country: "Biyya",
-    Username: "Maqaa fayyadamtoota",
-    Joined: "Guyyaa Makamu",
-    Edit: "Gulaali",
-    Save: "Oolchi",
-    Cancel: "Haqi",
-    Role: "Role",
-    loading: "Loading...",
-    logout: "Log Out",
-    logout_confirm: "Are you sure you want to log out?",
-    no_content_yet_for: "No content yet for {{tab}}.",
-  },
-};
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("Info");
+  const { dict, lang } = useLanguage();
+  const [updateState, setUpdateState] = useState({ updating: false, error: null });
+  const [activeTab, setActiveTab] = useState(`${t("info")}`);
   const [editMode, setEditMode] = useState(false);
-  const [language, setLanguage] = useState("en");
-  const [status, setStatus] = useState({ updating: false, error: null });
+
 
   const { user, loading, error } = useUserData();
 
@@ -81,17 +31,10 @@ export default function ProfilePage() {
   const [errorLogout, setErrorLogout] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  const handleLangChange = (newLangCode) => {
-    // Optional: update local user context or state
-    console.log("New language selected:", newLangCode);
-  };
   if (loading) return <p>{t("loading")}</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
-  const t = (key) => {
-    const dict = translations[language];
-    return dict && dict[key] ? dict[key] : key;
-  };
+
 
   const handleChange = (field, value) => {
     setUserEdit((user) => ({ ...user, [field]: value }));
@@ -119,9 +62,7 @@ export default function ProfilePage() {
       {/* Top Right Buttons */}
       <div className="flex gap-2 lang-toggle">
         <LanguageDropdown
-          value={user?.lang}
-          onChange={handleLangChange}
-          onUpdateStateChange={(state) => setStatus(state)}
+          onUpdateStateChange={(state) => setUpdateState(state)}
           style_pass={{maxWidth: 200}}
         />
       </div>
@@ -152,9 +93,9 @@ export default function ProfilePage() {
         {tabs.map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => setActiveTab(`${t(tab)}`)}
             className={`px-4 py-1 text-sm font-medium border transition-all duration-200 ${
-              activeTab === tab
+              activeTab == `${t(tab)}`
                 ? "bg-indigo-500 text-white border-indigo-500"
                 : "text-logo-500 border-transparent"
             }`}
@@ -165,30 +106,24 @@ export default function ProfilePage() {
       </div>
 
       {/* Info Tab */}
-      {activeTab === "Info" && (
+      {activeTab == `${t("info")}` && (
         <>
           <div className="w-full max-w-md text-left bg-white rounded-xl shadow px-6 py-5 space-y-4">
             <EditableField
-              label={t("Name")}
+              label={t("name")}
               value={user.name}
               editable={editMode}
               onChange={(v) => handleChange("name", v)}
             />
             <EditableField
-              label={t("Email")}
+              label={t("email")}
               value={user.email}
               editable={editMode}
               onChange={(v) => handleChange("email", v)}
             />
-            <EditableField
-              label={t("Country")}
-              value={user.country}
-              editable={editMode}
-              onChange={(v) => handleChange("country", v)}
-            />
-            <InfoRow label={t("Username")} value={user.username} />
-            <InfoRow label={t("Joined")} value={user.joined} />
-            <InfoRow label={t("Role")} value={user.role} />
+            <InfoRow label={t("username")} value={user.username} />
+            <InfoRow label={t("joined")} value={user.joined} />
+            <InfoRow label={t("role")} value={user.role} />
 
             <div className="flex justify-end gap-2 pt-2">
               {editMode ? (
@@ -197,13 +132,13 @@ export default function ProfilePage() {
                     onClick={() => setEditMode(false)}
                     className="text-sm text-logo-500 px-3 py-1 border rounded"
                   >
-                    {t("Cancel")}
+                    {t("cancel")}
                   </button>
                   <button
                     onClick={handleSave}
                     className="text-sm bg-indigo-500 text-white px-3 py-1 rounded"
                   >
-                    {t("Save")}
+                    {t("save")}
                   </button>
                 </>
               ) : (
@@ -211,7 +146,7 @@ export default function ProfilePage() {
                   onClick={() => setEditMode(true)}
                   className="text-sm txt_color_main bg-indigo-100 text-logo-400 px-3 py-1 rounded"
                 >
-                  {t("Edit")}
+                  {t("edit")}
                 </button>
               )}
             </div>
@@ -221,7 +156,7 @@ export default function ProfilePage() {
             className="w-full max-w-md text-sm bg-indigo-500 text-white px-3 py-1 rounded"
             style={{ marginTop: 35 }}
           >
-            {t("logout")}
+            {t("log_out")}
           </button>
 
           <ConfirmModal
@@ -229,13 +164,13 @@ export default function ProfilePage() {
             onClose={() => setShowModal(false)}
             onConfirm={confirmLogout}
              message={t("logout_confirm")}
-            confirmText={t("Log Out")}
-            cancelText={t("Cancel")}
+            confirmText={t("log_out")}
+            cancelText={t("cancel")}
           />
         </>
       )}
 
-      {activeTab !== "Info" && (
+      {activeTab !== `${t("info")}` && (
         <div className="text-center text-logo-400 text-sm mt-8">
           {t("no_content_yet_for")} <strong>{t(activeTab)}</strong>.
         </div>

@@ -15,7 +15,7 @@
   "registration_illustration": "የመመዝገቢያ ምስል",
   "mail_illustration": "የመልእክት ምስል",
   "welcome_illustration": "የመግቢያ ምስል",
-  "sign_in": "ግባ",
+  "sign_in": "ይግቡ",
   "signing_in": "በመግባት ላይ...",
   "forgot_password": "የይለፍ ቃልዎን ረስተዋል?",
   "no_acc": "መለያ የለዎትም?",
@@ -45,15 +45,15 @@
 
 
   "courses": "ኮርሶች",
-  "courses_admin": "የኮርስ አስተዳዳሪ",
-  "data_center": "የተጠቃሚ መረጃ",
-  "profile": "መገለጫ",
+  "courses_admin": "ኮርሶች",
+  "user_data": "የተጠቃሚ መረጃ",
+  "profile": "ተጠቃሚ",
   "loading": "በመጫን ላይ...",
   "module_not_found": "ሞጁል አልተገኘም",
   
   
-  "hi": "ሰላም, {{name}}",
-  "welcome_message_home": "ዛሬ አዲስ ነገር ለማማር ዝግጁ ነህ?",
+  "hi": "ሰላም,",
+  "welcome_message_home": "አዲስ ነገር ለማማር ዝግጁ ነዎት?",
   "admin_loading_warning": "⚠️ ሲስተሙ የአስተዳዳሪ መረጃን በመጫን ላይ ነው። እባክዎ ጥቂት ጊዜ ይጠብቁና እንደገና ይሞክሩ።",
   
   

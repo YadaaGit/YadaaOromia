@@ -11,6 +11,8 @@ import { handleSignIn, handleForgotPassword } from "@/utils/auth_services.js";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
 import { useTranslation } from "@/hooks/useTranslation.js";
+import { useLanguage } from "@/LanguageContext.jsx";
+import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 
 export default function Login() {
   const { t } = useTranslation();
@@ -23,6 +25,11 @@ export default function Login() {
   const [showError, setShowError] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+    const { dict, lang } = useLanguage();
+    const [updateState, setUpdateState] = useState({
+      updating: false,
+      error: null,
+    });
 
   useEffect(() => {
     if (error != "") {
@@ -60,6 +67,14 @@ export default function Login() {
       className="min-h-screen flex flex-col justify-center items-center px-6 bg-white"
       style={{ borderRadius: 13, paddingBottom: "20px" }}
     >
+      {/* Top Right Buttons */}
+      <div className="flex gap-2 lang-toggle">
+        <LanguageDropdown
+          onUpdateStateChange={(state) => setUpdateState(state)}
+          style_pass={{maxWidth: 200, marginTop: 20}}
+        />
+      </div>
+
       <div className="mb-6">
         <img
           src={login_illustration}
@@ -69,7 +84,7 @@ export default function Login() {
       </div>
 
       <h2 className="text-2xl font-bold mb-2 text-logo-800">{t("login")}</h2>
-      <p className="text-logo-500 text-sm mb-6">{t("login_to_contnue")}</p>
+      <p className="text-logo-500 text-sm mb-6">{t("login_to_continue")}</p>
 
       <form
         className="w-full max-w-sm space-y-4"
@@ -78,7 +93,7 @@ export default function Login() {
         <div className="relative">
           <input
             type="email"
-            placeholder= {t("email")}
+            placeholder={t("email")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full border rounded-full px-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -122,7 +137,7 @@ export default function Login() {
         </button>
 
         <p className="text-center text-sm text-gray-500">
-          {t("no_acc")} {" "}
+          {t("no_acc")}{" "}
           <span
             className="txt_color_main font-medium cursor-pointer"
             onClick={() => navigate("/register")}
