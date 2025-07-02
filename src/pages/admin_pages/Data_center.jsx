@@ -10,6 +10,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import useAllUsers from "@/hooks/get_all_user.js";
 import { useTranslation } from "@/hooks/useTranslation.js";
+import { Skeleton } from "@mui/material";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -29,7 +30,6 @@ export default function UserDashboard() {
     []
   );
   const { users, loading, error } = useAllUsers({ includeCourses: true });
-
 
   const exportToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(users);
@@ -82,7 +82,27 @@ export default function UserDashboard() {
 
   const summary = !loading && getSummary();
 
-  if (loading) return <p>{t("loading")}</p>;
+  if (loading)
+    return (
+      <div className="p-6 space-y-6">
+        {/* Header skeleton */}
+        <div className="flex justify-between items-center">
+          <Skeleton variant="text" width={160} height={32} />
+          <Skeleton variant="rectangular" width={140} height={40} />
+        </div>
+
+        {/* Summary cards skeleton */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} variant="rectangular" height={100} className="rounded-xl" />
+          ))}
+        </div>
+
+        {/* Table skeleton */}
+        <Skeleton variant="rectangular" height={500} className="rounded-xl" />
+      </div>
+    );
+
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
@@ -115,7 +135,7 @@ export default function UserDashboard() {
 
       <div style={{ height: 500 }}>
         <AgGridReact
-          rowData={loading? null : users}
+          rowData={loading ? null : users}
           columnDefs={columnDefs}
           pagination={true}
           theme={themeQuartz}

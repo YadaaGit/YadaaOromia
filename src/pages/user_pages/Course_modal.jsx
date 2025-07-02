@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useModuleData } from "@/hooks/get_course_data_test.js";
 import SectionViewer from "@/components/sections/Section_viewer.jsx";
 import { useTranslation} from "@/hooks/useTranslation.js";
+import { Skeleton } from "@mui/material";
 
 export default function CourseModal() {
   const { t } = useTranslation();
@@ -80,9 +81,7 @@ export default function CourseModal() {
                 ✕
               </button>
               {/* Conditional content inside header */}
-              {loading && (
-                <h2 className="text-2xl font-semibold">{t("loading")}</h2>
-              )}
+              {loading && <Skeleton variant="text" height={40} width="60%" />}
               {!loading && !module && (
                 <h2 className="text-2xl font-semibold">{t("module_not_found")}</h2>
               )}
@@ -92,7 +91,14 @@ export default function CourseModal() {
             </div>
             <div style={{ paddingTop: `${headerHeight}px` }}>
               {/* Conditional content inside modal */}
-              {loading && <div className="p-4 text-center">{t("loading")}</div>}
+              {loading && (
+                <div className="p-4">
+                  <Skeleton variant="text" height={24} width="90%" />
+                  <Skeleton variant="text" height={24} width="85%" />
+                  <Skeleton variant="text" height={24} width="80%" />
+                  <Skeleton variant="text" height={24} width="75%" />
+                </div>
+              )}
               {!loading && !module && (
                 <div className="p-4 text-center">{t("module_not_found")}</div>
               )}

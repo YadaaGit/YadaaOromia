@@ -39,6 +39,7 @@
   "check_inbox": "Verification email sent. Please check your inbox.",
   "resend_email": "Resend Verification Email",
   "resend_in": "Resend in {{seconds}}s",
+  
 
 
   "courses": "Courses",
@@ -47,9 +48,10 @@
   "profile": "Profile",
   "loading": "Loading...",
   "module_not_found": "Module not found",
+  "no_content_yet_for": "No content yet for",
 
 
-  "hi": "Hi, {{name}}",
+  "hi": "Hi, ",
   "welcome_message_home": "Ready to learn something new today?",
   "admin_loading_warning": "⚠️ Our system is loading admin data. Please wait a moment and try again.",
   "user_view": "User Overview",
@@ -63,12 +65,12 @@
   "admin": "Admin",
   "edit": "Edit",
   "save": "Save",
-  "Cancel": "Cancel",
+  "cancel": "Cancel",
   "log_out": "Log Out",
+  "logout_confirm": "Are you sure you want to log out?",
   "no_content": "No content yet for",
   "add_course": "+ Add Course",
   "user_add_course": "📚 Add New Course",
-
 
   "_comment_2":"the next are UX texts",
   

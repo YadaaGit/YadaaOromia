@@ -5,6 +5,8 @@ import "@/style/Dashboard_user.css";
 import "@/style/general.css";
 import useUserData from "@/hooks/get_user_data.js";
 import { useTranslation} from "@/hooks/useTranslation.js";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 function Courses() {
   const { user, loading, error } = useUserData();
@@ -21,7 +23,37 @@ function Courses() {
 
   const course_data = [...dummyCourses];
 
-  if (loading) return <p>{t("loading")}</p>;
+  if (loading) return (
+  <section id="courses">
+    {[...Array(3)].map((_, index) => ( // Show 3 skeleton cards
+      <div key={index} style={{ marginTop: 40 }}>
+        <div>
+          <h2 style={{ fontWeight: "bold" }}>
+            <Skeleton width={200} height={24} />
+          </h2>
+        </div>
+        <div id="module_list">
+          {[...Array(2)].map((_, idx) => ( // Show 2 skeleton modules per course
+            <div
+              key={idx}
+              id="module_card"
+              style={{ cursor: "default" }}
+            >
+              <div id="module_img">
+                <Skeleton height={80} width={120} />
+              </div>
+              <div id="module_info">
+                <h3><Skeleton width={150} /></h3>
+                <span><Skeleton width={100} /></span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </section>
+);
+
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
