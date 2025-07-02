@@ -6,7 +6,7 @@ import {
   EyeIcon,
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
-import login_illustration from "@/assets/images/login.jpg";
+import login_illustration from "@/assets/images/login_new.jpg";
 import { handleSignIn, handleForgotPassword } from "@/utils/auth_services.js";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
@@ -66,8 +66,8 @@ export default function Login() {
         />
       </div>
 
-      <h2 className="text-2xl font-bold mb-2 text-gray-800">Login</h2>
-      <p className="text-gray-500 text-sm mb-6">Please sign in to continue.</p>
+      <h2 className="text-2xl font-bold mb-2 text-logo-800">Login</h2>
+      <p className="text-logo-500 text-sm mb-6">Please sign in to continue.</p>
 
       <form
         className="w-full max-w-sm space-y-4"
@@ -81,7 +81,7 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full border rounded-full px-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          <UserCircleIcon className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
+          <UserCircleIcon className="w-5 h-5 text-logo-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
         </div>
 
         <PasswordField
@@ -114,12 +114,12 @@ export default function Login() {
         <button
           type="button"
           onClick={onForgotPassword}
-          className="text-sm text-indigo-600 underline w-full text-center"
+          className="text-sm text-logo-400 underline w-full text-center"
         >
           Forgot password?
         </button>
 
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-logo-500">
           Don’t have an account?{" "}
           <span
             className="txt_color_main font-medium cursor-pointer"
@@ -171,9 +171,9 @@ const PasswordField = ({
         placeholder={placeholder}
         className="w-full border rounded-full px-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
-      <LockClosedIcon className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
+      <LockClosedIcon className="w-5 h-5 text-logo-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
       <Icon
-        className="w-5 h-5 text-gray-400 absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
+        className="w-5 h-5 text-logo-400 absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
         onClick={() => setShow(!show)}
       />
     </div>

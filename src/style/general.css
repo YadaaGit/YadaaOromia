@@ -11,7 +11,7 @@
   margin-bottom: 20px;
 }
 .bg-indigo-500 {
-  background-color: #19384c !important;
+  background-color: #40280E !important;
 }
 .lang-toggle {
   margin: 0px 0px 16px 0px;
@@ -32,7 +32,7 @@
   border-radius: 0.5rem;
   background: white;
   cursor: pointer;
-  color: #19384c;
+  color: #40280E;
 }
 
 .btn_disabled {
@@ -40,22 +40,22 @@
 }
 
 .btn-primary {
-  background: #19384c;
+  background: #40280E;
   color: white;
 }
 
 .btn-active {
-  background: #19384c;
+  background: #40280E;
   color: white;
 }
 .color_main {
-  background-color: #19384c !important;
+  background-color: #40280E !important;
 }
 .border_main_1 {
-  border: 1px solid #19384c !important;
+  border: 1px solid #40280E !important;
 }
 .txt_color_main {
-  color: #19384c !important;
+  color: #40280E !important;
 }
 .rounded-full {
   border-radius: calc(infinity * 1px) !important;

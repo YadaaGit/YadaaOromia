@@ -60,7 +60,7 @@ export default function SectionViewer({
           {content.content.map((contents, index) => (
             <div key={index}>
               <h4 style={{ fontWeight: 900 }}>{contents.header}</h4>
-              <p className="mb-4 whitespace-pre-line text-gray-800 leading-relaxed">
+              <p className="mb-4 whitespace-pre-line text-logo-800 leading-relaxed">
                 {contents?.text}
               </p>
               {contents?.media && (

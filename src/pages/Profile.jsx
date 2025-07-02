@@ -97,7 +97,7 @@ export default function ProfilePage() {
 
   return (
     <div
-      className="flex flex-col items-center px-4 py-6 pb-28 bg-gray-50 min-h-screen text-center text-gray-800"
+      className="flex flex-col items-center px-4 py-6 pb-28 bg-gray-50 min-h-screen text-center text-logo-800"
       style={{ borderRadius: 10 }}
     >
       {/* Top Right Buttons */}
@@ -122,7 +122,7 @@ export default function ProfilePage() {
       {/* Name & XP */}
       <h2 className="text-xl font-bold">{user.name}</h2>
       <p
-        className="text-gray-500 text-sm mb-6"
+        className="text-logo-500 text-sm mb-6"
         style={{ overflow: "scroll", maxWidth: 230 }}
       >
         {user.email}
@@ -140,7 +140,7 @@ export default function ProfilePage() {
             className={`px-4 py-1 text-sm font-medium border transition-all duration-200 ${
               activeTab === tab
                 ? "bg-indigo-500 text-white border-indigo-500"
-                : "text-gray-500 border-transparent"
+                : "text-logo-500 border-transparent"
             }`}
           >
             {t(tab)}
@@ -179,7 +179,7 @@ export default function ProfilePage() {
                 <>
                   <button
                     onClick={() => setEditMode(false)}
-                    className="text-sm text-gray-500 px-3 py-1 border rounded"
+                    className="text-sm text-logo-500 px-3 py-1 border rounded"
                   >
                     {t("Cancel")}
                   </button>
@@ -193,7 +193,7 @@ export default function ProfilePage() {
               ) : (
                 <button
                   onClick={() => setEditMode(true)}
-                  className="text-sm txt_color_main bg-indigo-100 text-indigo-600 px-3 py-1 rounded"
+                  className="text-sm txt_color_main bg-indigo-100 text-logo-400 px-3 py-1 rounded"
                 >
                   {t("Edit")}
                 </button>
@@ -220,7 +220,7 @@ export default function ProfilePage() {
       )}
 
       {activeTab !== "Info" && (
-        <div className="text-center text-gray-400 text-sm mt-8">
+        <div className="text-center text-logo-400 text-sm mt-8">
           No content yet for <strong>{t(activeTab)}</strong>.
         </div>
       )}
@@ -232,7 +232,7 @@ export default function ProfilePage() {
 function EditableField({ label, value, editable, onChange }) {
   return (
     <div className="flex flex-col">
-      <span className="text-gray-500 text-sm mb-1">{label}</span>
+      <span className="text-logo-500 text-sm mb-1">{label}</span>
       {editable ? (
         <input
           type="text"
@@ -256,7 +256,7 @@ function EditableField({ label, value, editable, onChange }) {
 function InfoRow({ label, value }) {
   return (
     <div className="flex justify-between border-b border-gray-100 pb-2">
-      <span className="text-gray-500 text-sm">{label}</span>
+      <span className="text-logo-500 text-sm">{label}</span>
       <span
         className="text-gray-700 text-sm font-medium"
         style={{ width: 100, textAlign: "right", overflow: "scroll" }}

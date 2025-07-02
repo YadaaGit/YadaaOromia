@@ -96,14 +96,14 @@
 }
 
 #module_list::-webkit-scrollbar-thumb {
-  background: #19384ca4;
+  background: #734A1Ca4;
   border-radius: 10px;
   
   border: 2px solid #f1f1f1;
 }
 
 #module_list::-webkit-scrollbar-thumb:hover {
-  background: #19384cbd;
+  background: #734A1Cbd;
 }
 
 #module_img{

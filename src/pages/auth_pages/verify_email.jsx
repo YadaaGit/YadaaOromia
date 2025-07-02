@@ -62,12 +62,12 @@ export default function VerifyEmail() {
     <div className="min-h-screen flex flex-col justify-center items-center px-6 bg-white">
       <img src={mailImg} alt="Mail Illustration" className="h-40 mb-6" />
 
-      <h2 className="text-2xl font-bold mb-2 text-gray-800">
+      <h2 className="text-2xl font-bold mb-2 text-logo-800">
         Verify Your Email
       </h2>
-      <p className="text-gray-500 text-sm mb-6 text-center">
+      <p className="text-logo-500 text-sm mb-6 text-center">
         We’ve sent a verification email to: <br />
-        <span className="font-semibold text-indigo-600">{user?.email}</span>
+        <span className="font-semibold text-logo-800">{user?.email}</span>
       </p>
 
       {/* Status Message */}
@@ -88,7 +88,7 @@ export default function VerifyEmail() {
           disabled={cooldown > 0}
           className={`w-full border py-3 rounded-full font-semibold transition ${
             cooldown > 0
-              ? "border-gray-300 text-gray-400 cursor-not-allowed"
+              ? "border-gray-300 text-logo-400 cursor-not-allowed"
               : "border-indigo-500 text-indigo-500 hover:bg-indigo-50"
           }`}
         >

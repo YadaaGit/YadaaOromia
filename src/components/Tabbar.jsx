@@ -79,7 +79,7 @@ export default function TabBar() {
                 }}
                 transition={{ duration: 0.1 }}
                 className={`flex flex-col items-center ${
-                  isActive ? "txt_color_main font-semibold" : "text-gray-400"
+                  isActive ? "txt_color_main font-semibold" : "text-logo-400"
                 }`}
               >
                 <Icon className="w-6 h-6" />

@@ -26,7 +26,7 @@ function Courses() {
     <>
       <section id="welcome" className="mar_b_20">
         <div className="width_100p">
-          <h1 className="mar_0 width_100p ">Hi, {user.name.split(" ")[0]}</h1>
+          <h1 className="mar_0 width_100p " style={{fontWeight: 600}}>Hi, {user.name.split(" ")[0]}</h1>
           <h3 className="mar_0 width_100p ">
             Ready to learn something new today?
           </h3>
