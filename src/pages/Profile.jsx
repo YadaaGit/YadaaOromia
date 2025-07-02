@@ -237,7 +237,7 @@ export default function ProfilePage() {
 
       {activeTab !== "Info" && (
         <div className="text-center text-logo-400 text-sm mt-8">
-          {t("no_content_yet_for"} <strong>{t(activeTab)}</strong>.
+          {t("no_content_yet_for")} <strong>{t(activeTab)}</strong>.
         </div>
       )}
     </div>

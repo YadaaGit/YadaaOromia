@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import welcomeImg from "#/public/logo_transparent.png"; // Add your image here
+import welcomeImg from "@/assets/logos/logo_transparent.png"; // Add your image here
 import { useTranslation } from "@/hooks/useTranslation.js";
 
 export default function Welcome() {
