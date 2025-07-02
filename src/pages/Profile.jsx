@@ -10,6 +10,7 @@ import Loading from "@/components/basic_ui/Loading.jsx";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 import ConfirmModal from "@/components/basic_ui/confirm_modal.jsx";
 import { handleLogout } from "@/utils/auth_services";
+import { useTranslation } from "@/hooks/useTranslation.js";
 
 const tabs = ["Info", "Scores"];
 
@@ -25,6 +26,11 @@ const translations = {
     Edit: "Edit",
     Save: "Save",
     Cancel: "Cancel",
+    Role: "Role",
+    loading: "Loading...",
+    logout: "Log Out",
+    logout_confirm: "Are you sure you want to log out?",
+    no_content_yet_for: "No content yet for {{tab}}.",
   },
   am: {
     Info: "መረጃ",
@@ -37,6 +43,11 @@ const translations = {
     Edit: "አርትዕ",
     Save: "አስቀምጥ",
     Cancel: "ይቅር",
+    Role: "Role",
+    loading: "Loading...",
+    logout: "Log Out",
+    logout_confirm: "Are you sure you want to log out?",
+    no_content_yet_for: "No content yet for {{tab}}.",
   },
   om: {
     Info: "Odeeffannoo",
@@ -49,6 +60,11 @@ const translations = {
     Edit: "Gulaali",
     Save: "Oolchi",
     Cancel: "Haqi",
+    Role: "Role",
+    loading: "Loading...",
+    logout: "Log Out",
+    logout_confirm: "Are you sure you want to log out?",
+    no_content_yet_for: "No content yet for {{tab}}.",
   },
 };
 
@@ -69,7 +85,7 @@ export default function ProfilePage() {
     // Optional: update local user context or state
     console.log("New language selected:", newLangCode);
   };
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>{t("loading")}</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
   const t = (key) => {
@@ -205,23 +221,23 @@ export default function ProfilePage() {
             className="w-full max-w-md text-sm bg-indigo-500 text-white px-3 py-1 rounded"
             style={{ marginTop: 35 }}
           >
-            Log Out
+            {t("logout")}
           </button>
 
           <ConfirmModal
             show={showModal}
             onClose={() => setShowModal(false)}
             onConfirm={confirmLogout}
-            message="Are you sure you want to logout?"
-            confirmText="Log Out"
-            cancelText="Cancel"
+             message={t("logout_confirm")}
+            confirmText={t("Log Out")}
+            cancelText={t("Cancel")}
           />
         </>
       )}
 
       {activeTab !== "Info" && (
         <div className="text-center text-gray-400 text-sm mt-8">
-          No content yet for <strong>{t(activeTab)}</strong>.
+          {t("no_content_yet_for", { tab: t(activeTab) })}.
         </div>
       )}
     </div>

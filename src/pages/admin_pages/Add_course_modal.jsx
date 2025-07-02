@@ -3,8 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useModuleData } from "@/hooks/get_course_data_test.js";
 import Add_course_modal from "@/components/admin_components/Add_course.jsx";
+import { useTranslation } from "@/hooks/useTranslation.js";
 
 export default function CourseModal() {
+  const { t } = useTranslation();
   const headerRef = useRef(null);
   const modalRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -73,7 +75,7 @@ export default function CourseModal() {
               >
                 ✕
               </button>
-              <h2 className="text-2xl font-semibold">📚 Add New Course</h2>
+              <h2 className="text-2xl font-semibold">{t("user_add_course")}</h2>
             </div>
             <div style={{ paddingTop: `${headerHeight}px` }}>
               <Add_course_modal />

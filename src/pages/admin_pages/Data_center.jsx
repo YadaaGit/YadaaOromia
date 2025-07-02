@@ -9,11 +9,12 @@ import {
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import useAllUsers from "@/hooks/get_all_user.js";
+import { useTranslation } from "@/hooks/useTranslation.js";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function UserDashboard() {
-
+  const { t } = useTranslation();
   const columnDefs = useMemo(
     () => [
       { field: "name", sortable: true, filter: true },
@@ -81,13 +82,13 @@ export default function UserDashboard() {
 
   const summary = !loading && getSummary();
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>{t("loading")}</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold">User Overview</h2>
+        <h2 className="text-xl font-bold">{t("user_view")}</h2>
         <button
           onClick={exportToExcel}
           className="bg-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-700"

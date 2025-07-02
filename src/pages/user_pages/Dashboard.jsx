@@ -4,9 +4,11 @@ import dummyCourses from "@/hooks/get_course_data_test.js";
 import "@/style/Dashboard_user.css";
 import "@/style/general.css";
 import useUserData from "@/hooks/get_user_data.js";
+import { useTranslation} from "@/hooks/useTranslation.js";
 
 function Courses() {
   const { user, loading, error } = useUserData();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const openModule = (courseId, moduleId) => {
@@ -19,16 +21,16 @@ function Courses() {
 
   const course_data = [...dummyCourses];
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>{t("loading")}</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <>
       <section id="welcome" className="mar_b_20">
         <div className="width_100p">
-          <h1 className="mar_0 width_100p ">Hi, {user.name.split(" ")[0]}</h1>
+          <h1 className="mar_0 width_100p ">{t("hi", { name: user.name.split(" ")[0] })}</h1>
           <h3 className="mar_0 width_100p ">
-            Ready to learn something new today?
+            {t("welcome_message_home")}
           </h3>
         </div>
       </section>

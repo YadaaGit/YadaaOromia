@@ -1,16 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import welcomeImg from "@/assets/images/welcome.jpg"; // Add your image here
+import { useTranslation } from "@/hooks/useTranslation.js";
 
 export default function Welcome() {
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-white px-6" style={{borderRadius: 13, paddingBottom: 25}}>
-      <img src={welcomeImg} alt="Welcome" className="w-60 mb-6" />
-      <h1 className="text-2xl font-bold text-gray-800 mb-2">Hello</h1>
+      <img src={welcomeImg} alt={t("welcome_illustration")} className="w-60 mb-6" />
+      <h1 className="text-2xl font-bold text-gray-800 mb-2">{t("hello")}</h1>
       <p className="text-gray-500 text-sm text-center mb-8">
-        Welcome to our platform, where you learn something new daily.
+        {t("welcome_message_auth")}
       </p>
       <div className="flex flex-col w-full max-w-sm gap-4">
         <button
@@ -18,14 +19,14 @@ export default function Welcome() {
           style={{borderRadius: "calc(infinity * 1px)"}}
           onClick={() => navigate("/login")}
         >
-          Login
+          {t("login")}
         </button>
         <button
           className="border_main_1 txt_color_main border-indigo-600 text-indigo-600 py-3 rounded-full font-semibold"
           style={{borderRadius: "calc(infinity * 1px)"}}
           onClick={() => navigate("/register")}
         >
-          Sign Up
+          {t("sign_up")}
         </button>
       </div>
     </div>

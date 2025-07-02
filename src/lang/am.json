@@ -8,7 +8,12 @@
   "login_to_continue": "Please sign in to continue.",
   "email": "Email",
   "password": "Password",
+  "login_illustration": "Login Illustration",
+  "registration_illustration": "Registration Illustration",
+  "mail_illustration": "Mail Illustration",
+  "welcome_illustration": "Welcome Illustration",
   "sign_in": "Sign In",
+  "signing_in": "Signing In...",
   "forgot_password": "Forgot Password?",
   "no_acc": "Don’t have an account?",
   "register": "Register",
@@ -16,20 +21,38 @@
   "name": "Name",
   "age": "Age",
   "select_gender": "Select Gender",
+  "male": "Male",
+  "female": "Female",
   "username": "Username",
   "select_language": "Select Language",
+  "english": "English",
+  "amharic": "Amharic",
+  "oromifa": "Oromifa",
   "confirm_password": "Confirm Password",
   "had_acc": "Already have an account?",
+  "many_attempts": "You've made too many requests. Please wait before trying again.",
+  "email_send_failed": "Failed to send email. Please try again later.",
+  "email_not_verified": "Your email is not verified. Please check your inbox and verify your email address.",
+  "verify_email": "Verify Your Email",
+  "email_sent": "We’ve sent a verification email to: ",
+  "I_verified_email": "I’ve Verified My Email",
+  "check_inbox": "Verification email sent. Please check your inbox.",
+  "resend_email": "Resend Verification Email",
+  "resend_in": "Resend in {{seconds}}s",
 
 
   "courses": "Courses",
   "courses_admin": "Courses Admin",
   "data_center": "User Data",
   "profile": "Profile",
+  "loading": "Loading...",
+  "module_not_found": "Module not found",
 
 
-  "hi": "Hi",
+  "hi": "Hi, {{name}}",
   "welcome_message_home": "Ready to learn something new today?",
+  "admin_loading_warning": "⚠️ Our system is loading admin data. Please wait a moment and try again.",
+  "user_view": "User Overview",
   
 
   "info": "Info",
@@ -43,6 +66,8 @@
   "Cancel": "Cancel",
   "log_out": "Log Out",
   "no_content": "No content yet for",
+  "add_course": "+ Add Course",
+  "user_add_course": "📚 Add New Course",
 
 
 

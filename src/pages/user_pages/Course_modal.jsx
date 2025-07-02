@@ -3,8 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useModuleData } from "@/hooks/get_course_data_test.js";
 import SectionViewer from "@/components/sections/Section_viewer.jsx";
+import { useTranslation} from "@/hooks/useTranslation.js";
 
 export default function CourseModal() {
+  const { t } = useTranslation();
   const headerRef = useRef(null);
   const modalRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -79,10 +81,10 @@ export default function CourseModal() {
               </button>
               {/* Conditional content inside header */}
               {loading && (
-                <h2 className="text-2xl font-semibold">Loading...</h2>
+                <h2 className="text-2xl font-semibold">{t("loading")}</h2>
               )}
               {!loading && !module && (
-                <h2 className="text-2xl font-semibold">Module not found</h2>
+                <h2 className="text-2xl font-semibold">{t("module_not_found")}</h2>
               )}
               {!loading && module && (
                 <h2 className="text-2xl font-semibold">{module.title}</h2>
@@ -90,9 +92,9 @@ export default function CourseModal() {
             </div>
             <div style={{ paddingTop: `${headerHeight}px` }}>
               {/* Conditional content inside modal */}
-              {loading && <div className="p-4 text-center">Loading...</div>}
+              {loading && <div className="p-4 text-center">{t("loading")}</div>}
               {!loading && !module && (
-                <div className="p-4 text-center">Module not found</div>
+                <div className="p-4 text-center">{t("module_not_found")}</div>
               )}
               {!loading && module && (
                 <>

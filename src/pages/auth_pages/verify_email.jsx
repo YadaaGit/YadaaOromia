@@ -4,8 +4,10 @@ import { auth } from "#/firebase-config.js";
 import { sendEmailVerification } from "firebase/auth";
 import mailImg from "@/assets/images/emailVerification.jpg"; // Use your own image
 import { EnvelopeOpenIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "@/hooks/useTranslation.js";
 
 export default function VerifyEmail() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = auth.currentUser;
   const [cooldown, setCooldown] = useState(60);
@@ -35,16 +37,16 @@ export default function VerifyEmail() {
   const sendEmail = async () => {
     try {
       await sendEmailVerification(user);
-      setMessage("Verification email sent. Please check your inbox.");
+      setMessage({text: t("check_inbox")}); // Use translation for check inbox
       setCooldown(60); // Start 1 minute cooldown
       setError("");
     } catch (err) {
       if (err.code === "auth/too-many-requests") {
         setError(
-          "You've made too many requests. Please wait before trying again."
+          t("many_attempts") // Use translation for too many requests
         );
       } else {
-        setError("Failed to send email. Please try again later.");
+        setError(t("email_send_failed")); // Use translation for email send failure
       }
     }
   };
@@ -54,19 +56,19 @@ export default function VerifyEmail() {
     if (user.emailVerified) {
       navigate("/courses");
     } else {
-      setError("Email not verified yet. Please check your inbox.");
+      setError(t("email_not_verified")); // Use translation for email not verified
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center px-6 bg-white">
-      <img src={mailImg} alt="Mail Illustration" className="h-40 mb-6" />
+      <img src={mailImg} alt={t("mail_illustration")} className="h-40 mb-6" />
 
       <h2 className="text-2xl font-bold mb-2 text-gray-800">
-        Verify Your Email
+        {t("verify_email")}
       </h2>
       <p className="text-gray-500 text-sm mb-6 text-center">
-        We’ve sent a verification email to: <br />
+        {t("email_sent")} <br />
         <span className="font-semibold text-indigo-600">{user?.email}</span>
       </p>
 
@@ -80,7 +82,7 @@ export default function VerifyEmail() {
           onClick={checkVerification}
           className="w-full bg-indigo-500 text-white py-3 rounded-full font-semibold hover:bg-indigo-600 transition"
         >
-          I’ve Verified My Email
+          {t("I_verified_email")}
         </button>
 
         <button
@@ -93,8 +95,8 @@ export default function VerifyEmail() {
           }`}
         >
           {cooldown > 0
-            ? `Resend in ${cooldown}s`
-            : "Resend Verification Email"}
+            ? t("resend_in", { seconds: cooldown })
+            : t("resend_verification_email")}
         </button>
       </div>
     </div>

@@ -10,8 +10,10 @@ import login_illustration from "@/assets/images/login.jpg";
 import { handleSignIn, handleForgotPassword } from "@/utils/auth_services.js";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
+import { useTranslation } from "@/hooks/useTranslation.js";
 
 export default function Login() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -61,13 +63,13 @@ export default function Login() {
       <div className="mb-6">
         <img
           src={login_illustration}
-          alt="Login Illustration"
+          alt={t("login_illustration")}
           className="h-45 w-auto"
         />
       </div>
 
-      <h2 className="text-2xl font-bold mb-2 text-gray-800">Login</h2>
-      <p className="text-gray-500 text-sm mb-6">Please sign in to continue.</p>
+      <h2 className="text-2xl font-bold mb-2 text-gray-800">{t("login")}</h2>
+      <p className="text-gray-500 text-sm mb-6">{t("login_to_contnue")}</p>
 
       <form
         className="w-full max-w-sm space-y-4"
@@ -76,7 +78,7 @@ export default function Login() {
         <div className="relative">
           <input
             type="email"
-            placeholder="Email"
+            placeholder= {t("email")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full border rounded-full px-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -88,7 +90,7 @@ export default function Login() {
           name="password"
           value={password}
           onChange={handleChange}
-          placeholder="Password"
+          placeholder={t("password")}
           show={showPassword}
           setShow={setShowPassword}
         />
@@ -108,7 +110,7 @@ export default function Login() {
           onClick={onLogin}
           disabled={loading}
         >
-          {loading ? "Signing In..." : "Sign In"}
+          {loading ? t("signing_in") : t("sign_in")}
         </button>
 
         <button
@@ -116,16 +118,16 @@ export default function Login() {
           onClick={onForgotPassword}
           className="text-sm text-indigo-600 underline w-full text-center"
         >
-          Forgot password?
+          {t("forgot_password")}
         </button>
 
         <p className="text-center text-sm text-gray-500">
-          Don’t have an account?{" "}
+          {t("no_acc")} {" "}
           <span
             className="txt_color_main font-medium cursor-pointer"
             onClick={() => navigate("/register")}
           >
-            Sign Up
+            {t("sign_up")}
           </span>
         </p>
         <PopUp

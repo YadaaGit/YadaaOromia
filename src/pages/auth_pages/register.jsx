@@ -15,8 +15,10 @@ import useAdminEmails from "@/hooks/get_admin_emails.js";
 import Dropdown from "@/components/basic_ui/options.jsx";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
+import { useTranslation } from "@/hooks/useTranslation.js";
 
 export default function Register() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [loadingHere, setLoading] = useState(false);
@@ -88,20 +90,20 @@ export default function Register() {
       <div className="mb-6">
         <img
           src={registration_illustration}
-          alt="Register Illustration"
+          alt={t("registration_illustration")}
           className="h-45 w-auto"
         />
       </div>
 
-      <h2 className="text-2xl font-bold mb-2 text-gray-800">Register</h2>
-      <p className="text-gray-500 text-sm mb-6">Please register to continue.</p>
+      <h2 className="text-2xl font-bold mb-2 text-gray-800">{t("register")}</h2>
+      <p className="text-gray-500 text-sm mb-6">{t("register_to_continue")}</p>
 
       <form className="w-full max-w-sm space-y-4">
         <InputField
           name="name"
           value={formData.name}
           onChange={handleChange}
-          placeholder="Name"
+          placeholder={t("name")}
           Icon={IdentificationIcon}
         />
         <InputField
@@ -114,43 +116,43 @@ export default function Register() {
               setFormData((prev) => ({ ...prev, age: value }));
             }
           }}
-          placeholder="Age"
+          placeholder={t("age")}
           Icon={CalendarIcon}
         />
         <CustomDropdownField
           name="sex"
           value={formData.sex}
           onChange={handleChange}
-          placeholder="Select Gender"
-          options={["Male", "Female"]}
+          placeholder={t("select_gender")}
+          options={[t("male"), t("Female")]}
         />
         <InputField
           name="email"
           type="email"
           value={formData.email}
           onChange={handleChange}
-          placeholder="Email"
+          placeholder={t("email")}
           Icon={EnvelopeIcon}
         />
         <InputField
           name="username"
           value={formData.username}
           onChange={handleChange}
-          placeholder="Username"
+          placeholder={t("username")}
           Icon={UserCircleIcon}
         />
         <CustomDropdownField
           name="lang"
           value={formData.lang}
           onChange={handleChange}
-          placeholder="Select Language"
-          options={["English", "Amharic", "oromifa"]}
+          placeholder={t("select_language")}
+          options={[t("english"), t("amharic"), t("oromifa")]}
         />
         <PasswordField
           name="password"
           value={formData.password}
           onChange={handleChange}
-          placeholder="Password"
+          placeholder={t("password")}
           show={showPassword}
           setShow={setShowPassword}
         />
@@ -158,7 +160,7 @@ export default function Register() {
           name="con_password"
           value={formData.con_password}
           onChange={handleChange}
-          placeholder="Confirm Password"
+          placeholder={t("confirm_password")}
           show={showConfirmPassword}
           setShow={setShowConfirmPassword}
         />
@@ -175,7 +177,7 @@ export default function Register() {
         <PopUp
           show={showWarning}
           onClose={() => setShowWarning(false)}
-          message="⚠️ Our system is loading admin data. Please wait a moment and try again."
+          message={t("admin_loading_warning")}
           type="error"
         />
 
@@ -184,16 +186,16 @@ export default function Register() {
           className="w-full bg-indigo-500 text-white py-3 rounded-full font-semibold shadow-md hover:bg-indigo-700 transition"
           onClick={handleRegister}
         >
-          Sign Up
+          {t("sign_up")}
         </button>
 
         <p className="text-center text-sm text-gray-500">
-          Already have an account?{" "}
+          {t("had_acc")} {" "}
           <span
             className="txt_color_main font-medium cursor-pointer"
             onClick={() => navigate("/login")}
           >
-            Sign In
+            {t("sign_in")}
           </span>
         </p>
       </form>
