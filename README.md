@@ -1,4 +1,3 @@
-````markdown
 # React + Vite Web App
 
 A modern Telegram bot integrated with a web-based Telegram Mini App built with **React**, **Vite**, and **Express.js**, featuring Firebase integration, dynamic admin/user dashboards, multi-language support, and more.
@@ -114,7 +113,3 @@ Distributed under the MIT License.
 
 Made by [Novage Development](mailto:novageinvestmentgroup@gmail.com)
 If you want such or any softwares developed for you please contact us [Novage Development](mailto:novageinvestmentgroup@gmail.com)
-
-```
-
----
