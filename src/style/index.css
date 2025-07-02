@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 :root {
   font-family: "Nunito", sans-serif;
   font-optical-sizing: auto;
@@ -12,7 +14,7 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: #213547;
+  color: #734A1C;
   background-color: #f2f2f2;
 
   font-synthesis: none;
@@ -33,7 +35,7 @@
 }
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #734A1C;
   text-decoration: inherit;
 }
 a:hover {
@@ -71,10 +73,21 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+.text-logo-800{
+  color: #734A1C !important;
+
+}
+.text-logo-500 {
+    color: #74491bbd !important;
+}
+.text-logo-400 {
+    color: #74491ba0 !important;
+}
+
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
+    color: #734A1C;
     background-color: #f2f2f2;
   }
   a:hover {
@@ -87,7 +100,7 @@ button:focus-visible {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    color: #213547;
+    color: #734A1C;
     background-color: #f2f2f2;
   }
   a:hover {

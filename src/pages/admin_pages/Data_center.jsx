@@ -92,7 +92,7 @@ export default function UserDashboard() {
         <button
           onClick={exportToExcel}
           className="bg-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-700"
-          style={{ color: "#19384c !important" }}
+          style={{ color: "#734A1C !important" }}
         >
           Download Excel
         </button>
@@ -128,7 +128,7 @@ export default function UserDashboard() {
 function SummaryCard({ label, value }) {
   return (
     <div className="bg-white rounded-xl shadow p-4 text-center">
-      <p className="text-sm text-gray-500">{label}</p>
+      <p className="text-sm text-logo-500">{label}</p>
       <p
         className="text-lg font-bold text-gray-900"
         style={{ overflow: "scroll" }}

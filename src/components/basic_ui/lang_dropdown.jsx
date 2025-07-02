@@ -78,7 +78,7 @@ export default function LanguageDropdown({
         {updating ? (
           <div className="ml-2 w-5 h-5 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin" />
         ) : (
-          <ChevronDownIcon className="w-5 h-5 text-gray-400" />
+          <ChevronDownIcon className="w-5 h-5 text-logo-400" />
         )}
       </button>
 

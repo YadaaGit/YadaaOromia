@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import registration_illustration from "@/assets/images/registration.jpg";
+import registration_illustration from "@/assets/images/login_new.jpg";
 import {
   UserCircleIcon,
   IdentificationIcon,
@@ -95,8 +95,8 @@ export default function Register() {
         />
       </div>
 
-      <h2 className="text-2xl font-bold mb-2 text-gray-800">{t("register")}</h2>
-      <p className="text-gray-500 text-sm mb-6">{t("register_to_continue")}</p>
+      <h2 className="text-2xl font-bold mb-2 text-logo-800">{t("register")}</h2>
+      <p className="text-logo-500 text-sm mb-6">{t("register_to_continue")}</p>
 
       <form className="w-full max-w-sm space-y-4">
         <InputField
@@ -223,7 +223,7 @@ const InputField = ({
       placeholder={placeholder}
       className="w-full border rounded-full px-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
     />
-    <Icon className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
+    <Icon className="w-5 h-5 text-logo-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
   </div>
 );
 
@@ -254,7 +254,7 @@ const CustomDropdownField = ({
         placeholder={placeholder}
       />
       {Icon && (
-        <Icon className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
+        <Icon className="w-5 h-5 text-logo-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
       )}
     </div>
   );
@@ -281,9 +281,9 @@ const PasswordField = ({
         placeholder={placeholder}
         className="w-full border rounded-full px-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
-      <LockClosedIcon className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
+      <LockClosedIcon className="w-5 h-5 text-logo-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
       <Icon
-        className="w-5 h-5 text-gray-400 absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
+        className="w-5 h-5 text-logo-400 absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
         onClick={() => setShow(!show)}
       />
     </div>

@@ -10,7 +10,7 @@ export default function ConfirmModal({ show, onClose, onConfirm, message = "Are 
     padding: 20,
     zIndex: 99,}}>
       <div className="bg-white rounded-xl p-6 w-80 shadow-lg">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">{message}</h2>
+        <h2 className="text-lg font-semibold text-logo-800 mb-4">{message}</h2>
         <div className="flex justify-end space-x-3">
           <button
             onClick={onClose}
