@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useTelegramUser from "@/hooks/get_tg_data.js";
 import registration_illustration from "@/assets/images/registration.jpg";
 import {
   UserCircleIcon,
@@ -19,7 +18,6 @@ import Loading from "@/components/basic_ui/Loading.jsx";
 
 export default function Register() {
   const navigate = useNavigate();
-  const tgUser = useTelegramUser();
 
   const [loadingHere, setLoading] = useState(false);
   const [errorHere, setError] = useState("");
@@ -51,14 +49,6 @@ export default function Register() {
       console.log(`ERROR: ${errorHere}`);
     }
   }, [errorHere]);
-
-  useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      name: tgUser.name || prev.name,
-      username: tgUser.username || prev.username,
-    }));
-  }, [tgUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
