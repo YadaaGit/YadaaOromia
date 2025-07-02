@@ -9,8 +9,12 @@ import {
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./style/index.css";
+
+// Context & Hooks
+import { LanguageProvider } from "./LanguageContext";
 import useUserData from "@/hooks/get_user_data.js";
 
+// Pages & Components
 import SplashScreen from "./components/SplashScreen.jsx";
 import TabBar from "./components/Tabbar.jsx";
 import Welcome from "./pages/auth_pages/welcome_page.jsx";
@@ -24,16 +28,27 @@ import DataCenter from "./pages/admin_pages/Data_center.jsx";
 import CourseModal from "./pages/user_pages/Course_modal.jsx";
 import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 
-function AppRoutes() {
-  const location = useLocation();
+// wrap the app in the custom language provider
+function AppRoutesWrapper() {
   const { user, loading, error } = useUserData();
-  
+
   if (loading) return <SplashScreen />;
   if (error) return <p className="text-red-500">{error}</p>;
-  
-  const authenticated = !loading && !error ? user.authenticated : null;
 
-  // Check if we should hide the tab bar for the current route
+  const userLang = user?.lang || "am";
+
+  return (
+    <LanguageProvider userLang={userLang}>
+      <AppRoutes user={user} />
+    </LanguageProvider>
+  );
+}
+
+// main app
+function AppRoutes({ user }) {
+  const location = useLocation();
+
+  const authenticated = user?.authenticated;
   const shouldHideTabBar =
     ["/auth", "/login", "/register", "/verify_email", "/"].some((path) =>
       matchPath({ path, end: true }, location.pathname)
@@ -46,12 +61,13 @@ function AppRoutes() {
   return (
     <div className={shouldHideTabBar ? "" : "pb-16"}>
       <Routes location={background || location}>
+        {/* Main Routes; added conditional display and navigation*/}
         <Route
           path="/"
           element={
             authenticated ? (
               user.emailVerified ? (
-                user.role == "user" ? (
+                user.role === "user" ? (
                   <Navigate to="/courses" />
                 ) : (
                   <Navigate to="/courses_admin" />
@@ -69,7 +85,7 @@ function AppRoutes() {
           element={
             !authenticated ? (
               <Welcome />
-            ) : user.role == "user" ? (
+            ) : user.role === "user" ? (
               <Navigate to="/courses" />
             ) : (
               <Navigate to="/courses_admin" />
@@ -81,7 +97,7 @@ function AppRoutes() {
           element={
             !authenticated ? (
               <Login />
-            ) : user.role == "user" ? (
+            ) : user.role === "user" ? (
               <Navigate to="/courses" />
             ) : (
               <Navigate to="/courses_admin" />
@@ -93,7 +109,7 @@ function AppRoutes() {
           element={
             !authenticated ? (
               <Register />
-            ) : user.role == "user" ? (
+            ) : user.role === "user" ? (
               <Navigate to="/courses" />
             ) : (
               <Navigate to="/courses_admin" />
@@ -109,11 +125,11 @@ function AppRoutes() {
           path="/courses"
           element={
             !authenticated ? (
-              <Navigate to ="/auth" />
-            ) : user.role == "user" ? (
+              <Navigate to="/auth" />
+            ) : user.role === "user" ? (
               <Courses />
             ) : (
-              <Navigate to ="/courses_admin" />
+              <Navigate to="/courses_admin" />
             )
           }
         />
@@ -121,8 +137,8 @@ function AppRoutes() {
           path="/courses_admin"
           element={
             !authenticated ? (
-              <Navigate to ="/auth" />
-            ) : user.role == "user" ? (
+              <Navigate to="/auth" />
+            ) : user.role === "user" ? (
               <Navigate to="/courses" />
             ) : (
               <CoursesAdmin />
@@ -133,8 +149,8 @@ function AppRoutes() {
           path="/user_data"
           element={
             !authenticated ? (
-              <Navigate to ="/auth" />
-            ) : user.role == "user" ? (
+              <Navigate to="/auth" />
+            ) : user.role === "user" ? (
               <Navigate to="/courses" />
             ) : (
               <DataCenter />
@@ -160,10 +176,11 @@ function AppRoutes() {
   );
 }
 
+// insert the app into index.html to view from browser
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Router>
-      <AppRoutes />
+      <AppRoutesWrapper />
     </Router>
   </StrictMode>
 );

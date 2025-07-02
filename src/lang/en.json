@@ -1,0 +1,53 @@
+{
+  "_comment_1": "the next are UI texts",
+
+  "hello": "Hello",
+  "welcome_message_auth": "Welcome to our platform, where you will learn new things daily!",
+  "login": "Login",
+  "sign_up": "Sign Up",
+  "login_to_continue": "Please sign in to continue.",
+  "email": "Email",
+  "password": "Password",
+  "sign_in": "Sign In",
+  "forgot_password": "Forgot Password?",
+  "no_acc": "Don’t have an account?",
+  "register": "Register",
+  "register_to_continue": "Please register to continue.",
+  "name": "Name",
+  "age": "Age",
+  "select_gender": "Select Gender",
+  "username": "Username",
+  "select_language": "Select Language",
+  "confirm_password": "Confirm Password",
+  "had_acc": "Already have an account?",
+
+
+  "courses": "Courses",
+  "courses_admin": "Courses Admin",
+  "data_center": "User Data",
+  "profile": "Profile",
+
+
+  "hi": "Hi",
+  "welcome_message_home": "Ready to learn something new today?",
+  
+
+  "info": "Info",
+  "scores": "Scores",
+  "joined": "Joined",
+  "role": "Role",
+  "User": "User",
+  "admin": "Admin",
+  "edit": "Edit",
+  "save": "Save",
+  "Cancel": "Cancel",
+  "log_out": "Log Out",
+  "no_content": "No content yet for",
+
+
+
+
+  "_comment_2":"the next are UX texts",
+  
+  "fill_required_fields":"Please fill in all required fields."
+}

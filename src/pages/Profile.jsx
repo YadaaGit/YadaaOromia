@@ -57,14 +57,18 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("Info");
   const [editMode, setEditMode] = useState(false);
   const [language, setLanguage] = useState("en");
+  const [status, setStatus] = useState({ updating: false, error: null });
 
   const { user, loading, error } = useUserData();
 
   const [loadingLogout, setLoadingLogout] = useState(false);
   const [errorLogout, setErrorLogout] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [lang, setLang] = useState("English");
 
+  const handleLangChange = (newLangCode) => {
+    // Optional: update local user context or state
+    console.log("New language selected:", newLangCode);
+  };
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
@@ -99,11 +103,10 @@ export default function ProfilePage() {
       {/* Top Right Buttons */}
       <div className="flex gap-2 lang-toggle">
         <LanguageDropdown
-          options={["English", "Amharic", "Oromifa"]}
-          value={lang}
-          onChange={setLang}
-          placeholder="Choose Language"
-          style_pass={{ width: 120 }}
+          value={user?.lang}
+          onChange={handleLangChange}
+          onUpdateStateChange={(state) => setStatus(state)}
+          style_pass={{maxWidth: 200}}
         />
       </div>
 
@@ -118,7 +121,10 @@ export default function ProfilePage() {
 
       {/* Name & XP */}
       <h2 className="text-xl font-bold">{user.name}</h2>
-      <p className="text-gray-500 text-sm mb-6" style={{overflow: "scroll", maxWidth: 230}}>
+      <p
+        className="text-gray-500 text-sm mb-6"
+        style={{ overflow: "scroll", maxWidth: 230 }}
+      >
         {user.email}
       </p>
 
@@ -197,7 +203,7 @@ export default function ProfilePage() {
           <button
             onClick={() => setShowModal(true)}
             className="w-full max-w-md text-sm bg-indigo-500 text-white px-3 py-1 rounded"
-            style={{marginTop: 35}}
+            style={{ marginTop: 35 }}
           >
             Log Out
           </button>

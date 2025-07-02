@@ -1,73 +1,120 @@
-# React + Vite
+````markdown
+# React + Vite Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern Telegram bot integrated with a web-based Telegram Mini App built with **React**, **Vite**, and **Express.js**, featuring Firebase integration, dynamic admin/user dashboards, multi-language support, and more.
 
-Currently, two official plugins are available:
+To visit out bot **[ClickHere]**(https://t.me/yadaa_oromia_bot)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![GitHub repo size](https://img.shields.io/github/repo-size/YadaaGit/YadaaOromia)
+![GitHub last commit](https://img.shields.io/github/last-commit/YadaaGit/YadaaOromia)
+![License](https://img.shields.io/github/license/YadaaGit/YadaaOromia)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ✨ Features
 
-# File Structure (06/10/2025)
+- ⚡ Lightning-fast development with Vite
+- 🔒 User authentication & email verification
+- 🌐 Multi-language support (`en`, `am`, `or`)
+- 📦 Modular file structure (components, pages, hooks, etc.)
+- 📊 Separate admin dashboard & user dashboard
+- 🪄 Clean UI with splash screens, skeleton loaders, and modals
+- 📡 Server API with Express & MongoDB
 
-Webapp
-├── README.md
-├── eslint.config.js
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (>= 16)
+- npm
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/YadaaGit/YadaaOromia.git
+
+# Install frontend dependencies
+npm install
+
+# Go to server folder and install backend dependencies
+cd server
+npm install
+````
+
+---
+
+## 📦 Project Structure
+
+Here’s a simplified overview:
+
+```
+webapp/
+├── public/                 # Static files
+├── server/                 # Express server & models
+│   ├── models/
+│   └── index.js
+├── src/
+│   ├── assets/             # Images & logos
+│   ├── components/         # UI components & sections
+│   ├── hooks/              # Custom React hooks
+│   ├── lang/               # Translation JSON files
+│   ├── pages/              # All pages (auth, admin, user, etc.)
+│   ├── style/              # CSS files
+│   └── utils/              # Utility functions & services
 ├── index.html
-├── package-lock.json
 ├── package.json
-├── public
-│   └── vite.svg
-├── src
-│   ├── assets
-│   │   └── images
-│   │       ├── illstration_1.jpg
-│   │       ├── illstration_2.jpg
-│   │       ├── portrait.jpg
-│   │       └── welcome.jpg
-│   ├── components
-│   │   ├── Tabbar.jsx
-│   │   ├── basic_ui
-│   │   │   ├── button.jsx
-│   │   │   ├── card.jsx
-│   │   │   └── input.jsx
-│   │   └── sections
-│   │       ├── Quiz.jsx
-│   │       └── Section_viewer.jsx
-│   ├── hooks
-│   │   ├── get_course_data.js
-│   │   ├── get_course_data_test.js
-│   │   └── get_tg_data.js
-│   ├── main.jsx
-│   ├── pages
-│   │   ├── Profile.jsx
-│   │   ├── admin_pages
-│   │   │   ├── Dashboard_admin.jsx
-│   │   │   └── Data_center.jsx
-│   │   ├── auth_pages
-│   │   │   ├── login.jsx
-│   │   │   ├── register.jsx
-│   │   │   └── welcome_page.jsx
-│   │   └── user_pages
-│   │       ├── Course_modal.jsx
-│   │       └── Dashboard.jsx
-│   ├── style
-│   │   ├── Dashboard_user.css
-│   │   ├── general.css
-│   │   ├── index.css
-│   │   └── tabbar.css
-│   └── utils
-│       ├── auth_services.js
-│       └── validate.js
-├── server
-|   ├── models
-|   |   └── Course.js
-|   ├── .env
-|   ├── .gitignore
-|   ├── index.js
-|   ├── package-lock.json
-|   └── package.json
 └── vite.config.js
+```
+
+> ⚠️ The real folder structure may change as the project evolves.
+
+---
+
+## 📖 Usage
+
+Start the frontend dev server:
+
+```bash
+npm run dev
+```
+
+Start the backend server:
+
+```bash
+cd server
+node index.js
+```
+
+---
+
+## 🖼️ Screenshots
+
+*Add screenshots or GIFs of your app here to show it in action!*
+
+---
+
+## 📜 License
+
+Distributed under the MIT License.
+
+---
+
+## Tech stack
+
+* [Vite](https://vitejs.dev/)
+* [React](https://reactjs.org/)
+* [Firebase](https://firebase.google.com/)
+* [MongoDB](https://mongodb.com)
+
+---
+
+## 📧 Contact
+
+Made by [Novage Development](mailto:novageinvestmentgroup@gmail.com)
+If you want such or any softwares developed for you please contact us [Novage Development](mailto:novageinvestmentgroup@gmail.com)
+
+```
+
+---
