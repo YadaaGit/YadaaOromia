@@ -90,7 +90,11 @@ node index.js
 
 ## 🖼️ Screenshots
 
-*Add screenshots or GIFs of your app here to show it in action!*
+![Welcome page](./public/screenshots/welcome.jpg "Welcome page")
+![Login page](./public/screenshots/login.jpg "Login page")
+![Register page](./public/screenshots/register.jpg "Register page")
+![Profile page](./public/screenshots/profile.jpg "Profile page")
+![Course page](./public/screenshots/course.jpg "Course page")
 
 ---
 

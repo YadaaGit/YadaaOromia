@@ -10,7 +10,7 @@ import login_illustration from "@/assets/images/login_new.jpg";
 import { handleSignIn, handleForgotPassword } from "@/utils/auth_services.js";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
-import { useTranslation } from "@/hooks/useTranslation.js";
+import { useTranslation } from "@/utils/useTranslation.js";
 import { useLanguage } from "@/LanguageContext.jsx";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 

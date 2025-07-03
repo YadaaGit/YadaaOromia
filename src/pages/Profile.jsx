@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { handleLogout } from "@/utils/auth_services";
-import { useTranslation } from "@/hooks/useTranslation.js";
+import { useTranslation } from "@/utils/useTranslation.js";
 import { useLanguage } from "@/LanguageContext.jsx";
 import useUserData from "@/hooks/get_user_data.js";
 import ConfirmModal from "@/components/basic_ui/confirm_modal.jsx";

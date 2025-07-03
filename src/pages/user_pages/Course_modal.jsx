@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useModuleData } from "@/hooks/get_course_data_test.js";
 import SectionViewer from "@/components/sections/Section_viewer.jsx";
-import { useTranslation} from "@/hooks/useTranslation.js";
+import { useTranslation} from "@/utils/useTranslation.js";
 import { Skeleton } from "@mui/material";
 
 export default function CourseModal() {

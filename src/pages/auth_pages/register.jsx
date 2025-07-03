@@ -15,7 +15,7 @@ import useAdminEmails from "@/hooks/get_admin_emails.js";
 import Dropdown from "@/components/basic_ui/options.jsx";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
-import { useTranslation } from "@/hooks/useTranslation.js";
+import { useTranslation } from "@/utils/useTranslation.js";
 import { useLanguage } from "@/LanguageContext.jsx";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 

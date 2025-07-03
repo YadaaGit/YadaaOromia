@@ -9,7 +9,7 @@ import {
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import useAllUsers from "@/hooks/get_all_user.js";
-import { useTranslation } from "@/hooks/useTranslation.js";
+import { useTranslation } from "@/utils/useTranslation.js";
 import { Skeleton } from "@mui/material";
 
 ModuleRegistry.registerModules([AllCommunityModule]);

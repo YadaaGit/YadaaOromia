@@ -16,7 +16,7 @@ import {
   DocumentChartBarIcon as DataOutline
 } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
-import { useTranslation } from "@/hooks/useTranslation.js";
+import { useTranslation } from "@/utils/useTranslation.js";
 
 
 

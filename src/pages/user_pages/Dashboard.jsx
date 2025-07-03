@@ -4,7 +4,7 @@ import dummyCourses from "@/hooks/get_course_data_test.js";
 import "@/style/Dashboard_user.css";
 import "@/style/general.css";
 import useUserData from "@/hooks/get_user_data.js";
-import { useTranslation} from "@/hooks/useTranslation.js";
+import { useTranslation} from "@/utils/useTranslation.js";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 

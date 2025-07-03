@@ -4,7 +4,7 @@ import { auth } from "#/firebase-config.js";
 import { sendEmailVerification } from "firebase/auth";
 import mailImg from "@/assets/images/emailVerification.jpg"; // Use your own image
 import { EnvelopeOpenIcon } from "@heroicons/react/24/outline";
-import { useTranslation } from "@/hooks/useTranslation.js";
+import { useTranslation } from "@/utils/useTranslation.js";
 
 export default function VerifyEmail() {
   const { t } = useTranslation();
