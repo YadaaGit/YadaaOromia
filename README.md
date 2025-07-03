@@ -90,11 +90,19 @@ node index.js
 
 ## 🖼️ Screenshots
 
-![Welcome page](./public/screenshots/welcome.jpg "Welcome page")
+<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+  <img src="./public/screenshots/welcome.jpg" width="150" alt="Welcome page"/>
+  <img src="./public/screenshots/login.jpg" width="150" alt="Login page"/>
+  <img src="./public/screenshots/register.jpg" width="150" alt="Register page"/>
+  <img src="./public/screenshots/profile.jpg" width="150" alt="Profile page"/>
+  <img src="./public/screenshots/course.jpg" width="150" alt="Course page"/>
+</div>
+
+<!-- ![Welcome page](./public/screenshots/welcome.jpg "Welcome page")
 ![Login page](./public/screenshots/login.jpg "Login page")
 ![Register page](./public/screenshots/register.jpg "Register page")
 ![Profile page](./public/screenshots/profile.jpg "Profile page")
-![Course page](./public/screenshots/course.jpg "Course page")
+![Course page](./public/screenshots/course.jpg "Course page") -->
 
 ---
 
