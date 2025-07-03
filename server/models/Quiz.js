@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
 
-const moduleSchema = new mongoose.Schema({
-  module_id: String,
-  course_id: String,
+const quizSchema = new mongoose.Schema({
+  quiz_id: String,
+  is_final: Boolean,
   title: String,
-  image: String,
-  module_index: Number,
+  questions: Object
 });
 
 // Export the schema
-export default moduleSchema;
+export default quizSchema;

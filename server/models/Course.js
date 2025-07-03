@@ -4,8 +4,9 @@ const courseSchema = new mongoose.Schema({
   course_id: String,
   title: String,
   description: String,
-  no_of_lessons: Number,
+  final_quiz_id: String,
   course_index: Number,
+  module_ids: Object,
   metadata: Object,
 });
 

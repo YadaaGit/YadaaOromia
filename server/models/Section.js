@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 
-const moduleSchema = new mongoose.Schema({
-  module_id: String,
-  course_id: String,
+const sectionSchema = new mongoose.Schema({
+  section_id: String,
+  quiz_id: String,
   title: String,
   image: String,
-  module_index: Number,
+  section_index: Number,
+  contents: Object
 });
 
 // Export the schema
-export default moduleSchema;
+export default sectionSchema;

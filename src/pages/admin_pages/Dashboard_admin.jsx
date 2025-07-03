@@ -1,181 +1,138 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { handleLogout } from "@/utils/auth_services";
-import { useTranslation } from "@/hooks/useTranslation.js";
-import { useLanguage } from "@/LanguageContext.jsx";
-import useUserData from "@/hooks/get_user_data.js";
-import ConfirmModal from "@/components/basic_ui/confirm_modal.jsx";
-import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
-import { Skeleton } from "@mui/material";
+import dummyCourses from "@/hooks/get_course_data_test.js";
 import "@/style/Dashboard_user.css";
 import "@/style/general.css";
+import useUserData from "@/hooks/get_user_data.js";
+import { useTranslation } from "@/hooks/useTranslation.js";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
-const tabs = ["info", "scores"];
-
-export default function ProfilePage() {
+function Courses() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { dict, lang } = useLanguage();
-  const [updateState, setUpdateState] = useState({ updating: false, error: null });
-  const [activeTab, setActiveTab] = useState(`${t("info")}`);
-  const [editMode, setEditMode] = useState(false);
-
   const { user, loading, error } = useUserData();
-
-  const [loadingLogout, setLoadingLogout] = useState(false);
-  const [errorLogout, setErrorLogout] = useState("");
-  const [showModal, setShowModal] = useState(false);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center px-4 py-6 pb-28 bg-gray-50 min-h-screen text-center text-logo-800">
-        {/* Top right language dropdown skeleton */}
-        <div className="flex gap-2 lang-toggle w-full max-w-md justify-end mb-4">
-          <Skeleton variant="rectangular" width={120} height={36} />
-        </div>
-
-        {/* Avatar skeleton */}
-        <Skeleton variant="circular" width={96} height={96} className="mb-4" />
-
-        {/* Name and Email skeletons */}
-        <Skeleton variant="text" height={28} width={160} />
-        <Skeleton variant="text" height={20} width={200} className="mb-6" />
-
-        {/* Tab switcher skeleton */}
-        <Skeleton variant="rectangular" width={240} height={40} className="mb-4 rounded" />
-
-        {/* Info section skeleton */}
-        <div className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} variant="text" height={24} width="100%" />
-          ))}
-          <div className="flex justify-end gap-2 pt-2">
-            <Skeleton variant="rectangular" width={70} height={32} />
-            <Skeleton variant="rectangular" width={70} height={32} />
-          </div>
-        </div>
-
-        {/* Logout button skeleton */}
-        <Skeleton variant="rectangular" width="100%" height={40} className="mt-8 max-w-md" />
-      </div>
-    );
-  }
-
-  if (error) return <p className="text-red-500">{error}</p>;
-
-  const handleChange = (field, value) => {
-    setUserEdit((user) => ({ ...user, [field]: value }));
-  };
-
-  const handleSave = () => {
-    setEditMode(false);
-    console.log("Saved user data:", userEdit); // Replace with API call
-  };
-
-  const confirmLogout = () => {
-    handleLogout({
-      loading: setLoadingLogout,
-      error: setErrorLogout,
-      navigate: navigate,
-      redirectTo: "/ww",
+  const navigate = useNavigate();
+  const openModule = (courseId, moduleId) => {
+    navigate(`/courses/${courseId}/${moduleId}`, {
+      state: {
+        background: { pathname: location.pathname, search: location.search },
+      },
     });
   };
 
+  const course_data = [...dummyCourses];
+
+  const handleAddCourse = () => {
+    navigate(`/courses_admin/add_course`, {
+      state: {
+        background: { pathname: location.pathname, search: location.search },
+      },
+    });
+  };
+
+  if (loading)
+    return (
+      <section id="courses">
+        {[...Array(3)].map(
+          (
+            _,
+            index // Show 3 skeleton cards
+          ) => (
+            <div key={index} style={{ marginTop: 40 }}>
+              <div>
+                <h2 style={{ fontWeight: "bold" }}>
+                  <Skeleton width={200} height={24} />
+                </h2>
+              </div>
+              <div id="module_list">
+                {[...Array(2)].map(
+                  (
+                    _,
+                    idx // Show 2 skeleton modules per course
+                  ) => (
+                    <div
+                      key={idx}
+                      id="module_card"
+                      style={{ cursor: "default" }}
+                    >
+                      <div id="module_img">
+                        <Skeleton height={80} width={120} />
+                      </div>
+                      <div id="module_info">
+                        <h3>
+                          <Skeleton width={150} />
+                        </h3>
+                        <span>
+                          <Skeleton width={100} />
+                        </span>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          )
+        )}
+      </section>
+    );
+  if (error) return <p className="text-red-500">{error}</p>;
+
   return (
-    <div className="flex flex-col items-center px-4 py-6 pb-28 bg-gray-50 min-h-screen text-center text-logo-800" style={{ borderRadius: 10 }}>
-      {/* Top Right Buttons */}
-      <div className="flex gap-2 lang-toggle">
-        <LanguageDropdown onUpdateStateChange={(state) => setUpdateState(state)} style_pass={{ maxWidth: 200 }} />
-      </div>
-
-      {/* Avatar */}
-      <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-white mb-4">
-        <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
-      </div>
-
-      {/* Name & Email */}
-      <h2 className="text-xl font-bold">{user.name}</h2>
-      <p className="text-logo-500 text-sm mb-6" style={{ overflow: "scroll", maxWidth: 230 }}>
-        {user.email}
-      </p>
-
-      {/* Tab Switcher */}
-      <div className="flex justify-center gap-2 bg-white shadow mb-4" style={{ padding: 12, borderRadius: 10 }}>
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(`${t(tab)}`)}
-            className={`px-4 py-1 text-sm font-medium border transition-all duration-200 ${
-              activeTab == `${t(tab)}` ? "bg-indigo-500 text-white border-indigo-500" : "text-logo-500 border-transparent"
-            }`}
-          >
-            {t(tab)}
-          </button>
-        ))}
-      </div>
-
-      {/* Info Tab */}
-      {activeTab == `${t("info")}` && (
-        <>
-          <div className="w-full max-w-md text-left bg-white rounded-xl shadow px-6 py-5 space-y-4">
-            <EditableField label={t("name")} value={user.name} editable={editMode} onChange={(v) => handleChange("name", v)} />
-            <EditableField label={t("email")} value={user.email} editable={editMode} onChange={(v) => handleChange("email", v)} />
-            <InfoRow label={t("username")} value={user.username} />
-            <InfoRow label={t("joined")} value={user.joined} />
-            <InfoRow label={t("role")} value={user.role} />
-
-            <div className="flex justify-end gap-2 pt-2">
-              {editMode ? (
-                <>
-                  <button onClick={() => setEditMode(false)} className="text-sm text-logo-500 px-3 py-1 border rounded">{t("cancel")}</button>
-                  <button onClick={handleSave} className="text-sm bg-indigo-500 text-white px-3 py-1 rounded">{t("save")}</button>
-                </>
-              ) : (
-                <button onClick={() => setEditMode(true)} className="text-sm txt_color_main bg-indigo-100 text-logo-400 px-3 py-1 rounded">{t("edit")}</button>
-              )}
+    <>
+      <section id="welcome" className="mar_b_20">
+        <div className="width_100p">
+          <h1 className="mar_0 width_100p " style={{ fontWeight: 600 }}>
+            {t("hi")}
+            {user.name.split(" ")[0]}
+          </h1>
+          <h3 className="mar_0 width_100p ">{t("welcome_message_home")}</h3>
+        </div>
+      </section>
+      <section>
+        <button onClick={handleAddCourse} className="btn-primary">
+          {t("add_course")}
+        </button>
+      </section>
+      <section id="courses">
+        {course_data.map((course, index) => (
+          <div key={index} style={{ marginTop: 40 }}>
+            <div
+              style={
+                {
+                  // borderTop: "2px solid #a8a8a8",
+                  // borderBottom: "2px solid #a8a8a8",
+                  // padding: 10,
+                }
+              }
+            >
+              <h2 style={{ fontWeight: "bold" }}>{course.title}</h2>
+            </div>
+            <div id="module_list">
+              {course.modules.map((module, index) => (
+                <div
+                  id="module_card"
+                  className={`module_card_id_${index}`}
+                  key={index}
+                  onClick={() => {
+                    openModule(course.course_id, module.module_id);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div id="module_img">
+                    <img src={module.image} />
+                  </div>
+                  <div id="module_info">
+                    <h3>{module.title}</h3>
+                    <span>{module.lessons}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-          <button onClick={() => setShowModal(true)} className="w-full max-w-md text-sm bg-indigo-500 text-white px-3 py-1 rounded" style={{ marginTop: 35 }}>
-            {t("log_out")}
-          </button>
-
-          <ConfirmModal show={showModal} onClose={() => setShowModal(false)} onConfirm={confirmLogout} message={t("logout_confirm")} confirmText={t("log_out")} cancelText={t("cancel")} />
-        </>
-      )}
-
-      {activeTab !== `${t("info")}` && (
-        <div className="text-center text-logo-400 text-sm mt-8">
-          {t("no_content_yet_for")} <strong>{t(activeTab)}</strong>.
-        </div>
-      )}
-    </div>
+        ))}
+      </section>
+    </>
   );
 }
 
-// Editable field component
-function EditableField({ label, value, editable, onChange }) {
-  return (
-    <div className="flex flex-col">
-      <span className="text-logo-500 text-sm mb-1">{label}</span>
-      {editable ? (
-        <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className="border border-gray-300 rounded px-3 py-1 text-sm" />
-      ) : (
-        <span className="text-gray-700 text-sm font-medium" style={{ overflow: "scroll" }}>
-          {value}
-        </span>
-      )}
-    </div>
-  );
-}
-
-// Non-editable info row
-function InfoRow({ label, value }) {
-  return (
-    <div className="flex justify-between border-b border-gray-100 pb-2">
-      <span className="text-logo-500 text-sm">{label}</span>
-      <span className="text-gray-700 text-sm font-medium" style={{ width: 100, textAlign: "right", overflow: "scroll" }}>
-        {value}
-      </span>
-    </div>
-  );
-}
+export default Courses;

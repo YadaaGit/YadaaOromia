@@ -4,11 +4,12 @@ import cors from "cors";
 import chalk from "chalk";
 import dotenv from "dotenv";
 
+import createApiRoutes from "./routes/apiRoutes.js";
 import courseSchema from "./models/Course.js";
 import moduleSchema from "./models/Module.js";
 import quizSchema from "./models/Quiz.js";
 import sectionSchema from "./models/Section.js";
-import sectionImageSchema from "./models/Section_image.js";
+import sectionImageSchema from "./models/Image.js";
 
 dotenv.config();
 
@@ -28,7 +29,7 @@ function createModels(conn) {
     modules: conn.model("Module", moduleSchema, "modules"),
     quizzes: conn.model("Quiz", quizSchema, "quizzes"),
     sections: conn.model("Section", sectionSchema, "sections"),
-    section_images: conn.model("SectionImage", sectionImageSchema, "section_images"),
+    images: conn.model("SectionImage", sectionImageSchema, "images"),
   };
 }
 
@@ -67,7 +68,7 @@ connectWithRetry(
 );
 
 // Collections list for display
-const COLLECTION_NAMES = ["courses", "modules", "quizzes", "sections", "section_images"];
+const COLLECTION_NAMES = ["courses", "modules", "quizzes", "sections", "images"];
 
 // Homepage: display links to all dbs & collections
 app.get("/", (req, res) => {
@@ -104,6 +105,8 @@ app.get("/api/:db/:collection", async (req, res) => {
     res.status(500).json({ error: `Failed to fetch ${collection}` });
   }
 });
+
+app.use("/api", createApiRoutes(models));
 
 app.listen(PORT, () => {
   console.log(chalk.magenta(`🚀 Server running on http://localhost:${PORT}`));
