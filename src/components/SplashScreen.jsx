@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "@/assets/images/logo.jpg"; // replace with your actual logo path
+import logo from "@/assets/logos/logo_transparent.png"; // replace with your actual logo path
 
 export default function SplashScreen() {
   return (
