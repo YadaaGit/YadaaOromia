@@ -21,6 +21,8 @@ export const handleSignUp = async ({
   username,
   password,
   con_password,
+  country,
+  city,
   role,
   navigate,
   setLoading,
@@ -37,6 +39,8 @@ export const handleSignUp = async ({
     !username ||
     !age ||
     !sex ||
+    !country ||
+    !city ||
     !lang ||
     !con_password
   ) {
@@ -78,11 +82,15 @@ export const handleSignUp = async ({
       age: ageNumber,
       lang: langValue[lang],
       gender: sex,
-      email,
+      email, 
       username,
       uuid: user.uid,
       joined: serverTimestamp(),
-      role: role || "user", // fallback to "user"
+      role: role || "user", // fallback to "user",
+      streak: 1,
+      country,
+      city,
+      lastActiveAt: serverTimestamp()
     };
 
     await setDoc(doc(db, "users", user.uid), userData);

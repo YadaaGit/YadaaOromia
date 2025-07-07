@@ -18,6 +18,7 @@ import Loading from "@/components/basic_ui/Loading.jsx";
 import { useTranslation } from "@/utils/useTranslation.js";
 import { useLanguage } from "@/LanguageContext.jsx";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
+import { count } from "firebase/firestore";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -78,6 +79,8 @@ export default function Register() {
       sex: formData.sex,
       lang: formData.lang,
       email: formData.email,
+      country: formData.country, // Placeholder, replace with actual country input if needed
+      city: formData.city, // Placeholder, replace with actual city input if needed  
       username: formData.username,
       password: formData.password,
       con_password: formData.con_password,
@@ -153,6 +156,20 @@ export default function Register() {
           value={formData.username}
           onChange={handleChange}
           placeholder={t("username")}
+          Icon={UserCircleIcon}
+        />
+        <InputField
+          name="country"
+          value={formData.country}
+          onChange={handleChange}
+          placeholder={t("country")}
+          Icon={UserCircleIcon}
+        />
+        <InputField
+          name="city"
+          value={formData.city}
+          onChange={handleChange}
+          placeholder={t("city")}
           Icon={UserCircleIcon}
         />
         <CustomDropdownField

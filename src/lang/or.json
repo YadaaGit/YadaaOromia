@@ -61,6 +61,8 @@
   "joined": "Joined",
   "role": "Role",
   "User": "User",
+  "last_active": "Last Active",
+  "streak": "Streak",
   "admin": "Admin",
   "edit": "Edit",
   "save": "Save",
