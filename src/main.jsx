@@ -6,13 +6,15 @@ import {
   Navigate,
   matchPath,
 } from "react-router-dom";
-import { StrictMode } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./style/index.css";
 
 // Context & Hooks
 import { LanguageProvider } from "./LanguageContext";
 import useUserData from "@/hooks/get_user_data.js";
+import { db, auth } from "#/firebase-config.js";
+import { doc, updateDoc, serverTimestamp, increment } from "firebase/firestore";
 
 // Pages & Components
 import SplashScreen from "./components/SplashScreen.jsx";
@@ -46,6 +48,7 @@ function AppRoutesWrapper() {
 
 // main app
 function AppRoutes({ user }) {
+  console.log("loveee")
   const location = useLocation();
 
   const authenticated = user?.authenticated;
@@ -57,6 +60,55 @@ function AppRoutes({ user }) {
     matchPath("/courses_admin/:add_course", location.pathname);
 
   const background = location.state?.background || null;
+
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+  const todayDateObj = new Date();
+  const yesterday = new Date(todayDateObj); // clone today so you don’t modify the original
+  yesterday.setDate(todayDateObj.getDate() - 1);
+
+  useEffect(() => {
+    // Update last active date in Firestore if user is authenticated
+    if (authenticated && user.lastActiveAt) {
+      console.log("love");
+      if (user.lastActiveAt == today) return;
+      if (user.lastActiveAt != today) {
+        const userDocRef = doc(db, "users", user.uuid);
+        updateDoc(userDocRef, {
+          lastActiveAt: serverTimestamp(),
+        })
+          .then(() => {
+            console.log("Last active date updated successfully.");
+          })
+          .catch((error) => {
+            console.error("Error updating last active date:", error);
+          });
+      }
+      if ( lastActiveAt == yesterday) {
+        const userDocRef = doc(db, "users", user.uuid);
+        updateDoc(userDocRef, {
+          streak: increment(1),
+        })
+          .then(() => {
+            console.log("Streak updated successfully.");
+          })
+          .catch((error) => {
+            console.error("Error updating streak:", error);
+          });
+      }
+      if( user.lastActiveAt < yesterday) {
+        const userDocRef = doc(db, "users", user.uuid);
+        updateDoc(userDocRef, {
+          streak: 1,
+        })
+          .then(() => {
+            console.log("Streak reset to 1 due to inactivity.");
+          })
+          .catch((error) => {
+            console.error("Error resetting streak:", error);
+          });
+      }
+    }
+  }, [user.lastActiveAt, today]);
 
   return (
     <div className={shouldHideTabBar ? "" : "pb-16"}>

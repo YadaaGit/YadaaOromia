@@ -22,6 +22,17 @@ function formatTimestampToDateString(timestamp) {
   const options = { year: "numeric", month: "short", day: "2-digit" };
   return date.toLocaleDateString("en-US", options); // e.g., Jan 01, 2025
 }
+function formatTimestampToDateString2(timestamp) {
+  if (!timestamp || !(timestamp instanceof Timestamp)) return "";
+  const date = timestamp.toDate();
+
+  // Format date as YYYY-MM-DD
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`; // e.g., 2025-07-08
+}
 
 export default function useUserData() {
   const [user, setUser] = useState(null);
@@ -48,9 +59,15 @@ export default function useUserData() {
             }
 
             const userData = userSnapshot.data();
-            const formattedJoined = formatTimestampToDateString(userData.joined);
+            const formattedJoined = formatTimestampToDateString(
+              userData.joined
+            );// e.g. Jan 01, 2025 format
 
-            // ⏬ Fetch user's course progress (one-time)
+            const formattedLastActive = formatTimestampToDateString2(
+              userData.lastActiveAt
+            ); // YYYY-MM-DD format
+
+            // Fetch user's course progress (one-time)
             const courseProgressRef = collection(
               db,
               "users",
@@ -71,6 +88,7 @@ export default function useUserData() {
               emailVerified: firebaseUser.emailVerified,
               ...userData,
               joined: formattedJoined,
+              lastActiveAt: formattedLastActive,
               avatar: userData.avatar || avatar,
               course_progress: courseProgress,
             });
