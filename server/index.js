@@ -5,6 +5,7 @@ import chalk from "chalk";
 import dotenv from "dotenv";
 
 import createApiRoutes from "./routes/apiRoutes.js";
+import programSchema from "./models/Program.js";
 import courseSchema from "./models/Course.js";
 import moduleSchema from "./models/Module.js";
 import quizSchema from "./models/Quiz.js";
@@ -25,6 +26,7 @@ const models = {};
 
 function createModels(conn) {
   return {
+    program: conn.model("Program", programSchema, "programs"),
     courses: conn.model("Course", courseSchema, "courses"),
     modules: conn.model("Module", moduleSchema, "modules"),
     quizzes: conn.model("Quiz", quizSchema, "quizzes"),
@@ -55,6 +57,13 @@ async function connectWithRetry(name, srvUri, nonSrvUri) {
 }
 
 // Start DB connections
+
+connectWithRetry(
+  "EN_courses",
+  process.env.MONGO_URI_SRV_EN,
+  process.env.MONGO_URI_NONSRV_EN
+);
+
 connectWithRetry(
   "AM_courses",
   process.env.MONGO_URI_SRV_AM,

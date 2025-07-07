@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 const courseSchema = new mongoose.Schema({
-  course_id: String,
+  program_id: String,
   title: String,
-  description: String,
-  course_index: Number,
-  module_ids: Object,
+  final_quiz_id: String,
+  program_index: Number,
+  courses_ids: Object,
   metadata: Object,
 });
 
 // Export the schema
-export default courseSchema;
+export default programSchema;

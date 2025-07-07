@@ -158,7 +158,7 @@ export default function AddCoursePage() {
       }
 
       await axios.post(
-        `${api}/api/${language === "AM" ? "am_courses" : "or_courses"}/courses`,
+        `${api}/api/${language === "AM" ? "AM_courses" : "OR_courses"}/courses`,
         {
           course_id: newCourse.course_id,
           title: newCourse.title,
