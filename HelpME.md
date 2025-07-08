@@ -76,3 +76,13 @@ Frontend
 
 
 
+# Scripts 
+
+Run the following in the terminal in the root file 
+- "npm run dev": start project frontend (starts Vite+React)
+- "npm run server": start project backend (starts Express.js)
+- "npm run build": builds project
+- "npm run preview": previews project
+- "npm run": view all available scripts
+
+    → set in ./package.json 
