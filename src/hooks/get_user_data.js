@@ -35,6 +35,7 @@ function formatTimestampToDateString2(timestamp) {
   return `${year}-${month}-${day}`; // e.g., 2025-07-08
 }
 
+
 export default function useUserData() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -45,6 +46,8 @@ export default function useUserData() {
     error: adminError,
   } = useAdminEmails();
 
+
+
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       if (!firebaseUser) {
@@ -52,6 +55,7 @@ export default function useUserData() {
         setLoading(false);
         return;
       }
+      console.log("firebaseUser in useUserData:", firebaseUser);
 
       const userDocRef = doc(db, "users", firebaseUser.uid);
 
@@ -88,7 +92,7 @@ export default function useUserData() {
             });
 
             const isAdmin = adminEmails.includes(
-              formData.email.trim().toLowerCase()
+              firebaseUser.email.trim().toLowerCase()
             );
             const role = isAdmin ? "admin" : "user";
 
