@@ -24,6 +24,7 @@ export const handleSignUp = async ({
   country,
   city,
   role,
+  tgUser,
   navigate,
   setLoading,
   setError,
@@ -66,7 +67,6 @@ export const handleSignUp = async ({
 
   try {
     // Step 0: Check Telegram data presence (must run inside Telegram)
-    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
     if (!tgUser || !tgUser.id) {
       setError("This app must be opened inside Telegram to sign up.");
       setLoading(false);

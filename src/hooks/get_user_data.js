@@ -1,7 +1,7 @@
 /*
-  -This hook imports user data from Firebase Authentication and Firestore.
-  -It checks session state via onAuthStateChanged.
-  -It fetches additional profile data from Firestore and formats the joined timestamp.
+  -This hook imports user data from Firebase Authentication Service and Firebase Firestore.
+  -It checks session state via onAuthStateChanged (this way the user doesn't have to signin every time he gets in and out of the page).
+  -It fetches additional profile data from Firebase Firestore, assigns role and formats timestamps.
 */
 
 import { useEffect, useState } from "react";
@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "#/firebase-config.js";
 import avatar from "@/assets/images/portrait.jpg";
+import { useAdminEmails } from "@/hooks/get_admin_emails.js";
 
 function formatTimestampToDateString(timestamp) {
   if (!timestamp || !(timestamp instanceof Timestamp)) return "";
@@ -38,6 +39,11 @@ export default function useUserData() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {
+    adminEmails,
+    loading: adminLoading,
+    error: adminError,
+  } = useAdminEmails();
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
@@ -61,7 +67,7 @@ export default function useUserData() {
             const userData = userSnapshot.data();
             const formattedJoined = formatTimestampToDateString(
               userData.joined
-            );// e.g. Jan 01, 2025 format
+            ); // e.g. Jan 01, 2025 format
 
             const formattedLastActive = formatTimestampToDateString2(
               userData.lastActiveAt
@@ -81,12 +87,18 @@ export default function useUserData() {
               courseProgress[docSnap.id] = docSnap.data();
             });
 
+            const isAdmin = adminEmails.includes(
+              formData.email.trim().toLowerCase()
+            );
+            const role = isAdmin ? "admin" : "user";
+
             setUser({
               authenticated: true,
               uuid: firebaseUser.uid,
               email: firebaseUser.email,
               emailVerified: firebaseUser.emailVerified,
               ...userData,
+              role: role,
               joined: formattedJoined,
               lastActiveAt: formattedLastActive,
               avatar: userData.avatar || avatar,

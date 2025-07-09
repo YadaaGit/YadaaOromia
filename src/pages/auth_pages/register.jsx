@@ -11,7 +11,7 @@ import {
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import { handleSignUp } from "@/utils/auth_services.js";
-import useAdminEmails from "@/hooks/get_admin_emails.js";
+import { useAdminEmails } from "@/hooks/get_admin_emails.js";
 import Dropdown from "@/components/basic_ui/options.jsx";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
@@ -34,6 +34,19 @@ export default function Register() {
   const [showWarning, setShowWarning] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [tgUser, setTgUser] = useState(null);
+
+  useEffect(() => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready(); // tell Telegram we're ready
+      const user = window.Telegram.WebApp.initDataUnsafe?.user;
+      if (user) {
+        setTgUser(user);
+      } else {
+        console.warn("No Telegram user found");
+      }
+    }
+  }, []);
 
   const {
     adminEmails,
@@ -80,11 +93,12 @@ export default function Register() {
       lang: formData.lang,
       email: formData.email,
       country: formData.country, // Placeholder, replace with actual country input if needed
-      city: formData.city, // Placeholder, replace with actual city input if needed  
+      city: formData.city, // Placeholder, replace with actual city input if needed
       username: formData.username,
       password: formData.password,
       con_password: formData.con_password,
       role,
+      tgUser,
       navigate,
       setLoading,
       setError,
@@ -100,7 +114,7 @@ export default function Register() {
       <div className="flex gap-2 lang-toggle">
         <LanguageDropdown
           onUpdateStateChange={(state) => setUpdateState(state)}
-          style_pass={{maxWidth: 200, marginTop: 20}}
+          style_pass={{ maxWidth: 200, marginTop: 20 }}
         />
       </div>
 
