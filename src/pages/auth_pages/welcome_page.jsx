@@ -26,7 +26,7 @@ export default function Welcome() {
       <div className="flex gap-2 lang-toggle">
         <LanguageDropdown
           onUpdateStateChange={(state) => setUpdateState(state)}
-          style_pass={{maxWidth: 200, marginTop: 20}}
+          style_pass={{maxWidth: 200}}
         />
       </div>
 

@@ -18,7 +18,6 @@ export const handleSignUp = async ({
   sex,
   lang,
   email,
-  username,
   password,
   con_password,
   country,
@@ -37,7 +36,6 @@ export const handleSignUp = async ({
     !name ||
     !email ||
     !password ||
-    !username ||
     !age ||
     !sex ||
     !country ||
@@ -93,7 +91,6 @@ export const handleSignUp = async ({
       lang: langValue[lang],
       gender: sex,
       email,
-      username,
       uuid: user.uid,
       joined: serverTimestamp(),
       role: role || "user",
