@@ -48,6 +48,7 @@
   "profile": "Profile",
   "loading": "Loading...",
   "module_not_found": "Module not found",
+  "course_not_found": "Course not found",
   "no_content_yet_for": "No content yet for",
 
 
@@ -71,6 +72,7 @@
   "log_out": "Log Out",
   "logout_confirm": "Are you sure you want to log out?",
   "no_content": "No content yet for",
+  "take_final_quiz": "Take final quiz",
   "add_course": "+ Add Course",
   "user_add_course": "📚 Add New Course",
 

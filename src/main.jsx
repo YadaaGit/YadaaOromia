@@ -28,6 +28,7 @@ import CoursesAdmin from "./pages/admin_pages/Dashboard_admin.jsx";
 import AddModal from "./pages/admin_pages/Add_course_modal.jsx";
 import DataCenter from "./pages/admin_pages/Data_center.jsx";
 import CourseModal from "./pages/user_pages/Course_modal.jsx";
+import CourseDetails from "./pages/user_pages/Course_detail.jsx";
 import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 
 // wrap the app in the custom language provider
@@ -215,7 +216,11 @@ function AppRoutes({ user }) {
       {background && (
         <Routes>
           <Route
-            path="/courses/:courseId/:moduleId"
+            path="/courses/:programId/:courseId"
+            element={<CourseDetails />}
+          />
+          <Route
+            path="/courses/:programId/:courseId/:moduleId"
             element={<CourseModal />}
           />
           <Route path="/courses_admin/:add_course" element={<AddModal />} />

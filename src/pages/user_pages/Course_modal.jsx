@@ -11,7 +11,6 @@ export default function CourseModal() {
   const headerRef = useRef(null);
   const modalRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
-
   useEffect(() => {
     if (headerRef.current) {
       const resizeObserver = new ResizeObserver(() => {
@@ -25,8 +24,8 @@ export default function CourseModal() {
     }
   }, []);
 
-  const { courseId, moduleId } = useParams();
-  const { module, loading } = useModuleData(courseId, moduleId);
+  const { programId, courseId, moduleId } = useParams();
+  const { module, loading } = useModuleData(programId, courseId, moduleId);
   const navigate = useNavigate();
   const [visible, setVisible] = useState(true);
 
@@ -86,7 +85,7 @@ export default function CourseModal() {
                 <h2 className="text-2xl font-semibold">{t("module_not_found")}</h2>
               )}
               {!loading && module && (
-                <h2 className="text-2xl font-semibold">{module.title}</h2>
+                <h2 className="text-2xl font-semibold" style={{fontSize: "110%"}}>{module.title}</h2>
               )}
             </div>
             <div style={{ paddingTop: `${headerHeight}px` }}>
@@ -106,8 +105,7 @@ export default function CourseModal() {
                 <>
                   <SectionViewer
                     scrollRef={modalRef}
-                    sections={module.sections}
-                    finalQuiz={module.final_quiz}
+                    sections={module}
                   />
                 </>
               )}

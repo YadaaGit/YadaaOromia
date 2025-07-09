@@ -35,17 +35,17 @@ function Courses() {
               <h3 style={{ fontWeight: "500" }}>
                 <Skeleton width={180} height={22} />
               </h3>
-              <div id="module_list">
+              <div id="course_list">
                 {[...Array(2)].map((_, mIndex) => ( // 2 skeleton modules per course
                   <div
                     key={mIndex}
-                    id="module_card"
+                    id="course_card"
                     style={{ cursor: "default" }}
                   >
-                    <div id="module_img">
+                    <div id="course_img">
                       <Skeleton height={80} width={120} />
                     </div>
-                    <div id="module_info">
+                    <div id="course_info">
                       <h4><Skeleton width={150} /></h4>
                       <span><Skeleton width={100} /></span>
                     </div>
@@ -86,19 +86,19 @@ function Courses() {
                 <h3 style={{ fontWeight: "500", marginLeft: 10 }}>
                   {course.title}
                 </h3>
-                <div id="module_list">
+                <div id="course_list">
                   {course.modules.map((module, mIndex) => (
                     <div
-                      id="module_card"
-                      className={`module_card_id_${mIndex}`}
+                      id="course_card"
+                      className={`course_card_id_${mIndex}`}
                       key={mIndex}
                       onClick={() => openModule(course.course_id, module.module_id)}
                       style={{ cursor: "pointer" }}
                     >
-                      <div id="module_img">
+                      <div id="course_img">
                         <img src={module.image} alt={module.title} />
                       </div>
-                      <div id="module_info">
+                      <div id="course_info">
                         <h4>{module.title}</h4>
                         <span>{module.lessons}</span>
                       </div>

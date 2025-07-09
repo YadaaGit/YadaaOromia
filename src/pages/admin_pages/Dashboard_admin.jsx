@@ -12,16 +12,15 @@ function Courses() {
   const { user, loading, error } = useUserData();
   const navigate = useNavigate();
 
-  const openModule = (courseId, moduleId) => {
-    navigate(`/courses/${courseId}/${moduleId}`, {
+  const openModule = (programId, courseId) => {
+    navigate(`/courses/${programId}/${courseId}`, {
       state: {
         background: { pathname: location.pathname, search: location.search },
       },
     });
   };
-
-  const openFinalCourse = (programId) => {
-    navigate(`/programs/${programId}/final`, {
+  const openFinalQuiz = (programId) => {
+    navigate(`/courses/${programId}`, {
       state: {
         background: { pathname: location.pathname, search: location.search },
       },
@@ -51,29 +50,41 @@ function Courses() {
                 <h3 style={{ fontWeight: "500" }}>
                   <Skeleton width={180} height={22} />
                 </h3>
-                <div id="module_list">
-                  {[...Array(2)].map((_, mIndex) => (
-                    <div key={mIndex} id="module_card" style={{ cursor: "default" }}>
-                      <div id="module_img">
+                <div id="course_list">
+                  {[...Array(2)].map((_, cIndex) => (
+                    <div
+                      key={cIndex}
+                      id="course_card"
+                      style={{ cursor: "default" }}
+                    >
+                      <div id="course_img">
                         <Skeleton height={80} width={120} />
                       </div>
-                      <div id="module_info">
-                        <h4><Skeleton width={150} /></h4>
-                        <span><Skeleton width={100} /></span>
+                      <div id="course_info">
+                        <h4>
+                          <Skeleton width={150} />
+                        </h4>
+                        <span>
+                          <Skeleton width={100} />
+                        </span>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
             ))}
-            <div id="module_list" style={{ marginTop: 20 }}>
-              <div id="module_card" style={{ cursor: "default", opacity: 0.6 }}>
-                <div id="module_img">
+            <div id="course_list" style={{ marginTop: 20 }}>
+              <div id="course_card" style={{ cursor: "default", opacity: 0.6 }}>
+                <div id="course_img">
                   <Skeleton height={80} width={120} />
                 </div>
-                <div id="module_info">
-                  <h4><Skeleton width={120} /></h4>
-                  <span><Skeleton width={80} /></span>
+                <div id="course_info">
+                  <h4>
+                    <Skeleton width={120} />
+                  </h4>
+                  <span>
+                    <Skeleton width={80} />
+                  </span>
                 </div>
               </div>
             </div>
@@ -89,7 +100,8 @@ function Courses() {
       <section id="welcome" className="mar_b_20">
         <div className="width_100p">
           <h1 className="mar_0 width_100p" style={{ fontWeight: 600 }}>
-            {t("hi")}{user.name.split(" ")[0]}
+            {t("hi")}
+            {user.name.split(" ")[0]}
           </h1>
           <h3 className="mar_0 width_100p">{t("welcome_message_home")}</h3>
         </div>
@@ -108,50 +120,36 @@ function Courses() {
               {program.title}
             </h2>
 
-                <div id="module_list">
-            {program.courses.map((course, cIndex) => (
-              <div key={cIndex} style={{ marginTop: 20 }}>
-                <h3 style={{ fontWeight: "500", marginLeft: 10 }}>
-                  {course.title}
-                </h3>
-                  {course.modules.map((module, mIndex) => (
-                    <div
-                      id="module_card"
-                      className={`module_card_id_${mIndex}`}
-                      key={mIndex}
-                      onClick={() => openModule(course.course_id, module.module_id)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <div id="module_img">
-                        <img src={module.image} alt={module.title} />
-                      </div>
-                      <div id="module_info">
-                        <h4>{course.title}</h4>
-                        <span>{course.modules.length} {course.modules.length > 1 ? "Modules" : "Module"}</span>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            ))}
+            <div id="course_list">
+              {program.courses.map((course, cIndex) => (
+                <div
+                  id="course_card"
+                  className={`course_card_id_${cIndex}`}
+                  key={cIndex}
+                  onClick={() => openModule(program.program_id, course.course_id)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div id="course_img">
+                    <img src={course.image} alt={course.title} />
+                  </div>
+                  <div id="course_info">
+                    <h4>{course.title}</h4>
+                  </div>
                 </div>
-
-            {/* ✅ Add Take Final Course card at the end */}
-            <div id="module_list" style={{ marginTop: 20 }}>
+              ))}
               <div
-                id="module_card"
-                className="final_course_card"
-                onClick={() => openFinalCourse(program.program_id)}
-                style={{ cursor: "pointer", backgroundColor: "#f5f5f5" }}
+                id="course_card"
+                className={`quiz_card_id_${pIndex}`}
+                onClick={() => openFinalQuiz(program.program_id)}
+                style={{ cursor: "pointer" }}
               >
-                <div id="module_img">
-                  {/* use a placeholder image or icon */}
-                  <img src="/assets/final_course_icon.png" alt="Final Course" />
+                <div id="course_img">
+                  <img src={program.final_quiz.image} alt="Final Course" />
                 </div>
-                <div id="module_info">
-                  <h4 style={{ color: "#007bff", fontWeight: "600" }}>
-                    {t("take_final_course")}
+                <div id="course_info">
+                  <h4 style={{ fontWeight: "600" }}>
+                    {t("take_final_quiz")}
                   </h4>
-                  <span>{t("complete_and_get_certificate")}</span>
                 </div>
               </div>
             </div>

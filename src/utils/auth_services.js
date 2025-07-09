@@ -28,10 +28,10 @@ export const handleSignUp = async ({
   setLoading,
   setError,
 }) => {
-  await setError("");
-  await setLoading(true);
+  setError("");
+  setLoading(true);
 
-  // Input Validation and handling 
+  // Validate inputs
   if (
     !name ||
     !email ||
@@ -65,6 +65,16 @@ export const handleSignUp = async ({
   const langValue = { English: "en", Amharic: "am", oromifa: "or" };
 
   try {
+    // Step 0: Check Telegram data presence (must run inside Telegram)
+    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+    if (!tgUser || !tgUser.id) {
+      setError("This app must be opened inside Telegram to sign up.");
+      setLoading(false);
+      return;
+    }
+    const telegramUserId = String(tgUser.id);
+    const chatId = telegramUserId;
+
     // Step 1: Create user in Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -76,30 +86,37 @@ export const handleSignUp = async ({
     // Step 2: Update display name
     await updateProfile(user, { displayName: name });
 
-    // Step 3: Store user data in Firestore
+    // Step 3: Store user data in Firestore with telegram info
     const userData = {
       name,
       age: ageNumber,
       lang: langValue[lang],
       gender: sex,
-      email, 
+      email,
       username,
       uuid: user.uid,
       joined: serverTimestamp(),
-      role: role || "user", // fallback to "user",
+      role: role || "user",
       streak: 1,
       country,
       city,
-      lastActiveAt: serverTimestamp()
+      lastActiveAt: serverTimestamp(),
+      telegramUserId,
+      chatId,
     };
 
     await setDoc(doc(db, "users", user.uid), userData);
 
-    // step 4: Store user progress tracking data
+    // Step 3b: Store telegramLinks mapping for bot lookup
+    await setDoc(doc(db, "telegramLinks", telegramUserId), {
+      firebase_id: user.uid,
+      chat_id: chatId,
+    });
 
+    // Step 4: Store user progress tracking data for each course
     const user_progress = {
+      current_course: 1,
       current_module: 1,
-      current_section: 1,
       final_quiz_score: 0,
     };
 
