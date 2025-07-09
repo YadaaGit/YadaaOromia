@@ -25,6 +25,7 @@
     "firebase": "^11.9.1",
     "framer-motion": "^12.16.0",
     "lucide-react": "^0.513.0",
+    "mongodb": "^6.17.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-loading-skeleton": "^3.5.0",
