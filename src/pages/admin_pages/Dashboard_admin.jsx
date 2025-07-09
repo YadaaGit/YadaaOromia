@@ -20,7 +20,7 @@ function Courses() {
     });
   };
   const openFinalQuiz = (programId) => {
-    navigate(`/courses/${programId}`, {
+    navigate(`/courses/${programId}/final_quiz`, {
       state: {
         background: { pathname: location.pathname, search: location.search },
       },
@@ -126,7 +126,9 @@ function Courses() {
                   id="course_card"
                   className={`course_card_id_${cIndex}`}
                   key={cIndex}
-                  onClick={() => openModule(program.program_id, course.course_id)}
+                  onClick={() =>
+                    openModule(program.program_id, course.course_id)
+                  }
                   style={{ cursor: "pointer" }}
                 >
                   <div id="course_img">
@@ -147,9 +149,7 @@ function Courses() {
                   <img src={program.final_quiz.image} alt="Final Course" />
                 </div>
                 <div id="course_info">
-                  <h4 style={{ fontWeight: "600" }}>
-                    {t("take_final_quiz")}
-                  </h4>
+                  <h4 style={{ fontWeight: "600" }}>{t("take_final_quiz")}</h4>
                 </div>
               </div>
             </div>

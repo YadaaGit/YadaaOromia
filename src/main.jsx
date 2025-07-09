@@ -30,6 +30,7 @@ import DataCenter from "./pages/admin_pages/Data_center.jsx";
 import CourseModal from "./pages/user_pages/Course_modal.jsx";
 import CourseDetails from "./pages/user_pages/Course_detail.jsx";
 import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
+import FinalQuizPage from './pages/user_pages/Final_quiz_page.jsx';
 
 // wrap the app in the custom language provider
 function AppRoutesWrapper() {
@@ -49,7 +50,7 @@ function AppRoutesWrapper() {
 
 // main app
 function AppRoutes({ user }) {
-  console.log("loveee")
+  console.log("loveee");
   const location = useLocation();
 
   const authenticated = user?.authenticated;
@@ -84,7 +85,7 @@ function AppRoutes({ user }) {
             console.error("Error updating last active date:", error);
           });
       }
-      if ( lastActiveAt == yesterday) {
+      if (lastActiveAt == yesterday) {
         const userDocRef = doc(db, "users", user.uuid);
         updateDoc(userDocRef, {
           streak: increment(1),
@@ -96,7 +97,7 @@ function AppRoutes({ user }) {
             console.error("Error updating streak:", error);
           });
       }
-      if( user.lastActiveAt < yesterday) {
+      if (user.lastActiveAt < yesterday) {
         const userDocRef = doc(db, "users", user.uuid);
         updateDoc(userDocRef, {
           streak: 1,
@@ -223,6 +224,10 @@ function AppRoutes({ user }) {
             path="/courses/:programId/:courseId/:moduleId"
             element={<CourseModal />}
           />
+            <Route
+              path="/courses/:programId/final_quiz"
+              element={<FinalQuizPage />}
+            />
           <Route path="/courses_admin/:add_course" element={<AddModal />} />
         </Routes>
       )}

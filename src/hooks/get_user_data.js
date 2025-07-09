@@ -88,7 +88,7 @@ export default function useUserData() {
             });
 
             const isAdmin = adminEmails.includes(
-              formData.email.trim().toLowerCase()
+              firebaseUser.email.trim().toLowerCase()
             );
             const role = isAdmin ? "admin" : "user";
 

@@ -13,8 +13,15 @@ function Courses() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const openModule = (courseId, moduleId) => {
-    navigate(`/courses/${courseId}/${moduleId}`, {
+const openModule = (programId, courseId) => {
+    navigate(`/courses/${programId}/${courseId}`, {
+      state: {
+        background: { pathname: location.pathname, search: location.search },
+      },
+    });
+  };
+  const openFinalQuiz = (programId) => {
+    navigate(`/courses/${programId}/final_quiz`, {
       state: {
         background: { pathname: location.pathname, search: location.search },
       },
@@ -66,11 +73,10 @@ function Courses() {
       <section id="welcome" className="mar_b_20">
         <div className="width_100p">
           <h1 className="mar_0 width_100p" style={{ fontWeight: 600 }}>
-            {t("hi")}{user.name.split(" ")[0]}
+            {t("hi")}
+            {user.name.split(" ")[0]}
           </h1>
-          <h3 className="mar_0 width_100p">
-            {t("welcome_message_home")}
-          </h3>
+          <h3 className="mar_0 width_100p">{t("welcome_message_home")}</h3>
         </div>
       </section>
 
@@ -81,32 +87,39 @@ function Courses() {
               {program.title}
             </h2>
 
-            {program.courses.map((course, cIndex) => (
-              <div key={cIndex} style={{ marginTop: 20 }}>
-                <h3 style={{ fontWeight: "500", marginLeft: 10 }}>
-                  {course.title}
-                </h3>
-                <div id="course_list">
-                  {course.modules.map((module, mIndex) => (
-                    <div
-                      id="course_card"
-                      className={`course_card_id_${mIndex}`}
-                      key={mIndex}
-                      onClick={() => openModule(course.course_id, module.module_id)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <div id="course_img">
-                        <img src={module.image} alt={module.title} />
-                      </div>
-                      <div id="course_info">
-                        <h4>{module.title}</h4>
-                        <span>{module.lessons}</span>
-                      </div>
-                    </div>
-                  ))}
+            <div id="course_list">
+              {program.courses.map((course, cIndex) => (
+                <div
+                  id="course_card"
+                  className={`course_card_id_${cIndex}`}
+                  key={cIndex}
+                  onClick={() => openModule(program.program_id, course.course_id)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div id="course_img">
+                    <img src={course.image} alt={course.title} />
+                  </div>
+                  <div id="course_info">
+                    <h4>{course.title}</h4>
+                  </div>
+                </div>
+              ))}
+              <div
+                id="course_card"
+                className={`quiz_card_id_${pIndex}`}
+                onClick={() => openFinalQuiz(program.program_id)}
+                style={{ cursor: "pointer" }}
+              >
+                <div id="course_img">
+                  <img src={program.final_quiz.image} alt="Final Course" />
+                </div>
+                <div id="course_info">
+                  <h4 style={{ fontWeight: "600" }}>
+                    {t("take_final_quiz")}
+                  </h4>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
         ))}
       </section>
