@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "#/firebase-config.js";
 import avatar from "@/assets/images/portrait.jpg";
-import { useAdminEmails } from "@/hooks/get_admin_emails.js";
+import useAdminEmails from "@/hooks/get_admin_emails.js";
 
 function formatTimestampToDateString(timestamp) {
   if (!timestamp || !(timestamp instanceof Timestamp)) return "";
