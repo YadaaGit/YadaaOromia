@@ -11,7 +11,7 @@ import {
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import { handleSignUp } from "@/utils/auth_services.js";
-import { useAdminEmails } from "@/hooks/get_admin_emails.js";
+import useAdminEmails from "@/hooks/get_admin_emails.js";
 import Dropdown from "@/components/basic_ui/options.jsx";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
