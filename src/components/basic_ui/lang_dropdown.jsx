@@ -7,7 +7,7 @@ import { useLanguage } from "@/LanguageContext.jsx";
 const LANGUAGE_LABELS = {
   en: "English",
   am: "Amharic",
-  or: "Oromifa",
+  or: "Affan Oromo",
 };
 
 export default function LanguageDropdown({

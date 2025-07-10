@@ -17,6 +17,7 @@
     "@mui/material": "^7.2.0",
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/vite": "^4.1.8",
+    "@telegram-apps/sdk": "^3.11.4",
     "ag-grid-community": "^34.0.0",
     "ag-grid-react": "^34.0.0",
     "axios": "^1.10.0",

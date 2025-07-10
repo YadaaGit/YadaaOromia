@@ -181,8 +181,9 @@ export default function AddCoursePage() {
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-xl font-bold mb-2">Add New Course</h2>
       <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+        <option value="AM">English</option>
         <option value="AM">Amharic</option>
-        <option value="OR">Oromifa</option>
+        <option value="OR">Affan Oromo</option>
       </select>
       <input
         className="input mb-2"

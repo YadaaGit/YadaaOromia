@@ -18,7 +18,7 @@ import Loading from "@/components/basic_ui/Loading.jsx";
 import { useTranslation } from "@/utils/useTranslation.js";
 import { useLanguage } from "@/LanguageContext.jsx";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
-import { count } from "firebase/firestore";
+import useTelegramSdk from "@/hooks/get_tg_data.js";
 import { getNames as getCountryNames } from "country-list";
 import * as countriesCities from "countries-cities";
 
@@ -26,6 +26,7 @@ export default function Register() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { dict, lang } = useLanguage();
+  const { tgUser, chatId, isTelegram, initDataRaw } = useTelegramSdk({ enableLocalFallback: false });
   const [updateState, setUpdateState] = useState({
     updating: false,
     error: null,
@@ -36,7 +37,6 @@ export default function Register() {
   const [showWarning, setShowWarning] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [tgUser, setTgUser] = useState(null);
   const [countries, setCountries] = useState([]);
   const [citiesList, setCitiesList] = useState([]);
   const [autoCountry, setAutoCountry] = useState("");
@@ -61,30 +61,9 @@ export default function Register() {
   });
 
 
-useEffect(() => {
-  if (typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp) {
-    window.alert("11i loading id");
-    window.Telegram.WebApp.ready();
-    const user = window.Telegram.WebApp.initDataUnsafe?.user;
-    const chat = window.Telegram.WebApp.initDataUnsafe?.chat;
-    if (user) {
-      window.alert("12i found user id");
-      setTgUser(user);
-    } else {
-      window.alert("12e No Telegram user found");
-    }
-
-    if (chat) {
-      window.alert("13i Chat ID:", chat.id);
-      setChatId(chat.id); // if you want to store it in state
-    } else {
-      window.alert("13e No Telegram chat found");
-    }
-
-  } else {
-    window.alert("11e Not running inside Telegram WebApp");
-  }
-}, []);
+  useEffect(() => {
+    window.alert(`tgUser: ${tgUser} \nchatId: ${chatId} \nisTelegram: ${isTelegram} \ninitDataRaw: ${initDataRaw} \n${window.location.hash}`)
+  }, []);
 
   useEffect(() => {
     const allCountries = getCountryNames().sort((a, b) => a.localeCompare(b));
@@ -181,6 +160,7 @@ useEffect(() => {
       con_password: formData.con_password,
       role,
       tgUser,
+      chatId,
       navigate,
       setLoading,
       setError,

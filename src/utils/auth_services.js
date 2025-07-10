@@ -24,6 +24,7 @@ export const handleSignUp = async ({
   city,
   role,
   tgUser,
+  chatId,
   navigate,
   setLoading,
   setError,

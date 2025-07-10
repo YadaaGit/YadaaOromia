@@ -3,7 +3,7 @@
 
 # Database structure:
 
-Two databases, one for each language "AM_courses" (for amharic) & "OR_courses" (for oromifa)
+Two databases, one for each language "AM_courses" (for amharic) & "OR_courses" (for Affan Oromo)
 
 Each database has 5 collections to save courses, modules, sections, quizzes and images.
 
