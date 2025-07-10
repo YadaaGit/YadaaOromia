@@ -64,6 +64,8 @@ export default function Register() {
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.ready(); // tell Telegram we're ready
+      const chatId = Telegram.WebApp.initDataUnsafe.chat.id;
+      window.alert("Chat ID:", chatId);
       const user = window.Telegram.WebApp.initDataUnsafe?.user;
       if (user) {
         setTgUser(user);
