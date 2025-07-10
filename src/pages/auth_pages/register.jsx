@@ -19,6 +19,8 @@ import { useTranslation } from "@/utils/useTranslation.js";
 import { useLanguage } from "@/LanguageContext.jsx";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 import { count } from "firebase/firestore";
+import { getNames as getCountryNames } from "country-list";
+import * as countriesCities from "countries-cities";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -35,19 +37,10 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [tgUser, setTgUser] = useState(null);
-
-  useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready(); // tell Telegram we're ready
-      const user = window.Telegram.WebApp.initDataUnsafe?.user;
-      if (user) {
-        setTgUser(user);
-      } else {
-        console.warn("No Telegram user found");
-      }
-    }
-  }, []);
-
+  const [countries, setCountries] = useState([]);
+  const [citiesList, setCitiesList] = useState([]);
+  const [autoCountry, setAutoCountry] = useState("");
+  const [autoCity, setAutoCity] = useState("");
   const {
     adminEmails,
     loading: adminLoading,
@@ -63,7 +56,49 @@ export default function Register() {
     username: "",
     password: "",
     con_password: "",
+    country: "",
+    city: "",
   });
+
+
+  useEffect(() => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready(); // tell Telegram we're ready
+      const user = window.Telegram.WebApp.initDataUnsafe?.user;
+      if (user) {
+        setTgUser(user);
+      } else {
+        console.warn("No Telegram user found");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const allCountries = getCountryNames();
+    setCountries(allCountries);
+  }, []);
+
+  
+
+   useEffect(() => {
+    const detectLocation = async () => {
+      try {
+        const res = await fetch("/api/get-location");
+        const data = await res.json();
+        if (data.country) setAutoCountry(data.country);
+        if (data.city) setAutoCity(data.city);
+
+        setFormData((prev) => ({
+          ...prev,
+          country: prev.country || data.country || "",
+          city: prev.city || data.city || "",
+        }));
+      } catch (err) {
+        console.error("Failed to fetch user location:", err);
+      }
+    };
+    detectLocation();
+  }, []);
 
   useEffect(() => {
     if (errorHere !== "") {
@@ -72,8 +107,42 @@ export default function Register() {
     }
   }, [errorHere]);
 
+  useEffect(() => {
+  if (formData.country) {
+    const cityArr = countriesCities.getCities(formData.country) || [];
+    setCitiesList(cityArr);
+
+    setFormData((prev) => ({
+      ...prev,
+      city:
+        cityArr.includes(prev.city) || !autoCity
+          ? prev.city
+          : cityArr.includes(autoCity)
+          ? autoCity
+          : "",
+    }));
+  } else {
+    setCitiesList([]);
+    setFormData((prev) => ({ ...prev, city: "" }));
+  }
+}, [formData.country]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "country") {
+      if (value === "" || countries.includes(value)) {
+        setFormData((prev) => ({ ...prev, [name]: value }));
+      }
+      return;
+    }
+
+    if (name === "city") {
+      if (value === "" || citiesList.includes(value)) {
+        setFormData((prev) => ({ ...prev, [name]: value }));
+      }
+      return;
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -92,8 +161,8 @@ export default function Register() {
       sex: formData.sex,
       lang: formData.lang,
       email: formData.email,
-      country: formData.country, // Placeholder, replace with actual country input if needed
-      city: formData.city, // Placeholder, replace with actual city input if needed
+      country: formData.country, 
+      city: formData.city,
       username: formData.username,
       password: formData.password,
       con_password: formData.con_password,
@@ -172,19 +241,23 @@ export default function Register() {
           placeholder={t("username")}
           Icon={UserCircleIcon}
         />
-        <InputField
+        <CustomDropdownField
           name="country"
           value={formData.country}
           onChange={handleChange}
-          placeholder={t("country")}
+          placeholder={formData.country || autoCountry || t("country")}
+          options={countries}
           Icon={UserCircleIcon}
+          hasIconPadding={true}
         />
-        <InputField
+        <CustomDropdownField
           name="city"
           value={formData.city}
           onChange={handleChange}
-          placeholder={t("city")}
+          placeholder={formData.city || autoCity || t("city")}
+          options={citiesList}
           Icon={UserCircleIcon}
+          hasIconPadding={true}
         />
         <CustomDropdownField
           name="lang"
@@ -280,6 +353,7 @@ const CustomDropdownField = ({
   onChange,
   Icon,
   options,
+  hasIconPadding = false,
 }) => {
   const handleChange = (selectedValue) => {
     onChange({
@@ -292,15 +366,17 @@ const CustomDropdownField = ({
 
   return (
     <div className="relative border rounded-full bg-white">
-      <Dropdown
-        options={options}
-        value={value}
-        onChange={handleChange}
-        placeholder={placeholder}
-      />
-      {Icon && (
+      <div className={hasIconPadding ? "" : ""}>
+        <Dropdown
+          options={options}
+          value={value}
+          onChange={handleChange}
+          placeholder={placeholder}
+        />
+      </div>
+      {/* {Icon && (
         <Icon className="w-5 h-5 text-logo-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
-      )}
+      )} */}
     </div>
   );
 };

@@ -69,6 +69,8 @@
   "edit": "Edit",
   "save": "Save",
   "cancel": "Cancel",
+  "country": "Country",
+  "city": "City",
   "log_out": "Log Out",
   "logout_confirm": "Are you sure you want to log out?",
   "no_content": "No content yet for",

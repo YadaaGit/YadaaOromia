@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { v4 as uuid } from "uuid";
+import fetch from "node-fetch";
 
 const upload = multer(); // use memory storage for images
 const router = express.Router();
@@ -73,6 +74,36 @@ export default function createApiRoutes(models) {
     } catch (err) {
       console.error("Error saving course:", err.message);
       res.status(500).json({ error: "Failed to save course" });
+    }
+  });
+
+  // ✅ GeoIP & VPN detection
+  router.get("/get-location", async (req, res) => {
+    try {
+      const ip =
+        req.headers["x-forwarded-for"]?.split(",")[0] ||
+        req.socket.remoteAddress;
+      
+      console.log("Client IP detected:", ip);  
+
+      const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
+      const geoData = await geoRes.json();
+
+      const vpnRes = await fetch(`http://ip-api.com/json/${ip}?fields=proxy`);
+      const vpnData = await vpnRes.json();
+
+      const location = {
+        ip,
+        country: geoData.country_name,
+        city: geoData.city,
+        region: geoData.region,
+        isVpn: geoData.security?.vpn || vpnData.proxy || false,
+      };
+
+      res.json(location);
+    } catch (err) {
+      console.error("GeoIP/VPN detection error:", err.message);
+      res.status(500).json({ error: "Failed to get location data" });
     }
   });
 
