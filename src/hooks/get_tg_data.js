@@ -1,68 +1,45 @@
-import { useEffect, useState } from "react";
-import { retrieveLaunchParams } from '@telegram-apps/sdk';
+import { useMemo } from 'react';
+import {
+  initDataRaw as _initDataRaw,
+  initDataState as _initDataState,
+  useSignal,
+  retrieveLaunchParams,
+} from '@telegram-apps/sdk-react';
 
-// Default export hook
-export default function useTelegramSdk({ enableLocalFallback = true } = {}) {
-  const [tgUser, setTgUser] = useState(null);
-  const [chatId, setChatId] = useState(null);
-  const [isTelegram, setIsTelegram] = useState(false);
-  const [initDataRaw, setInitDataRaw] = useState(null);
+/**
+ * Hook to get reactive init data: user, chat, receiver, raw init data
+ * Includes optional fallback for local dev
+ */
+export function useTelegramInitData({ enableLocalFallback = true } = {}) {
+  let initDataRaw = useSignal(_initDataRaw);
+  let initDataState = useSignal(_initDataState);
 
-  useEffect(() => {
-    try {
-      const { initData, initDataRaw } = retrieveLaunchParams();
-
-      if (initData && initData.user) {
-        setTgUser(initData.user);
-        setInitDataRaw(initDataRaw);
-        if (initData.chat) setChatId(initData.chat.id);
-        setIsTelegram(true);
-      } else {
-        console.warn("No Telegram user found");
-        if (enableLocalFallback) {
-          setTgUser({ id: 123, firstName: "Dev", username: "dev_user" });
-          setChatId(456);
-        }
+  // Fallback if not running inside Telegram (e.g., during local dev)
+  if ((!initDataRaw || !initDataState || !initDataState.user) && enableLocalFallback) {
+    console.warn("⚠️ Using fallback init data (not running inside Telegram)");
+    initDataRaw = "mock_init_data_raw_string";
+    initDataState = {
+      user: {
+        id: 123456,
+        first_name: "LocalDev",
+        username: "local_dev",
+        language_code: "en",
+      },
+      chat: {
+        id: 654321,
+        type: "private",
+        title: "Local Chat"
       }
-    } catch (err) {
-      console.error("Failed to retrieve launch params:", err);
-      if (enableLocalFallback) {
-        console.log("Using fallback data");
-        setTgUser({ id: 123, firstName: "Dev", username: "dev_user" });
-        setChatId(456);
-      }
-    }
-  }, [enableLocalFallback]);
+    };
+  }
 
-  return { tgUser, chatId, isTelegram, initDataRaw };
+  return { initDataRaw, initDataState };
 }
 
-// Named export hook
-export function useTelegramSdk2({ enableLocalFallback = true } = {}) {
-  const [chatId2, setChatId2] = useState(null);
-  const [isTelegram2, setIsTelegram2] = useState(false);
-
-  useEffect(() => {
-    try {
-      const launchParams = retrieveLaunchParams();
-
-      if (launchParams && launchParams.initData && launchParams.initData.chat) {
-        setChatId2(launchParams.initData.chat.id);
-        setIsTelegram2(true);
-      } else {
-        console.warn("No Telegram chat found");
-        if (enableLocalFallback) {
-          setChatId2(456);
-        }
-      }
-    } catch (err) {
-      console.error("Failed to retrieve launch params:", err);
-      if (enableLocalFallback) {
-        console.log("Using fallback data");
-        setChatId2(456);
-      }
-    }
-  }, [enableLocalFallback]);
-
-  return { chatId2, isTelegram2 };
+/**
+ * Hook to get static launch params once
+ */
+export function useTelegramLaunchParams() {
+  const launchParams = useMemo(() => retrieveLaunchParams(), []);
+  return launchParams;
 }
