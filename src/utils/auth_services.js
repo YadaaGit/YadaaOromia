@@ -23,8 +23,7 @@ export const handleSignUp = async ({
   country,
   city,
   role,
-  tgUser,
-  chatId,
+  userId,
   navigate,
   setLoading,
   setError,
@@ -66,13 +65,11 @@ export const handleSignUp = async ({
 
   try {
     // Step 0: Check Telegram data presence (must run inside Telegram)
-    if (!tgUser || !tgUser.id) {
+    if (!userId) {
       setError("This app must be opened inside Telegram to sign up.");
       setLoading(false);
       return;
     }
-    const telegramUserId = String(tgUser.id);
-    const chatId = telegramUserId;
 
     // Step 1: Create user in Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(
@@ -99,16 +96,15 @@ export const handleSignUp = async ({
       country,
       city,
       lastActiveAt: serverTimestamp(),
-      telegramUserId,
-      chatId,
+      telegramId: userId,
     };
 
     await setDoc(doc(db, "users", user.uid), userData);
 
     // Step 3b: Store telegramLinks mapping for bot lookup
-    await setDoc(doc(db, "telegramLinks", telegramUserId), {
+    await setDoc(doc(db, "telegramLinks", userId), {
       firebase_id: user.uid,
-      chat_id: chatId,
+      chat_id: userId,
     });
 
     // Step 4: Store user progress tracking data for each course
