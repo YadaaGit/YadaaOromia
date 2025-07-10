@@ -62,18 +62,25 @@ export default function Register() {
 
 
   useEffect(() => {
+    window.Telegram.WebApp.ready(); // tell Telegram we're ready
     window.alert("loading Chat ID:");
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready(); // tell Telegram we're ready
-      const chatId = Telegram.WebApp.initDataUnsafe.chat.id || "not-found";
-      window.alert("Chat ID:", chatId);
-      const user = window.Telegram.WebApp.initDataUnsafe?.user;
-      if (user) {
-        setTgUser(user);
-      } else {
-        console.warn("No Telegram user found");
-      }
+    if (window.Telegram) {
+      window.alert("first");
     }
+    if (window.Telegram.WebApp) {
+      window.alert("second");
+    }
+    const chatId = Telegram.WebApp.initDataUnsafe.chat.id || "not-found";
+    window.alert("Chat ID:", chatId);
+
+    // if (window.Telegram && window.Telegram.WebApp) {
+    //   const user = window.Telegram.WebApp.initDataUnsafe?.user;
+    //   if (user) {
+    //     setTgUser(user);
+    //   } else {
+    //     console.warn("No Telegram user found");
+    //   }
+    // }
   }, []);
 
   useEffect(() => {
