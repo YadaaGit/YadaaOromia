@@ -9,7 +9,6 @@ import { auth } from "#/firebase-config.js";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "#/firebase-config.js";
 import dummyCourses from "@/hooks/get_course_data_test.js";
-import { getCountries, getCities } from "countries-cities";
 
 const course_data = [...dummyCourses];
 
@@ -45,20 +44,6 @@ export const handleSignUp = async ({
     !con_password
   ) {
     setError("Please fill in all required fields.");
-    setLoading(false);
-    return;
-  }
-
-  const validCountries = getCountries();
-  if (!validCountries.includes(country)) {
-    setError("Please select a valid country.");
-    setLoading(false);
-    return;
-  }
-
-  const validCities = getCities(country);
-  if (!validCities.includes(city)) {
-    setError("Please select a valid city for the chosen country.");
     setLoading(false);
     return;
   }

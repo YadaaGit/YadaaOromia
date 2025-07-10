@@ -74,7 +74,7 @@ export default function Register() {
   }, []);
 
   useEffect(() => {
-    const allCountries = getCountryNames();
+    const allCountries = getCountryNames().sort((a, b) => a.localeCompare(b));
     setCountries(allCountries);
   }, []);
 
@@ -226,28 +226,12 @@ export default function Register() {
           placeholder={t("select_gender")}
           options={[t("male"), t("female")]}
         />
-        <InputField
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder={t("email")}
-          Icon={EnvelopeIcon}
-        />
-        <InputField
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          placeholder={t("username")}
-          Icon={UserCircleIcon}
-        />
         <CustomDropdownField
           name="country"
           value={formData.country}
           onChange={handleChange}
           placeholder={formData.country || autoCountry || t("country")}
           options={countries}
-          Icon={UserCircleIcon}
           hasIconPadding={true}
         />
         <CustomDropdownField
@@ -256,7 +240,6 @@ export default function Register() {
           onChange={handleChange}
           placeholder={formData.city || autoCity || t("city")}
           options={citiesList}
-          Icon={UserCircleIcon}
           hasIconPadding={true}
         />
         <CustomDropdownField
@@ -266,6 +249,14 @@ export default function Register() {
           placeholder={t("select_language")}
           options={[t("english"), t("amharic"), t("oromifa")]}
         />
+        <InputField
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder={t("email")}
+          Icon={EnvelopeIcon}
+        />  
         <PasswordField
           name="password"
           value={formData.password}

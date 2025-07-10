@@ -28,6 +28,11 @@ export default function SectionViewer({ module, finalQuiz = null, scrollRef }) {
     [finalQuiz]
   );
 
+  const handleQuizPassed = () => {
+    setPassedQuiz(true)
+    
+  };
+
   // Scroll to top on change
   useEffect(() => {
     scrollRef?.current?.scrollTo({ top: 0, behavior: "smooth" });
@@ -68,7 +73,7 @@ export default function SectionViewer({ module, finalQuiz = null, scrollRef }) {
           ))}
           <Quiz
             questions={sectionQuestions}
-            onPassed={() => setPassedQuiz(true)}
+            onPassed={() => handleQuizPassed()}
           />
         </>
       )}

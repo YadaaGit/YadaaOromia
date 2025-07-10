@@ -87,7 +87,7 @@ function AppRoutes({ user }) {
             console.error("Error updating last active date:", error);
           });
       }
-      if (lastActiveAt == yesterday) {
+      if (user.lastActiveAt == yesterday) {
         const userDocRef = doc(db, "users", user.uuid);
         updateDoc(userDocRef, {
           streak: increment(1),
