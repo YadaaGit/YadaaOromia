@@ -400,7 +400,7 @@
 //   );
 // };
 
-import { useTelegramInitData, useTelegramLaunchParams } from "@/hooks/useTelegramData";
+import { useTelegramInitData, useTelegramLaunchParams } from "@/hooks/get_tg_data.js";
 
 export default function MyTelegramPage() {
   const { initDataRaw, initDataState } = useTelegramInitData();
