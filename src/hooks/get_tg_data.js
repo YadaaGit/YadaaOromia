@@ -35,3 +35,32 @@ export default function useTelegramSdk({ enableLocalFallback = true } = {}) {
 
   return { tgUser, chatId, isTelegram, initDataRaw };
 }
+
+export default function useTelegramSdk2({ enableLocalFallback = true } = {}) {
+  const [chatId2, setChatId2] = useState(null);
+  const [isTelegram2, setIsTelegram2] = useState(false);
+
+  useEffect(() => {
+    try {
+const launchParams = retrieveLaunchParams();
+
+      if (launchParams) {
+        setChatId2(launchParams.initData.chat.id);
+        setIsTelegram2(true);
+      } else {
+        console.warn("No Telegram user found");
+        if (enableLocalFallback) {
+          setChatId2(456);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to retrieve launch params:", err);
+      if (enableLocalFallback) {
+        console.log("Using fallback data");
+        setChatId2(456);
+      }
+    }
+  }, [enableLocalFallback]);
+
+  return { chatId2, isTelegram2 };
+}
