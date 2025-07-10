@@ -61,7 +61,6 @@ export const handleSignUp = async ({
     return;
   }
 
-  const langValue = { English: "en", Amharic: "am", oromifa: "or" };
 
   try {
     // Step 0: Check Telegram data presence (must run inside Telegram)
@@ -86,7 +85,7 @@ export const handleSignUp = async ({
     const userData = {
       name,
       age: ageNumber,
-      lang: langValue[lang],
+      lang,
       gender: sex,
       email,
       uuid: user.uid,

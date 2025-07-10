@@ -57,13 +57,12 @@ export default function Register() {
     sex: "",
     lang: "",
     email: "",
-    username: "",
     password: "",
     con_password: "",
     country: "",
     city: "",
   });
-  
+
 
 
   useEffect(() => {
@@ -136,7 +135,7 @@ export default function Register() {
 
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+  
   const handleRegister = () => {
     if (adminLoading) {
       setShowWarning(true);
@@ -154,7 +153,6 @@ export default function Register() {
       email: formData.email,
       country: formData.country,
       city: formData.city,
-      username: formData.username,
       password: formData.password,
       con_password: formData.con_password,
       role,
@@ -235,7 +233,7 @@ export default function Register() {
         />
         <CustomDropdownField
           name="lang"
-          value={formData.lang}
+          value={{en: t("english"), am: t("amharic"), or: t("oromifa")}[formData.lang]}
           onChange={handleChange}
           placeholder={t("select_language")}
           options={[t("english"), t("amharic"), t("oromifa")]}
@@ -337,11 +335,20 @@ const CustomDropdownField = ({
   options,
   hasIconPadding = false,
 }) => {
+  const langValues = ["en", "am", "or"];
+
   const handleChange = (selectedValue) => {
+    let finalValue = selectedValue;
+
+    if (name === "lang") {
+      const idx = options.indexOf(selectedValue);
+      finalValue = idx !== -1 ? langValues[idx] : null;
+    }
+
     onChange({
       target: {
         name,
-        value: selectedValue,
+        value: finalValue,
       },
     });
   };
