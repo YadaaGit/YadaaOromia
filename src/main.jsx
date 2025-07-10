@@ -35,7 +35,7 @@ import AboutUs from "./pages/about_us.jsx";
 import FinalQuizPage from './pages/user_pages/Final_quiz_page.jsx';
 init({
   debug: true,         // enable SDK debug logging
-  eruda: false,        // true if you want mobile console overlay
+  eruda: true,        // true if you want mobile console overlay
   mockForMacOS: false, // true if you want to mock macOS Telegram quirks
 }).then(() => {
   console.log('✅ Telegram SDK initialized');
