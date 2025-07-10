@@ -11,6 +11,7 @@ import { createRoot } from "react-dom/client";
 import "./style/index.css";
 
 // Context & Hooks
+import { init } from './init.js';
 import { LanguageProvider } from "./LanguageContext";
 import useUserData from "@/hooks/get_user_data.js";
 import { db, auth } from "#/firebase-config.js";
@@ -31,8 +32,14 @@ import CourseModal from "./pages/user_pages/Course_modal.jsx";
 import CourseDetails from "./pages/user_pages/Course_detail.jsx";
 import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 import AboutUs from "./pages/about_us.jsx";
-
 import FinalQuizPage from './pages/user_pages/Final_quiz_page.jsx';
+init({
+  debug: true,         // enable SDK debug logging
+  eruda: false,        // true if you want mobile console overlay
+  mockForMacOS: false, // true if you want to mock macOS Telegram quirks
+}).then(() => {
+  console.log('✅ Telegram SDK initialized');
+});
 
 // wrap the app in the custom language provider
 function AppRoutesWrapper() {
