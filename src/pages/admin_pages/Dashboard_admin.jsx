@@ -12,20 +12,6 @@ function Courses() {
   const { user, loading, error } = useUserData();
   const navigate = useNavigate();
 
-  const openModule = (programId, courseId) => {
-    navigate(`/courses/${programId}/${courseId}`, {
-      state: {
-        background: { pathname: location.pathname, search: location.search },
-      },
-    });
-  };
-  const openFinalQuiz = (programId) => {
-    navigate(`/courses/${programId}`, {
-      state: {
-        background: { pathname: location.pathname, search: location.search },
-      },
-    });
-  };
 
   const handleAddCourse = () => {
     navigate(`/courses_admin/add_course`, {
@@ -36,6 +22,28 @@ function Courses() {
   };
 
   const program_data = [...dummyPrograms];
+  const progress = user?.course_progress || {}; // user course progress
+
+  const openModule = (programId, courseId, isLocked) => {
+    if (isLocked) {
+      setLockMessage("Complete all courses before this to open this");
+      setShowLockPopup(true);
+    } else {
+      navigate(`/courses/${programId}/${courseId}`, {
+        state: {
+          background: { pathname: location.pathname, search: location.search },
+        },
+      });
+    }
+  };
+
+  const openFinalQuiz = (programId) => {
+    navigate(`/courses/${programId}/final_quiz`, {
+      state: {
+        background: { pathname: location.pathname, search: location.search },
+      },
+    });
+  };
 
   if (loading)
     return (
@@ -119,37 +127,63 @@ function Courses() {
             <h2 style={{ fontWeight: "bold", marginBottom: 10 }}>
               {program.title}
             </h2>
-
             <div id="course_list">
-              {program.courses.map((course, cIndex) => (
-                <div
-                  id="course_card"
-                  className={`course_card_id_${cIndex}`}
-                  key={cIndex}
-                  onClick={() => openModule(program.program_id, course.course_id)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <div id="course_img">
-                    <img src={course.image} alt={course.title} />
+              {program.courses.map((course, cIndex) => {
+                const courseProgress = progress[course.course_id];
+                const isCompleted = courseProgress?.completed;
+                const isFirstLocked =
+                  !isCompleted &&
+                  !program.courses
+                    .slice(0, cIndex)
+                    .every(
+                      (prevCourse) => progress[prevCourse.course_id]?.completed
+                    );
+
+                return (
+                  <div
+                    key={cIndex}
+                    id="course_card"
+                    onClick={() =>
+                      openModule(
+                        program.program_id,
+                        course.course_id,
+                        isFirstLocked
+                      )
+                    }
+                    className={`course_card_id_${cIndex}`}
+                    style={{ position: "relative" }}
+                  >
+                    {isFirstLocked ? (
+                      <div className="locked_cover">
+                        <Lock className="w-6 h-6" style={{ color: "white" }} />
+                      </div>
+                    ) : null}
+                    <div id="course_img">
+                      <img src={course.image} alt={course.title} />
+                    </div>
+                    <div id="course_info">
+                      <h4>{course.title}</h4>
+                    </div>
                   </div>
-                  <div id="course_info">
-                    <h4>{course.title}</h4>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
+
               <div
                 id="course_card"
                 className={`quiz_card_id_${pIndex}`}
                 onClick={() => openFinalQuiz(program.program_id)}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", position: "relative" }}
               >
+                {true ? (
+                  <div className="locked_cover">
+                    <Lock className="w-6 h-6" style={{ color: "white" }} />
+                  </div>
+                ) : null}
                 <div id="course_img">
                   <img src={program.final_quiz.image} alt="Final Course" />
                 </div>
                 <div id="course_info">
-                  <h4 style={{ fontWeight: "600" }}>
-                    {t("take_final_quiz")}
-                  </h4>
+                  <h4 style={{ fontWeight: "600" }}>{t("take_final_quiz")}</h4>
                 </div>
               </div>
             </div>

@@ -19,7 +19,6 @@ export const handleSignUp = async ({
   sex,
   lang,
   email,
-  username,
   password,
   con_password,
   country,
@@ -38,7 +37,6 @@ export const handleSignUp = async ({
     !name ||
     !email ||
     !password ||
-    !username ||
     !age ||
     !sex ||
     !country ||
@@ -108,7 +106,6 @@ export const handleSignUp = async ({
       lang: langValue[lang],
       gender: sex,
       email,
-      username,
       uuid: user.uid,
       joined: serverTimestamp(),
       role: role || "user",
@@ -133,6 +130,8 @@ export const handleSignUp = async ({
       current_course: 1,
       current_module: 1,
       final_quiz_score: 0,
+      completed: false,
+      certificate_link: "",
     };
 
     await Promise.all(

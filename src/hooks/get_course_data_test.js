@@ -403,11 +403,36 @@ A good scientific hypothesis is testable and falsifiable.`,
       },
     ],
     final_quiz: {
-      quiz_title: "",
-      quiz_description: "",
+      quiz_title: "final quiz",
+      quiz_description: "eyyeyyegygvdyegce",
       isFinal: true,
       image: ill5,
-      questions: [],
+      questions: [
+        {
+          question: "What is the first step in the scientific method?",
+          options: [
+            "Form a hypothesis",
+            "Conduct an experiment",
+            "Make an observation",
+            "Analyze results",
+          ],
+          answer: 2,
+          explanation:
+            "The mitochondria produce ATP, the main energy currency of the cell.",
+        },
+        {
+          question: "Why must a hypothesis be falsifiable?",
+          options: [
+            "To make it sound scientific",
+            "So it can be proven true",
+            "So it can be tested and possibly disproven",
+            "To ensure it aligns with existing theories",
+          ],
+          answer: 2,
+          explanation:
+            "The mitochondria produce ATP, the main energy currency of the cell.",
+        },
+      ],
       metadata: {
         question_num: 5,
         difficulty: "",
@@ -423,6 +448,28 @@ A good scientific hypothesis is testable and falsifiable.`,
     },
   },
 ];
+
+export const useProgramData = (programId) => {
+  const [program, setProgram] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const program_data = dummyCourses.find((p) => p.program_id === programId);
+    if (program_data) {
+      setTimeout(() => {
+        setProgram(program_data || null);
+        setLoading(false);
+      }, 500); // simulate loading delay
+    } else {
+      setTimeout(() => {
+        setCourse(null);
+        setLoading(false);
+      }, 500);
+    }
+  }, [programId]);
+
+  return { program, loading };
+};
 
 export const useCourseData = (programId, courseId) => {
   const [course, setCourse] = useState(null);

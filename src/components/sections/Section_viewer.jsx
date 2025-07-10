@@ -1,47 +1,41 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Quiz from "./Quiz";
 import PopUp from "../basic_ui/pop_up.jsx";
 
-export default function SectionViewer({
-  sections = [],
-  finalQuiz = null,
-  scrollRef,
-}) {
+export default function SectionViewer({ module, finalQuiz = null, scrollRef }) {
   const navigate = useNavigate();
-
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(0); // 0=content, 1=final quiz
   const [passedQuiz, setPassedQuiz] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false);
-  const isFinal = current === sections.length;
-  const content = isFinal ? null : sections[current];
+  const isFinal = current === 1;
 
-  // ✅ Memoize shuffled quiz questions per section
-  const sectionQuestions = useMemo(() => {
-    if (!content?.quiz) return [];
-    return [...content.quiz]
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 2)
-      .map((q, i) => ({ id: i, ...q }));
-  }, [current]);
+  // Shuffle questions
+  const sectionQuestions = useMemo(
+    () =>
+      [...(module?.questions || [])]
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 2)
+        .map((q, i) => ({ id: i, ...q })),
+    [module]
+  );
 
-  const finalQuizQuestions = useMemo(() => {
-    if (!finalQuiz?.questions) return [];
-    return [...finalQuiz.questions]
-      .sort(() => 0.5 - Math.random())
-      .map((q, i) => ({ id: i, ...q }));
-  }, [finalQuiz]);
+  const finalQuizQuestions = useMemo(
+    () =>
+      [...(finalQuiz?.questions || [])]
+        .sort(() => 0.5 - Math.random())
+        .map((q, i) => ({ id: i, ...q })),
+    [finalQuiz]
+  );
 
+  // Scroll to top on change
   useEffect(() => {
-    if (scrollRef?.current) {
-      scrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    scrollRef?.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [current]);
 
   const handleNext = () => {
-    if (isFinal) {
-      setShowCongrats(true);
-    } else {
+    if (isFinal) setShowCongrats(true);
+    else {
       setCurrent((prev) => prev + 1);
       setPassedQuiz(false);
     }
@@ -49,30 +43,29 @@ export default function SectionViewer({
 
   const handlePrev = () => {
     if (current > 0) setCurrent((prev) => prev - 1);
-    setPassedQuiz(true); // assume already passed if revisiting
+    setPassedQuiz(true); // assume passed on revisit
   };
 
   return (
     <div className="max-w-2xl mx-auto px-4">
-      {!isFinal && content && (
+      {!isFinal && (
         <>
-          <h3 className="text-2xl font-bold mb-3">{content.title}</h3>
-          {content.content.map((contents, index) => (
-            <div key={index}>
-              <h4 style={{ fontWeight: 900 }}>{contents.header}</h4>
-              <p className="mb-4 whitespace-pre-line text-logo-800 leading-relaxed">
-                {contents?.text}
+          <h3 className="text-2xl font-bold mb-3">{module.title}</h3>
+          {module.content.map((c, idx) => (
+            <div key={idx}>
+              <h4 className="font-bold">{c.header}</h4>
+              <p className="mb-4 text-logo-800 leading-relaxed whitespace-pre-line">
+                {c.text}
               </p>
-              {contents?.media && (
+              {c.media && (
                 <img
-                  src={contents.media}
+                  src={c.media}
                   alt=""
                   className="rounded-xl mb-6 w-full max-h-72 object-cover"
                 />
               )}
             </div>
           ))}
-
           <Quiz
             questions={sectionQuestions}
             onPassed={() => setPassedQuiz(true)}
@@ -115,13 +108,14 @@ export default function SectionViewer({
           {isFinal ? "Completed" : "Next"}
         </button>
       </div>
+
       <PopUp
         show={showCongrats}
         onClose={() => {
           setShowCongrats(false);
-          navigate("/courses");
+          navigate(`/program/${programId}/final-quiz`);
         }}
-        message="🎉 You passed the final test!"
+        message="🎉 You completed all modules! Time for the final quiz!"
         type="success"
       />
     </div>
