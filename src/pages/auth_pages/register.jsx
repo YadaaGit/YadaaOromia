@@ -61,27 +61,30 @@ export default function Register() {
   });
 
 
-  useEffect(() => {
-    window.Telegram.WebApp.ready(); // tell Telegram we're ready
-    window.alert("loading Chat ID:");
-    if (window.Telegram) {
-      window.alert("first");
+useEffect(() => {
+  if (typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp) {
+    window.alert("11i loading id");
+    window.Telegram.WebApp.ready();
+    const user = window.Telegram.WebApp.initDataUnsafe?.user;
+    const chat = window.Telegram.WebApp.initDataUnsafe?.chat;
+    if (user) {
+      window.alert("12i found user id");
+      setTgUser(user);
+    } else {
+      window.alert("12e No Telegram user found");
     }
-    if (window.Telegram.WebApp) {
-      window.alert("second");
-    }
-    const chatId = Telegram.WebApp.initDataUnsafe.chat.id || "not-found";
-    window.alert("Chat ID:", chatId);
 
-    // if (window.Telegram && window.Telegram.WebApp) {
-    //   const user = window.Telegram.WebApp.initDataUnsafe?.user;
-    //   if (user) {
-    //     setTgUser(user);
-    //   } else {
-    //     console.warn("No Telegram user found");
-    //   }
-    // }
-  }, []);
+    if (chat) {
+      window.alert("13i Chat ID:", chat.id);
+      setChatId(chat.id); // if you want to store it in state
+    } else {
+      window.alert("13e No Telegram chat found");
+    }
+
+  } else {
+    window.alert("11e Not running inside Telegram WebApp");
+  }
+}, []);
 
   useEffect(() => {
     const allCountries = getCountryNames().sort((a, b) => a.localeCompare(b));
