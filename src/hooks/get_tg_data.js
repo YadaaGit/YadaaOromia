@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { retrieveLaunchParams } from '@telegram-apps/sdk';
 
+// Default export hook
 export default function useTelegramSdk({ enableLocalFallback = true } = {}) {
   const [tgUser, setTgUser] = useState(null);
   const [chatId, setChatId] = useState(null);
@@ -36,19 +37,20 @@ export default function useTelegramSdk({ enableLocalFallback = true } = {}) {
   return { tgUser, chatId, isTelegram, initDataRaw };
 }
 
-export default function useTelegramSdk2({ enableLocalFallback = true } = {}) {
+// Named export hook
+export function useTelegramSdk2({ enableLocalFallback = true } = {}) {
   const [chatId2, setChatId2] = useState(null);
   const [isTelegram2, setIsTelegram2] = useState(false);
 
   useEffect(() => {
     try {
-const launchParams = retrieveLaunchParams();
+      const launchParams = retrieveLaunchParams();
 
-      if (launchParams) {
+      if (launchParams && launchParams.initData && launchParams.initData.chat) {
         setChatId2(launchParams.initData.chat.id);
         setIsTelegram2(true);
       } else {
-        console.warn("No Telegram user found");
+        console.warn("No Telegram chat found");
         if (enableLocalFallback) {
           setChatId2(456);
         }

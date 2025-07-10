@@ -18,8 +18,7 @@ import Loading from "@/components/basic_ui/Loading.jsx";
 import { useTranslation } from "@/utils/useTranslation.js";
 import { useLanguage } from "@/LanguageContext.jsx";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
-import useTelegramSdk from "@/hooks/get_tg_data.js";
-import useTelegramSdk2 from "@/hooks/get_tg_data.js";
+import useTelegramSdk, {useTelegramSdk2} from "@/hooks/get_tg_data.js";
 import { getNames as getCountryNames } from "country-list";
 import * as countriesCities from "countries-cities";
 
@@ -65,6 +64,9 @@ export default function Register() {
 
   useEffect(() => {
     window.alert(`tgUser: ${tgUser} \nchatId: ${chatId} \nisTelegram: ${isTelegram} \ninitDataRaw: ${initDataRaw} \n${window.location.hash}`)
+  }, []);
+
+  useEffect(() => {
     window.alert(`chatId2: ${chatId2} \nisTelegram2: ${isTelegram2} \n${window.location.hash}`)
   }, []);
 
