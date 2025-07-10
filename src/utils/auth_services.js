@@ -115,6 +115,8 @@ export const handleSignUp = async ({
       current_course: 1,
       current_module: 1,
       final_quiz_score: 0,
+      completed: false,
+      certificate_link: "",
     };
 
     await Promise.all(
