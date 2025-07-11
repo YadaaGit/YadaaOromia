@@ -7,6 +7,7 @@ import partner3 from "../assets/partners/partner3.png";
 
 const partners = [partner1, partner2, partner3];
 
+
 const AboutUs = () => {
   const navigate = useNavigate();
 
