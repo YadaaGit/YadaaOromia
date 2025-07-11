@@ -55,7 +55,6 @@ export default function useUserData() {
         setLoading(false);
         return;
       }
-      console.log("firebaseUser in useUserData:", firebaseUser);
 
       const userDocRef = doc(db, "users", firebaseUser.uid);
 
@@ -82,7 +81,7 @@ export default function useUserData() {
               db,
               "users",
               firebaseUser.uid,
-              "courses"
+              "programs"
             );
             const courseSnapshots = await getDocs(courseProgressRef);
 

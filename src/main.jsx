@@ -6,7 +6,7 @@ import {
   Navigate,
   matchPath,
 } from "react-router-dom";
-import { StrictMode, useEffect, useState } from "react";
+import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "./style/index.css";
 
@@ -14,7 +14,7 @@ import "./style/index.css";
 import { init } from './init.js';
 import { LanguageProvider } from "./LanguageContext";
 import useUserData from "@/hooks/get_user_data.js";
-import { db, auth } from "#/firebase-config.js";
+import { db } from "#/firebase-config.js";
 import { doc, updateDoc, serverTimestamp, increment } from "firebase/firestore";
 
 // Pages & Components
@@ -32,23 +32,20 @@ import CourseModal from "./pages/user_pages/Course_modal.jsx";
 import CourseDetails from "./pages/user_pages/Course_detail.jsx";
 import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 import AboutUs from "./pages/about_us.jsx";
-import FinalQuizPage from './pages/user_pages/Final_quiz_page.jsx';
+import FinalQuizPage from './pages/user_pages/Final_quiz_modal.jsx';
 
 init({
-  debug: true,         // enable SDK debug logging
-  eruda: true,        // true if you want mobile console overlay
-  mockForMacOS: false, // true if you want to mock macOS Telegram quirks
-}).then(() => {
-  console.log('✅ Telegram SDK initialized');
+  debug: true,
+  eruda: true,
+  mockForMacOS: false,
 });
 
-// wrap the app in the custom language provider
 function AppRoutesWrapper() {
   const { user, loading, error } = useUserData();
 
   if (loading) return <SplashScreen />;
   if (error) {
-    console.log(error);
+    console.error(error);
     return <SplashScreen />;
   }
 
@@ -61,73 +58,48 @@ function AppRoutesWrapper() {
   );
 }
 
-// main app
 function AppRoutes({ user }) {
   const location = useLocation();
-
   const authenticated = user?.authenticated;
+
   const shouldHideTabBar =
     ["/auth", "/login", "/register", "/verify_email", "/"].some((path) =>
       matchPath({ path, end: true }, location.pathname)
     ) ||
-    matchPath("/courses/:courseId/:moduleId", location.pathname) ||
+    matchPath("/courses/:programId/:courseId", location.pathname) ||
+    matchPath("/courses/:programId/:courseId/:moduleId", location.pathname) ||
     matchPath("/courses_admin/:add_course", location.pathname);
 
   const background = location.state?.background || null;
 
-  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0];
   const todayDateObj = new Date();
-  const yesterday = new Date(todayDateObj); // clone today so you don’t modify the original
-  yesterday.setDate(todayDateObj.getDate() - 1);
+  const yesterdayDate = new Date(todayDateObj);
+  yesterdayDate.setDate(todayDateObj.getDate() - 1);
 
   useEffect(() => {
-    // Update last active date in Firestore if user is authenticated
     if (authenticated && user.lastActiveAt) {
-      console.log("love");
-      if (user.lastActiveAt == today) return;
-      if (user.lastActiveAt != today) {
-        const userDocRef = doc(db, "users", user.uuid);
-        updateDoc(userDocRef, {
-          lastActiveAt: serverTimestamp(),
-        })
-          .then(() => {
-            console.log("Last active date updated successfully.");
-          })
-          .catch((error) => {
-            console.error("Error updating last active date:", error);
-          });
+      if (user.lastActiveAt === today) return;
+
+      const userDocRef = doc(db, "users", user.uuid);
+
+      if (user.lastActiveAt === yesterdayDate.toISOString().split("T")[0]) {
+        updateDoc(userDocRef, { streak: increment(1) })
+          .catch((error) => console.error("Error updating streak:", error));
+      } else if (user.lastActiveAt < yesterdayDate.toISOString().split("T")[0]) {
+        updateDoc(userDocRef, { streak: 1 })
+          .catch((error) => console.error("Error resetting streak:", error));
       }
-      if (user.lastActiveAt == yesterday) {
-        const userDocRef = doc(db, "users", user.uuid);
-        updateDoc(userDocRef, {
-          streak: increment(1),
-        })
-          .then(() => {
-            console.log("Streak updated successfully.");
-          })
-          .catch((error) => {
-            console.error("Error updating streak:", error);
-          });
-      }
-      if (user.lastActiveAt < yesterday) {
-        const userDocRef = doc(db, "users", user.uuid);
-        updateDoc(userDocRef, {
-          streak: 1,
-        })
-          .then(() => {
-            console.log("Streak reset to 1 due to inactivity.");
-          })
-          .catch((error) => {
-            console.error("Error resetting streak:", error);
-          });
-      }
+
+      updateDoc(userDocRef, { lastActiveAt: serverTimestamp() })
+        .catch((error) => console.error("Error updating last active date:", error));
     }
   }, [user.lastActiveAt, today]);
 
   return (
     <div className={shouldHideTabBar ? "" : "pb-16"}>
       <Routes location={background || location}>
-        {/* Main Routes; added conditional display and navigation*/}
+        {/* Public and protected main routes */}
         <Route
           path="/"
           element={
@@ -148,39 +120,15 @@ function AppRoutes({ user }) {
         />
         <Route
           path="/auth"
-          element={
-            !authenticated ? (
-              <Welcome />
-            ) : user.role === "user" ? (
-              <Navigate to="/courses" />
-            ) : (
-              <Navigate to="/courses_admin" />
-            )
-          }
+          element={!authenticated ? <Welcome /> : <Navigate to={user.role === "user" ? "/courses" : "/courses_admin"} />}
         />
         <Route
           path="/login"
-          element={
-            !authenticated ? (
-              <Login />
-            ) : user.role === "user" ? (
-              <Navigate to="/courses" />
-            ) : (
-              <Navigate to="/courses_admin" />
-            )
-          }
+          element={!authenticated ? <Login /> : <Navigate to={user.role === "user" ? "/courses" : "/courses_admin"} />}
         />
         <Route
           path="/register"
-          element={
-            !authenticated ? (
-              <Register />
-            ) : user.role === "user" ? (
-              <Navigate to="/courses" />
-            ) : (
-              <Navigate to="/courses_admin" />
-            )
-          }
+          element={!authenticated ? <Register /> : <Navigate to={user.role === "user" ? "/courses" : "/courses_admin"} />}
         />
         <Route path="/verify_email" element={<VerifyEmail />} />
         <Route
@@ -189,68 +137,39 @@ function AppRoutes({ user }) {
         />
         <Route
           path="/courses"
-          element={
-            !authenticated ? (
-              <Navigate to="/auth" />
-            ) : user.role === "user" ? (
-              <Courses />
-            ) : (
-              <Navigate to="/courses_admin" />
-            )
-          }
+          element={!authenticated ? <Navigate to="/auth" /> : (user.role === "user" ? <Courses /> : <Navigate to="/courses_admin" />)}
         />
         <Route
           path="/courses_admin"
-          element={
-            !authenticated ? (
-              <Navigate to="/auth" />
-            ) : user.role === "user" ? (
-              <Navigate to="/courses" />
-            ) : (
-              <CoursesAdmin />
-            )
-          }
+          element={!authenticated ? <Navigate to="/auth" /> : (user.role === "user" ? <Navigate to="/courses" /> : <CoursesAdmin />)}
         />
         <Route
           path="/user_data"
-          element={
-            !authenticated ? (
-              <Navigate to="/auth" />
-            ) : user.role === "user" ? (
-              <Navigate to="/courses" />
-            ) : (
-              <DataCenter />
-            )
-          }
+          element={!authenticated ? <Navigate to="/auth" /> : (user.role === "user" ? <Navigate to="/courses" /> : <DataCenter />)}
         />
+
+        {/* Direct access to course detail, module view, final quiz */}
+        <Route path="/courses/:programId/:courseId" element={<CourseDetails />} />
+        <Route path="/courses/:programId/:courseId/:moduleId" element={<CourseModal />} />
+        <Route path="/courses/:programId/final_quiz" element={<FinalQuizPage />} />
+        <Route path="/courses_admin/:add_course" element={<AddModal />} />
       </Routes>
 
-      {/* Modal Routes */}
+      {/* Modal overlays if background is set */}
       {background && (
         <Routes>
-          <Route
-            path="/courses/:programId/:courseId"
-            element={<CourseDetails />}
-          />
-          <Route
-            path="/courses/:programId/:courseId/:moduleId"
-            element={<CourseModal />}
-          />
-            <Route
-              path="/courses/:programId/final_quiz"
-              element={<FinalQuizPage />}
-            />
+          <Route path="/courses/:programId/:courseId" element={<CourseDetails />} />
+          <Route path="/courses/:programId/:courseId/:moduleId" element={<CourseModal />} />
+          <Route path="/courses/:programId/final_quiz" element={<FinalQuizPage />} />
           <Route path="/courses_admin/:add_course" element={<AddModal />} />
         </Routes>
       )}
 
-      {/* Show TabBar only if it should not be hidden */}
       {!shouldHideTabBar && <TabBar />}
     </div>
   );
 }
 
-// insert the app into index.html to view from browser
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Router>

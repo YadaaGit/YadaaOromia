@@ -1,20 +1,21 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCourseData } from "@/hooks/get_course_data_test.js";
-import SectionViewer from "@/components/sections/Section_viewer.jsx";
+import { useProgramData } from "@/hooks/get_course_data_test.js";
 import { useTranslation } from "@/utils/useTranslation.js";
 import { Skeleton } from "@mui/material";
+import Quiz from "@/components/sections/Quiz";
 
 export default function CourseModules() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const headerRef = useRef(null);
   const modalRef = useRef(null);
-  const { programId, courseId, moduleId } = useParams();
-  const { course, loading } = useCourseData(programId, courseId);
-  const navigate = useNavigate();
   const [headerHeight, setHeaderHeight] = useState(0);
   const [visible, setVisible] = useState(true);
+  const { programId } = useParams();
+  const { program, loading } = useProgramData(programId);
+  const [passedQuiz, setPassedQuiz] = useState(false);
 
   useEffect(() => {
     if (headerRef.current) {
@@ -31,7 +32,7 @@ export default function CourseModules() {
   useEffect(() => {
     if (!visible) {
       const timer = setTimeout(
-        () => navigate(`/courses/${programId}/${courseId}`, { replace: true }),
+        () => navigate(`/courses`, { replace: true }),
         300
       );
       return () => clearTimeout(timer);
@@ -70,13 +71,13 @@ export default function CourseModules() {
                 ✕
               </button>
               {loading && <Skeleton variant="text" height={32} width="60%" />}
-              {!loading && course && (
-                <h2 className="text-xl font-bold">{course.title}</h2>
+              {!loading && program && (
+                <h2 className="text-xl font-bold">{program.final_quiz.quiz_title}</h2>
               )}
             </div>
 
             {/* Content */}
-            <div style={{ paddingTop: `${headerHeight}px` }}>
+            <div style={{ paddingTop: `${headerHeight}px`, padding: 20 }}>
               {loading && (
                 <div className="p-4">
                   <Skeleton variant="text" height={24} width="90%" />
@@ -84,14 +85,11 @@ export default function CourseModules() {
                   <Skeleton variant="text" height={24} width="70%" />
                 </div>
               )}
-              {!loading && course && (
-                <SectionViewer
-                  modules={course.modules}
-                  scrollRef={modalRef}
-                  currentModuleId={moduleId}
-                  programId={programId}
-                  courseId={courseId}
-                />
+              {!loading && (!program || !program.final_quiz) && (
+                <div className="p-4 text-center">Final quiz not found</div>
+              )}
+              {!loading && program && (
+                <Quiz questions={program.final_quiz.quiz} onPassed={() => setPassedQuiz(true)} />
               )}
             </div>
           </motion.div>

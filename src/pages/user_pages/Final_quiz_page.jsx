@@ -4,8 +4,8 @@ import Quiz from "@/components/sections/Quiz.jsx";
 import { useState } from "react";
 
 export default function FinalQuizPage() {
-  const { programId } = useParams();
   const navigate = useNavigate();
+  const { programId } = useParams();
   const { program, loading } = useProgramData(programId);
   const [passed, setPassed] = useState(false);
 

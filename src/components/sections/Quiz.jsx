@@ -6,7 +6,6 @@ export default function Quiz({ questions = [], onPassed }) {
   const [hasPassed, setHasPassed] = useState(false);
 
   useEffect(() => {
-    // Reset on new questions
     setAnswered({});
     setLocked({});
     setHasPassed(false);
@@ -20,10 +19,9 @@ export default function Quiz({ questions = [], onPassed }) {
     const question = questions.find((q) => q.id === qid);
     const isCorrect = selectedIndex === question.answer;
 
-    if (isCorrect) {
-      setLocked((prev) => ({ ...prev, [qid]: true }));
-    } else {
-      setLocked((prev) => ({ ...prev, [qid]: true }));
+    setLocked((prev) => ({ ...prev, [qid]: true }));
+
+    if (!isCorrect) {
       setTimeout(() => {
         setLocked((prev) => ({ ...prev, [qid]: false }));
         setAnswered((prev) => {
@@ -33,24 +31,22 @@ export default function Quiz({ questions = [], onPassed }) {
         });
       }, 2000);
     }
+  };
 
-    const allAnswered = questions.every(
-      (q) => (q.id === qid ? true : answered[q.id] !== undefined)
-    );
-    const allCorrect = questions.every(
-      (q) => (q.id === qid ? selectedIndex : answered[q.id]) === q.answer
-    );
+  // ✅ correct: watch answered after it's updated
+  useEffect(() => {
+    const allAnswered = questions.every((q) => answered[q.id] !== undefined);
+    const allCorrect = questions.every((q) => answered[q.id] === q.answer);
 
     if (allAnswered && allCorrect && !hasPassed) {
       setHasPassed(true);
       onPassed();
     }
-  };
+  }, [answered, hasPassed, questions, onPassed]);
 
   return (
     <div className="mt-6 border-t pt-6">
       <h4 className="text-lg font-semibold mb-4">Quiz</h4>
-
       {questions.map((q) => {
         const selectedIndex = answered[q.id];
         const isLocked = locked[q.id];
@@ -80,7 +76,6 @@ export default function Quiz({ questions = [], onPassed }) {
                 );
               })}
             </div>
-
             {selectedIndex === q.answer && q.explanation && (
               <div className="mt-2 text-sm text-gray-700 bg-gray-100 p-3 rounded">
                 <strong>Explanation:</strong> {q.explanation}

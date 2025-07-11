@@ -17,7 +17,7 @@ export default function PopUp({ show, onClose, message, type = "info" }) {
           exit={{ opacity: 0, y: 50 }}
           transition={{ duration: 0.3 }}
           className={`fixed bottom-5 right-5 text-white px-4 py-3 rounded-lg shadow-lg z-50`}
-          style={{background: bgColor}}
+          style={{background: bgColor, zIndex: 999}}
         >
           <div className="flex items-center justify-between space-x-3">
             <span>{message}</span>

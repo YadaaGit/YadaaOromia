@@ -109,14 +109,6 @@ export const handleSignUp = async ({
     await setDoc(doc(db, "telegram_links", String(userId)), idData);
 
     // Step 4: Add user progress for each course
-    const user_progress = {
-      current_course: 1,
-      current_module: 1,
-      final_quiz_score: 0,
-      completed: false,
-      certificate_link: "",
-    };
-
     if (!Array.isArray(course_data)) {
       throw new Error("Internal error: course_data is not an array");
     }
@@ -129,7 +121,14 @@ export const handleSignUp = async ({
         }
         return setDoc(
           doc(db, "users", user.uid, "programs", element.program_id),
-          user_progress
+          {
+            current_course: 1,
+            current_module: 1,
+            final_quiz_score: 0,
+            final_pass_point: element.metadata.final_pass_point,
+            completed: false,
+            certificate_link: "",
+          }
         );
       })
     );
