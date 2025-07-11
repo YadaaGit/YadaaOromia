@@ -3,7 +3,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "#/firebase-config.js";
 
 
-export const handleSignUp = async ({
+export const handleUpdateProgress = async ({
   programId,
   coursePassed,
   setError,

@@ -16,7 +16,7 @@ export function useTelegramInitData({ enableLocalFallback = true } = {}) {
 
   // Fallback if not running inside Telegram (e.g., during local dev)
   if ((!initDataRaw || !initDataState || !initDataState.user) && enableLocalFallback) {
-    console.warn("⚠️ Using fallback init data (not running inside Telegram)");
+    // console.warn("⚠️ Using fallback init data (not running inside Telegram)");
     initDataRaw = "mock_init_data_raw_string";
     initDataState = {
       user: {

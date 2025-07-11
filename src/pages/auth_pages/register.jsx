@@ -63,8 +63,6 @@ export default function Register() {
     city: "",
   });
 
-
-
   useEffect(() => {
     const allCountries = getCountryNames().sort((a, b) => a.localeCompare(b));
     setCountries(allCountries);
@@ -135,7 +133,7 @@ export default function Register() {
 
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
   const handleRegister = () => {
     if (adminLoading) {
       setShowWarning(true);
@@ -210,7 +208,7 @@ export default function Register() {
         />
         <CustomDropdownField
           name="sex"
-          value={formData.sex}
+          value={{ m: t("male"), f: t("female") }[formData.sex]}
           onChange={handleChange}
           placeholder={t("select_gender")}
           options={[t("male"), t("female")]}
@@ -233,7 +231,11 @@ export default function Register() {
         />
         <CustomDropdownField
           name="lang"
-          value={{en: t("english"), am: t("amharic"), or: t("oromifa")}[formData.lang]}
+          value={
+            { en: t("english"), am: t("amharic"), or: t("oromifa") }[
+              formData.lang
+            ]
+          }
           onChange={handleChange}
           placeholder={t("select_language")}
           options={[t("english"), t("amharic"), t("oromifa")]}
@@ -311,19 +313,21 @@ const InputField = ({
   placeholder,
   Icon,
   type = "text",
-}) => (
-  <div className="relative">
-    <input
-      type={type}
-      name={name}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className="w-full border rounded-full px-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-    />
-    <Icon className="w-5 h-5 text-logo-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
-  </div>
-);
+}) => {
+  return (
+    <div className="relative">
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="w-full border rounded-full px-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+      <Icon className="w-5 h-5 text-logo-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
+    </div>
+  );
+};
 
 // Reusable Dropdown Field
 const CustomDropdownField = ({
@@ -336,6 +340,7 @@ const CustomDropdownField = ({
   hasIconPadding = false,
 }) => {
   const langValues = ["en", "am", "or"];
+  const sexValues = ["m", "f"];
 
   const handleChange = (selectedValue) => {
     let finalValue = selectedValue;
@@ -343,6 +348,10 @@ const CustomDropdownField = ({
     if (name === "lang") {
       const idx = options.indexOf(selectedValue);
       finalValue = idx !== -1 ? langValues[idx] : null;
+    }
+    if (name === "sex") {
+      const idx = options.indexOf(selectedValue);
+      finalValue = idx !== -1 ? sexValues[idx] : null;
     }
 
     onChange({

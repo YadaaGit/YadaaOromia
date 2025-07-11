@@ -33,6 +33,7 @@ import CourseDetails from "./pages/user_pages/Course_detail.jsx";
 import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 import AboutUs from "./pages/about_us.jsx";
 import FinalQuizPage from './pages/user_pages/Final_quiz_page.jsx';
+
 init({
   debug: true,         // enable SDK debug logging
   eruda: true,        // true if you want mobile console overlay
@@ -46,7 +47,10 @@ function AppRoutesWrapper() {
   const { user, loading, error } = useUserData();
 
   if (loading) return <SplashScreen />;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (error) {
+    console.log(error);
+    return <SplashScreen />;
+  }
 
   const userLang = user?.lang || "am";
 
@@ -59,7 +63,6 @@ function AppRoutesWrapper() {
 
 // main app
 function AppRoutes({ user }) {
-  console.log("loveee");
   const location = useLocation();
 
   const authenticated = user?.authenticated;

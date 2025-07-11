@@ -31,23 +31,24 @@ export const handleSignUp = async ({
   setError("");
   setLoading(true);
 
-  // Validate inputs
+  // Validate required fields
   if (
     !name ||
     !email ||
     !password ||
+    !con_password ||
     !age ||
     !sex ||
     !country ||
     !city ||
-    !lang ||
-    !con_password
+    !lang
   ) {
     setError("Please fill in all required fields.");
     setLoading(false);
     return;
   }
-  
+
+  // Validate age
   const ageNumber = parseInt(age);
   if (isNaN(ageNumber) || ageNumber < 13 || ageNumber > 60) {
     setError("Please enter a valid age between 13 and 60.");
@@ -55,21 +56,21 @@ export const handleSignUp = async ({
     return;
   }
 
+  // Check password match
   if (password !== con_password) {
     setError("Passwords do not match.");
     setLoading(false);
     return;
   }
 
+  // Check Telegram userId presence
+  if (!userId) {
+    setError("This app must be opened inside Telegram to sign up.");
+    setLoading(false);
+    return;
+  }
 
   try {
-    // Step 0: Check Telegram data presence (must run inside Telegram)
-    if (!userId) {
-      setError("This app must be opened inside Telegram to sign up.");
-      setLoading(false);
-      return;
-    }
-
     // Step 1: Create user in Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -81,7 +82,7 @@ export const handleSignUp = async ({
     // Step 2: Update display name
     await updateProfile(user, { displayName: name });
 
-    // Step 3: Store user data in Firestore with telegram info
+    // Step 3: Store user data in Firestore
     const userData = {
       name,
       age: ageNumber,
@@ -95,18 +96,19 @@ export const handleSignUp = async ({
       country,
       city,
       lastActiveAt: serverTimestamp(),
-      telegramId: userId,
+      telegramId: String(userId),
     };
 
     await setDoc(doc(db, "users", user.uid), userData);
 
-    // Step 3b: Store telegramLinks mapping for bot lookup
-    await setDoc(doc(db, "telegramLinks", userId), {
+    // Step 3b: Store telegram_links mapping
+    const idData = {
       firebase_id: user.uid,
-      chat_id: userId,
-    });
+      chat_id: String(userId),
+    };
+    await setDoc(doc(db, "telegram_links", String(userId)), idData);
 
-    // Step 4: Store user progress tracking data for each course
+    // Step 4: Add user progress for each course
     const user_progress = {
       current_course: 1,
       current_module: 1,
@@ -115,31 +117,45 @@ export const handleSignUp = async ({
       certificate_link: "",
     };
 
+    if (!Array.isArray(course_data)) {
+      throw new Error("Internal error: course_data is not an array");
+    }
+
     await Promise.all(
-      course_data.map((element) =>
-        setDoc(
-          doc(db, "users", user.uid, "courses", element.course_id),
+      course_data.map((element) => {
+        if (typeof element.program_id !== "string") {
+          console.error("Invalid program_id in course_data:", element);
+          throw new Error("Invalid program data");
+        }
+        return setDoc(
+          doc(db, "users", user.uid, "programs", element.program_id),
           user_progress
-        )
-      )
+        );
+      })
     );
 
-    // Step 5: Redirect to verification screen
-    navigate("/verify_email");
+
+    // Step 5: Navigate to verification or dashboard
+    // navigate("/verify_email");
   } catch (err) {
-    console.error("Sign-up Error:", err);
-    switch (err.code) {
-      case "auth/email-already-in-use":
-        setError("This email is already in use, try to sign in instead.");
-        break;
-      case "auth/invalid-email":
-        setError("Invalid email format.");
-        break;
-      case "auth/weak-password":
-        setError("Password must be at least 6 characters.");
-        break;
-      default:
-        setError("An unexpected error occurred, please try again later.");
+    console.error("❌ Sign-up Error:", err);
+    if (err.code) {
+      // Firebase error codes
+      switch (err.code) {
+        case "auth/email-already-in-use":
+          setError("This email is already in use, try to sign in instead.");
+          break;
+        case "auth/invalid-email":
+          setError("Invalid email format.");
+          break;
+        case "auth/weak-password":
+          setError("Password must be at least 6 characters.");
+          break;
+        default:
+          setError("An unexpected error occurred, please try again later.");
+      }
+    } else {
+      setError(err.message || "An unexpected error occurred.");
     }
   } finally {
     setLoading(false);
@@ -170,15 +186,18 @@ export const handleSignIn = async ({
     navigate("/");
   } catch (err) {
     console.error(err);
-    switch (err.code) {
+    switch (err.message) {
       case "auth/user-not-found":
         setError("No user found with this email.");
         break;
-      case "Error (auth/invalid-credential)":
+      case "auth/invalid-credential":
         setError("Incorrect credentials. Please try again.");
         break;
       case "auth/invalid-email":
         setError("Invalid email format.");
+        break;
+      case "auth/network-request-failed":
+        setError("Network failed to connect, reconnect and try again.");
         break;
       default:
         setError("An unexpected error occurred. Please try again later.");

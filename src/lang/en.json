@@ -37,8 +37,8 @@
   "email_sent": "We’ve sent a verification email to: ",
   "I_verified_email": "I’ve Verified My Email",
   "check_inbox": "Verification email sent. Please check your inbox.",
-  "resend_email": "Resend Verification Email",
-  "resend_in": "Resend in {{seconds}}s",
+  "resend_email": "Send Verification Email",
+  "resend_in": "Resend in",
   
 
 
