@@ -63,7 +63,7 @@ function AppRoutes({ user }) {
   const authenticated = user?.authenticated;
 
   const shouldHideTabBar =
-    ["/auth", "/login", "/register", "/verify_email", "/"].some((path) =>
+    ["/auth", "/login", "/register", "/verify_email", "/", "about_us"].some((path) =>
       matchPath({ path, end: true }, location.pathname)
     ) ||
     matchPath("/courses/:programId/:courseId", location.pathname) ||
@@ -114,7 +114,7 @@ function AppRoutes({ user }) {
                 <Navigate to="/verify_email" />
               )
             ) : (
-              <AboutUs />
+              <Navigate to="/about_us"/>
             )
           }
         />
@@ -147,6 +147,8 @@ function AppRoutes({ user }) {
           path="/user_data"
           element={!authenticated ? <Navigate to="/auth" /> : (user.role === "user" ? <Navigate to="/courses" /> : <DataCenter />)}
         />
+
+        <Route path="/about_us" element={<AboutUs />} />
 
         {/* Direct access to course detail, module view, final quiz */}
         <Route path="/courses/:programId/:courseId" element={<CourseDetails />} />

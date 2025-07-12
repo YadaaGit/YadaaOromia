@@ -22,11 +22,18 @@ export default function Welcome() {
       className="min-h-screen flex flex-col justify-center items-center bg-white px-6"
       style={{ borderRadius: 13, paddingBottom: 25 }}
     >
-      {/* Top Right Buttons */}
-      <div className="flex gap-2 lang-toggle">
+      {/* Top Bar with Back Button and Language Dropdown */}
+      <div className="flex w-full max-w-md justify-between items-center mb-4">
+        <button
+          onClick={() => navigate("/about_us")}
+          className="bg-indigo-100 text-logo-600 px-4 py-2 rounded-full font-semibold hover:bg-indigo-200 transition"
+          style={{ borderRadius: "999px" }}
+        >
+          ← {t("back")}
+        </button>
         <LanguageDropdown
           onUpdateStateChange={(state) => setUpdateState(state)}
-          style_pass={{maxWidth: 200}}
+          style_pass={{ maxWidth: 200 }}
         />
       </div>
 

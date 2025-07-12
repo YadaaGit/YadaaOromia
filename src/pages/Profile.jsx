@@ -92,7 +92,7 @@ export default function ProfilePage() {
       loading: setLoadingLogout,
       error: setErrorLogout,
       navigate: navigate,
-      redirectTo: "/ww",
+      redirectTo: "/",
     });
   };
 

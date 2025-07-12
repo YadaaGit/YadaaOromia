@@ -2,6 +2,7 @@
   "_comment_1": "the next are UI texts",
 
   "hello": "Hello",
+  "back": "Back",
   "welcome_message_auth": "Welcome to our platform, where you will learn new things daily!",
   "login": "Login",
   "sign_up": "Sign Up",
@@ -48,6 +49,20 @@
   "loading": "Loading...",
   "module_not_found": "Module not found",
   "no_content_yet_for": "No content yet for",
+
+  "about_us_title": "Empowering Education, One Line of Code at a Time",
+  "about_us_intro": "We are a passionate team of developers, designers, and educators who believe in transforming learning through technology. We build powerful and intuitive tools that help learners stay engaged and teachers track progress effortlessly.",
+  "our_mission": "Our Mission",
+  "mission_text": "To democratize access to quality education through smart, efficient, and scalable digital platforms.",
+  "our_vision": "Our Vision",
+  "vision_text": "A world where every learner, regardless of location, has the tools they need to succeed.",
+  "core_values": "Our Values",
+  "value_innovation": "Innovation",
+  "value_inclusion": "Inclusion",
+  "value_quality": "Quality",
+  "contact_us": "Contact Us",
+  "contact_email": "Email: info@example.com",
+  "contact_phone": "Phone: +251-123-456-789",
 
 
   "hi": "Hi, ",
