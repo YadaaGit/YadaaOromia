@@ -10,14 +10,14 @@ import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "./style/index.css";
 
-// Context & Hooks
+// Context & hooks
 import { init } from './init.js';
 import { LanguageProvider } from "./LanguageContext";
 import useUserData from "@/hooks/get_user_data.js";
 import { db } from "#/firebase-config.js";
 import { doc, updateDoc, serverTimestamp, increment } from "firebase/firestore";
 
-// Pages & Components
+// Pages & components
 import SplashScreen from "./components/SplashScreen.jsx";
 import TabBar from "./components/Tabbar.jsx";
 import Welcome from "./pages/auth_pages/welcome_page.jsx";
@@ -34,12 +34,14 @@ import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 import AboutUs from "./pages/about_us.jsx";
 import FinalQuizPage from './pages/user_pages/Final_quiz_modal.jsx';
 
+// Initialize client-side tools
 init({
   debug: true,
   eruda: true,
   mockForMacOS: false,
 });
 
+// Top-level wrapper: loads user data and language context
 function AppRoutesWrapper() {
   const { user, loading, error } = useUserData();
 
@@ -58,10 +60,13 @@ function AppRoutesWrapper() {
   );
 }
 
+// Main routes component
 function AppRoutes({ user }) {
   const location = useLocation();
   const authenticated = user?.authenticated;
+  const role = user?.role || "user"; // always get latest role reactively
 
+  // Paths where tab bar should be hidden
   const shouldHideTabBar =
     ["/auth", "/login", "/register", "/verify_email", "/"].some((path) =>
       matchPath({ path, end: true }, location.pathname)
@@ -72,21 +77,22 @@ function AppRoutes({ user }) {
 
   const background = location.state?.background || null;
 
-  const today = new Date().toISOString().split("T")[0];
-  const todayDateObj = new Date();
-  const yesterdayDate = new Date(todayDateObj);
-  yesterdayDate.setDate(todayDateObj.getDate() - 1);
-
+  // Streak logic: update user's streak & last active date
   useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(new Date().getDate() - 1);
+    const yesterday = yesterdayDate.toISOString().split("T")[0];
+
     if (authenticated && user.lastActiveAt) {
       if (user.lastActiveAt === today) return;
 
       const userDocRef = doc(db, "users", user.uuid);
 
-      if (user.lastActiveAt === yesterdayDate.toISOString().split("T")[0]) {
+      if (user.lastActiveAt === yesterday) {
         updateDoc(userDocRef, { streak: increment(1) })
           .catch((error) => console.error("Error updating streak:", error));
-      } else if (user.lastActiveAt < yesterdayDate.toISOString().split("T")[0]) {
+      } else if (user.lastActiveAt < yesterday) {
         updateDoc(userDocRef, { streak: 1 })
           .catch((error) => console.error("Error resetting streak:", error));
       }
@@ -94,7 +100,7 @@ function AppRoutes({ user }) {
       updateDoc(userDocRef, { lastActiveAt: serverTimestamp() })
         .catch((error) => console.error("Error updating last active date:", error));
     }
-  }, [user.lastActiveAt, today]);
+  }, [authenticated, user.lastActiveAt]);
 
   return (
     <div className={shouldHideTabBar ? "" : "pb-16"}>
@@ -105,7 +111,7 @@ function AppRoutes({ user }) {
           element={
             authenticated ? (
               user.emailVerified ? (
-                user.role === "user" ? (
+                role === "user" ? (
                   <Navigate to="/courses" />
                 ) : (
                   <Navigate to="/courses_admin" />
@@ -120,15 +126,15 @@ function AppRoutes({ user }) {
         />
         <Route
           path="/auth"
-          element={!authenticated ? <Welcome /> : <Navigate to={user.role === "user" ? "/courses" : "/courses_admin"} />}
+          element={!authenticated ? <Welcome /> : <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />}
         />
         <Route
           path="/login"
-          element={!authenticated ? <Login /> : <Navigate to={user.role === "user" ? "/courses" : "/courses_admin"} />}
+          element={!authenticated ? <Login /> : <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />}
         />
         <Route
           path="/register"
-          element={!authenticated ? <Register /> : <Navigate to={user.role === "user" ? "/courses" : "/courses_admin"} />}
+          element={!authenticated ? <Register /> : <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />}
         />
         <Route path="/verify_email" element={<VerifyEmail />} />
         <Route
@@ -137,18 +143,18 @@ function AppRoutes({ user }) {
         />
         <Route
           path="/courses"
-          element={!authenticated ? <Navigate to="/auth" /> : (user.role === "user" ? <Courses /> : <Navigate to="/courses_admin" />)}
+          element={!authenticated ? <Navigate to="/auth" /> : (role === "user" ? <Courses /> : <Navigate to="/courses_admin" />)}
         />
         <Route
           path="/courses_admin"
-          element={!authenticated ? <Navigate to="/auth" /> : (user.role === "user" ? <Navigate to="/courses" /> : <CoursesAdmin />)}
+          element={!authenticated ? <Navigate to="/auth" /> : (role === "user" ? <Navigate to="/courses" /> : <CoursesAdmin />)}
         />
         <Route
           path="/user_data"
-          element={!authenticated ? <Navigate to="/auth" /> : (user.role === "user" ? <Navigate to="/courses" /> : <DataCenter />)}
+          element={!authenticated ? <Navigate to="/auth" /> : (role === "user" ? <Navigate to="/courses" /> : <DataCenter />)}
         />
 
-        {/* Direct access to course detail, module view, final quiz */}
+        {/* Direct access pages */}
         <Route path="/courses/:programId/:courseId" element={<CourseDetails />} />
         <Route path="/courses/:programId/:courseId/:moduleId" element={<CourseModal />} />
         <Route path="/courses/:programId/final_quiz" element={<FinalQuizPage />} />
@@ -165,11 +171,13 @@ function AppRoutes({ user }) {
         </Routes>
       )}
 
+      {/* Bottom tab bar, only when appropriate */}
       {!shouldHideTabBar && <TabBar />}
     </div>
   );
 }
 
+// Mount the app
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Router>

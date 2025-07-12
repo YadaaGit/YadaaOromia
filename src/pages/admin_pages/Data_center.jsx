@@ -82,7 +82,7 @@ export default function UserDashboard() {
 
   const summary = !loading && getSummary();
 
-  if (loading)
+  if (loading || !users)
     return (
       <div className="p-6 space-y-6">
         {/* Header skeleton */}
