@@ -5,12 +5,12 @@ import logo from "../assets/logos/logo_icon.png";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 
 const partners = [
-  "https://via.placeholder.com/120x80?text=Partner+1",
-  "https://via.placeholder.com/120x80?text=Partner+2",
-  "https://via.placeholder.com/120x80?text=Partner+3",
-  "https://via.placeholder.com/120x80?text=Partner+4",
-  "https://via.placeholder.com/120x80?text=Partner+5",
-  "https://via.placeholder.com/120x80?text=Partner+6",
+  "../assets/logos/logo_icon.png",
+  "../assets/logos/logo_icon.png",
+  "../assets/logos/logo_icon.png",
+  "../assets/logos/logo_icon.png",
+  "../assets/logos/logo_icon.png",
+  "../assets/logos/logo_icon.png"
 ];
 
 const AboutUs = () => {
@@ -48,9 +48,9 @@ const AboutUs = () => {
     >
       {/* Top Bar with Language Dropdown and Sign Up Button */}
       <div className="flex w-full max-w-md justify-between items-center mb-4">
-        <LanguageDropdown style_pass={{ maxWidth: 200 }} />
+        <LanguageDropdown style_pass={{ maxWidth: 160 }} />
         <button
-          onClick={() => navigate("/register")}
+          onClick={() => navigate("/auth")}
           className="bg-indigo-500 text-white px-4 py-2 rounded-full font-semibold shadow hover:bg-indigo-600 transition"
           style={{ borderRadius: "999px" }}
         >
@@ -71,7 +71,7 @@ const AboutUs = () => {
         className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 mb-6"
         style={{ textAlign: "center" }}
       >
-        <h1 className="text-2xl font-bold text-logo-800 mb-2">
+        <h1 className="text-2xl font-bold text-logo-800 mb-2" style={{ fontSize: "180%" }}>
           {t("about_us_title") ||
             "Empowering Education, One Line of Code at a Time"}
         </h1>
@@ -117,8 +117,8 @@ const AboutUs = () => {
         onMouseLeave={() => setIsHovered(false)}
         style={{
           borderRadius: 16,
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          background: "#fff",
+          // boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          // background: "#fff",
           padding: 16,
         }}
       >
@@ -140,7 +140,7 @@ const AboutUs = () => {
             }}
           >
             <img
-              src={src}
+              src={logo}
               alt={`Partner ${index % partners.length + 1}`}
               style={{ maxWidth: "100%", maxHeight: "100%" }}
             />
@@ -150,10 +150,10 @@ const AboutUs = () => {
       <div className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 mb-6">
         <h2 className="text-xl font-bold text-logo-800 mb-4">{t("contact_us") || "Contact Us"}</h2>
         <p className="text-logo-500 text-sm mb-2">
-          {t("contact_email") || "Email: info@example.com"}
+          {t("contact_email") || "Email"}: info@example.com
         </p>
         <p className="text-logo-500 text-sm">
-          {t("contact_phone") || "Phone: +251-123-456-789"}
+          {t("contact_phone") || "Phone"}: +251-123-456-789
         </p>
       </div>
     </div>
@@ -161,3 +161,4 @@ const AboutUs = () => {
 };
 
 export default AboutUs;
+
