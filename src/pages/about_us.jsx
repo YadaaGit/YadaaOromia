@@ -44,7 +44,7 @@ const AboutUs = () => {
   return (
     <div
       className="min-h-screen flex flex-col items-center bg-white px-6"
-      style={{ borderRadius: 13, paddingBottom: 25, background: "#f4f7fa" }}
+      style={{ borderRadius: 13, paddingBottom: 25, background: "#f4f7fa", paddingTop: 20}}
     >
       {/* Top Bar with Language Dropdown and Sign Up Button */}
       <div className="flex w-full max-w-md justify-between items-center mb-4">
@@ -62,7 +62,7 @@ const AboutUs = () => {
       <img
         src={logo}
         alt="Logo"
-        style={{ height: 60, marginBottom: 16, cursor: "pointer" }}
+        style={{ height: 120, marginBottom: 16, cursor: "pointer" }}
         onClick={() => window.location.reload()}
       />
 
