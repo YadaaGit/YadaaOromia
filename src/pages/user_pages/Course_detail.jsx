@@ -20,7 +20,9 @@ export default function CourseDetails() {
   const program = dummyPrograms.find((p) => p.program_id === programId);
   const courses = program?.courses || [];
   const currentIndex = courses.findIndex((c) => c.course_id === courseId);
+
   const programProgress = user?.course_progress?.[programId];
+  const unlockedCourseIndex = (programProgress?.current_course || 1) - 1;
   const unlockedModuleIndex = (programProgress?.current_module || 1) - 1;
 
   const openModule = (moduleId, isLocked) => {
@@ -113,7 +115,7 @@ export default function CourseDetails() {
                 </div>
               <div className="flex-1 min-w-[250px] max-h-[400px] overflow-y-auto border rounded p-2" style={{ borderRadius: 20 }}>
                   {course.modules.map((module, mIndex) => {
-                    const isLocked = mIndex > unlockedModuleIndex;
+                    const isLocked = currentIndex < unlockedCourseIndex ? false : mIndex > unlockedModuleIndex;
                     return (
                       <div
                         key={module.module_id}
@@ -140,7 +142,7 @@ export default function CourseDetails() {
                 >
                   Previous Course
                 </button>
-                <button onClick={handleNext} className="btn">
+                <button onClick={handleNext} disabled={unlockedCourseIndex <= currentIndex} className={unlockedCourseIndex <= currentIndex ? "btn btn_disabled" : "btn"}>
                   {currentIndex < courses.length - 1
                     ? "Next Course"
                     : "Final Quiz"}

@@ -40,7 +40,10 @@ export default function SectionViewer({
       navigate(`/courses/${programId}/${courseId}/${nextModule.module_id}`);
       setCurrentIndex((prev) => prev + 1);
       setPassedQuiz(false);
+    } else if (currentIndex === modules.length - 1){
+      navigate(`/courses`);
     }
+    
   };
 
   const handlePrev = () => {
@@ -108,14 +111,14 @@ export default function SectionViewer({
         </button>
         <button
           onClick={handleNext}
-          disabled={!passedQuiz || currentIndex === modules.length - 1}
+          disabled={!passedQuiz}
           className={
-            !passedQuiz || currentIndex === modules.length - 1
+            !passedQuiz
               ? "btn btn_disabled"
               : "btn"
           }
         >
-          Next
+          {currentIndex === modules.length - 1 ? "Next course" :"Next"}
         </button>
       </div>
     </div>

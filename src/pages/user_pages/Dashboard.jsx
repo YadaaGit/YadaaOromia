@@ -41,7 +41,7 @@ function Courses() {
     }
   };
 
-  if (loading)
+  if (loading || !user)
     return (
       <section id="courses">
         {[...Array(2)].map((_, pIndex) => (

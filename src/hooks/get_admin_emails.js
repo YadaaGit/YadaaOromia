@@ -1,3 +1,8 @@
+/**
+ * React hook: fetch list of admin emails from Firestore once.
+ * Document: admin_emails/emails, field: admin_emails_list
+ */
+
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "#/firebase-config.js";
@@ -10,7 +15,6 @@ export default function useAdminEmails() {
   useEffect(() => {
     const fetchAdminEmails = async () => {
       try {
-        setLoading(true);
         const docRef = doc(db, "admin_emails", "emails");
         const docSnap = await getDoc(docRef);
 
