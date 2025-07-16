@@ -495,8 +495,6 @@ A good scientific hypothesis is testable and falsifiable.`,
     final_quiz: {
       quiz_title: "program 1 final quiz",
       quiz_description: "final quiz description this ans that you know",
-      isFinal: true,
-      image: ill5,
       quiz: [
         {
           question: "What is the first step in the scientific method?",

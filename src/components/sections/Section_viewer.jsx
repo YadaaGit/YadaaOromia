@@ -40,10 +40,9 @@ export default function SectionViewer({
       navigate(`/courses/${programId}/${courseId}/${nextModule.module_id}`);
       setCurrentIndex((prev) => prev + 1);
       setPassedQuiz(false);
-    } else if (currentIndex === modules.length - 1){
+    } else if (currentIndex === modules.length - 1) {
       navigate(`/courses`);
     }
-    
   };
 
   const handlePrev = () => {
@@ -61,7 +60,14 @@ export default function SectionViewer({
         <>
           {currentModule.content.map((c, idx) => (
             <div key={idx}>
-              {c.header && <h4 className="font-bold">{c.header}</h4>}
+              {c.header && (
+                <h4
+                  className="font-bold"
+                  style={{ fontSize: "large", marginBottom: "7px" }}
+                >
+                  {c.header}
+                </h4>
+              )}
               {c.text && (
                 <p className="mb-4 text-logo-800 leading-relaxed whitespace-pre-line">
                   {c.text}
@@ -112,13 +118,9 @@ export default function SectionViewer({
         <button
           onClick={handleNext}
           disabled={!passedQuiz}
-          className={
-            !passedQuiz
-              ? "btn btn_disabled"
-              : "btn"
-          }
+          className={!passedQuiz ? "btn btn_disabled" : "btn"}
         >
-          {currentIndex === modules.length - 1 ? "Next course" :"Next"}
+          {currentIndex === modules.length - 1 ? "Next course" : "Next"}
         </button>
       </div>
     </div>

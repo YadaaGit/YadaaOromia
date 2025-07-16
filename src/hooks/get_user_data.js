@@ -96,8 +96,6 @@ export default function useUserData() {
               const isAdmin = adminEmails.includes(email);
               const role = isAdmin ? "admin" : "user";
 
-              console.log(`Assigned role: ${role} for email: ${email}`);
-
               // Set full user object, atomic update
               setUser({
                 authenticated: true,

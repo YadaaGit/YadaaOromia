@@ -3,14 +3,17 @@ import mongoose from "mongoose";
 import cors from "cors";
 import chalk from "chalk";
 import dotenv from "dotenv";
+import dns from "dns";
 
 import createApiRoutes from "./routes/apiRoutes.js";
 import programSchema from "./models/Program.js";
 import courseSchema from "./models/Course.js";
 import moduleSchema from "./models/Module.js";
-import quizSchema from "./models/Quiz.js";
-import sectionSchema from "./models/Section.js";
-import sectionImageSchema from "./models/Image.js";
+import finalQuizSchema from "./models/FinalQuiz.js";
+import imageSchema from "./models/Image.js";
+
+// Prefer IPv4 to avoid Node 22 + MongoDB Atlas DNS issues
+dns.setDefaultResultOrder("ipv4first");
 
 dotenv.config();
 
@@ -19,104 +22,150 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 9174;
-const RETRY_INTERVAL = 5000; // 5 seconds
+
+// Connection options reused for clarity & maintainability
+const mongooseOptions = {
+  bufferCommands: false,
+  serverSelectionTimeoutMS: 10000,
+  socketTimeoutMS: 45000,
+  family: 4,
+};
 
 const connections = {};
 const models = {};
 
-function createModels(conn) {
-  return {
-    program: conn.model("Program", programSchema, "programs"),
-    courses: conn.model("Course", courseSchema, "courses"),
-    modules: conn.model("Module", moduleSchema, "modules"),
-    quizzes: conn.model("Quiz", quizSchema, "quizzes"),
-    sections: conn.model("Section", sectionSchema, "sections"),
-    images: conn.model("SectionImage", sectionImageSchema, "images"),
+/**
+ * Connects to MongoDB using SRV URI, falls back to non-SRV if necessary
+ * @param {string} dbKey - Unique key for the connection & models
+ * @param {string} dbName - Mongo database name
+ */
+async function connectDbWithFallback(dbKey, dbName) {
+  const srvUri = process.env.MONGO_URI_SRV;
+  const nonSrvUri =
+    process.env[`MONGO_URI_NONSRV_${dbKey.split("_")[0]}`] ||
+    process.env.MONGO_URI_NONSRV;
+
+  try {
+    console.log(chalk.blue(`[${dbKey}] Attempting connection with SRV URI...`));
+    connections[dbKey] = await mongoose
+      .createConnection(srvUri, {
+        ...mongooseOptions,
+        dbName,
+      })
+      .asPromise();
+
+    console.log(chalk.green(`[${dbKey}] Connected using SRV URI`));
+  } catch (err) {
+    console.warn(
+      chalk.yellow(`[${dbKey}] SRV connection failed, trying non-SRV URI...`),
+      err.message
+    );
+    connections[dbKey] = await mongoose
+      .createConnection(nonSrvUri, {
+        ...mongooseOptions,
+        dbName,
+      })
+      .asPromise();
+    console.log(chalk.green(`[${dbKey}] Connected using non-SRV URI`));
+  }
+
+  // Create models immediately after connection using new schemas
+  models[dbKey] = {
+    programs: connections[dbKey].model("Program", programSchema, "programs"),
+    courses: connections[dbKey].model("Course", courseSchema, "courses"),
+    modules: connections[dbKey].model("Module", moduleSchema, "modules"),
+    final_quiz: connections[dbKey].model(
+      "FinalQuiz",
+      finalQuizSchema,
+      "final_quiz"
+    ),
+    images: connections[dbKey].model("Image", imageSchema, "images"),
   };
 }
 
-async function connectWithRetry(name, srvUri, nonSrvUri) {
-  try {
-    console.log(chalk.blue(`[${name}] Trying SRV URI...`));
-    connections[name] = await mongoose.createConnection(srvUri);
-    models[name] = createModels(connections[name]);
-    console.log(chalk.green(`[${name}] Connected using SRV URI`));
-  } catch (err) {
-    console.warn(chalk.yellow(`[${name}] SRV connection failed:`), err.message);
-    try {
-      console.log(chalk.blue(`[${name}] Trying non-SRV URI...`));
-      connections[name] = await mongoose.createConnection(nonSrvUri);
-      models[name] = createModels(connections[name]);
-      console.log(chalk.green(`[${name}] Connected using non-SRV URI`));
-    } catch (err2) {
-      console.error(chalk.red(`[${name}] Both connections failed:`), err2.message);
-      console.log(chalk.cyan(`[${name}] Retrying in ${RETRY_INTERVAL / 1000}s...`));
-      setTimeout(() => connectWithRetry(name, srvUri, nonSrvUri), RETRY_INTERVAL);
-    }
-  }
+/**
+ * Sets up all connections concurrently for faster startup
+ */
+async function setupConnections() {
+  const dbConfigs = [
+    { key: "AM_courses", name: "AM_courses" },
+    { key: "OR_courses", name: "OR_courses" },
+    { key: "EN_courses", name: "EN_courses" },
+  ];
+
+  // Run connections in parallel for faster startup
+  await Promise.all(
+    dbConfigs.map(({ key, name }) => connectDbWithFallback(key, name))
+  );
 }
 
-// Start DB connections
+// Main start function
+setupConnections()
+  .then(() => {
+    // List of collections exposed by API
+    const COLLECTION_NAMES = [
+      "programs",
+      "courses",
+      "modules",
+      "final_quiz",
+      "images",
+    ];
 
-connectWithRetry(
-  "EN_courses",
-  process.env.MONGO_URI_SRV_EN,
-  process.env.MONGO_URI_NONSRV_EN
-);
+    // Simple homepage to list available endpoints
+    app.get("/", (req, res) => {
+      let html = `<h1>Available API Endpoints</h1><ul>`;
+      for (const dbName of Object.keys(models)) {
+        html += `<li><strong>${dbName}</strong><ul>`;
+        for (const col of COLLECTION_NAMES) {
+          html += `<li><a href="/api/${dbName}/${col}">/api/${dbName}/${col}</a></li>`;
+        }
+        html += `</ul></li>`;
+      }
+      html += `</ul>`;
+      res.send(html);
+    });
 
-connectWithRetry(
-  "AM_courses",
-  process.env.MONGO_URI_SRV_AM,
-  process.env.MONGO_URI_NONSRV_AM
-);
+    // Dynamic collection route handler
+    app.get("/api/:db/:collection", async (req, res) => {
+      const { db, collection } = req.params;
 
-connectWithRetry(
-  "OR_courses",
-  process.env.MONGO_URI_SRV_OR,
-  process.env.MONGO_URI_NONSRV_OR
-);
+      if (!models[db]) {
+        return res
+          .status(503)
+          .json({ error: `Database "${db}" not connected yet` });
+      }
 
-// Collections list for display
-const COLLECTION_NAMES = ["courses", "modules", "quizzes", "sections", "images"];
+      const model = models[db][collection];
+      if (!model) {
+        return res
+          .status(404)
+          .json({
+            error: `Collection "${collection}" not found in DB "${db}"`,
+          });
+      }
 
-// Homepage: display links to all dbs & collections
-app.get("/", (req, res) => {
-  let html = `<h1>Available API Endpoints</h1><ul>`;
-  for (const dbName of Object.keys(models)) {
-    html += `<li><strong>${dbName}</strong><ul>`;
-    for (const col of COLLECTION_NAMES) {
-      html += `<li><a href="/api/${dbName}/${col}">/api/${dbName}/${col}</a></li>`;
-    }
-    html += `</ul></li>`;
-  }
-  html += `</ul>`;
-  res.send(html);
-});
+      try {
+        const docs = await model.find();
+        res.json(docs);
+      } catch (err) {
+        console.error(
+          chalk.red(`[${db}] Error fetching ${collection}:`),
+          err.message
+        );
+        res.status(500).json({ error: `Failed to fetch ${collection}` });
+      }
+    });
 
-// Dynamic route for collections
-app.get("/api/:db/:collection", async (req, res) => {
-  const { db, collection } = req.params;
+    // Attach any additional API routes (modular design)
+    app.use("/api", createApiRoutes(models));
 
-  if (!models[db]) {
-    return res.status(503).json({ error: `Database "${db}" not connected yet` });
-  }
-
-  const model = models[db][collection];
-  if (!model) {
-    return res.status(404).json({ error: `Collection "${collection}" not found in DB "${db}"` });
-  }
-
-  try {
-    const docs = await model.find();
-    res.json(docs);
-  } catch (err) {
-    console.error(chalk.red(`[${db}] Error fetching ${collection}:`), err.message);
-    res.status(500).json({ error: `Failed to fetch ${collection}` });
-  }
-});
-
-app.use("/api", createApiRoutes(models));
-
-app.listen(PORT, () => {
-  console.log(chalk.magenta(`🚀 Server running on http://localhost:${PORT}`));
-});
+    app.listen(PORT, () => {
+      console.log(
+        chalk.magenta(`🚀 Server running on http://localhost:${PORT}`)
+      );
+    });
+  })
+  .catch((err) => {
+    console.error(chalk.red("Failed to connect to databases:"), err);
+    process.exit(1); // Exit on fatal DB connection failure
+  });

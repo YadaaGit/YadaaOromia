@@ -15,6 +15,9 @@ export default function LanguageDropdown({
   style_pass,
   placeholder = "Select Language",
   onUpdateStateChange,
+  thisReg,
+  setThis,
+  ifThis
 }) {
   const { lang, setLang } = useLanguage(); // use context
   const [open, setOpen] = useState(false);
@@ -48,6 +51,15 @@ export default function LanguageDropdown({
       });
     } finally {
       setUpdating(false);
+      if (thisReg && ifThis) {
+        let reg_lang_options = {
+          am: "እባክዎ መጀመሪያ ሀገር ይምረጡ",
+          en: "Please select a country first",
+          or: "Bara biyya dura filadhu",
+        };
+
+        setThis([reg_lang_options[langCode] || "Please select a country first"]);
+      }
       if (!error) onUpdateStateChange?.({ updating: false, error: null });
     }
   };

@@ -45,53 +45,56 @@ export default function CourseModules() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-opacity-50 z-50 flex justify-center"
-          style={{ alignItems: "flex-end" }}
+          className="fixed inset-0 bg-opacity-50 z-50 flex justify-center items-end"
           onClick={() => setVisible(false)}
         >
           <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 100, damping: 15 }}
-            className="bg-white w-full max-w-3xl max-h-[100vh] min-h-[50vh] overflow-y-auto relative"
+            transition={{ type: "spring", stiffness: 120, damping: 20 }}
+            className="bg-white w-full max-w-4xl max-h-screen min-h-[60vh] overflow-y-auto shadow-lg relative"
             onClick={(e) => e.stopPropagation()}
             ref={modalRef}
           >
             {/* Header */}
             <div
               ref={headerRef}
-              className="fixed top-0 left-0 right-0 bg-white shadow-md px-4 py-3 z-50"
+              className="sticky top-0 z-40 bg-white px-6 py-4 border-b border-gray-200 flex justify-between items-center"
             >
+              <h2 className="text-xl font-semibold text-logo-800">
+                {loading ? (
+                  <Skeleton variant="text" height={28} width="60%" />
+                ) : (
+                  course?.modules.find((m) => m.module_id === moduleId)?.title || "Loading..."
+                )}
+              </h2>
               <button
                 onClick={() => setVisible(false)}
-                className="absolute top-2 right-4 text-xl font-bold"
+                className="text-2xl text-gray-500 hover:text-red-500 font-bold transition"
               >
                 ✕
               </button>
-              {loading && <Skeleton variant="text" height={32} width="60%" />}
-              {!loading && course && (
-                <h2 className="text-xl font-bold">{course.title}</h2>
-              )}
             </div>
 
-            {/* Content */}
-            <div style={{ paddingTop: `${headerHeight}px` }}>
-              {loading && (
-                <div className="p-4">
+            {/* Body */}
+            <div className="px-6 pb-6">
+              {loading ? (
+                <div className="space-y-3 mt-4">
                   <Skeleton variant="text" height={24} width="90%" />
                   <Skeleton variant="text" height={24} width="80%" />
                   <Skeleton variant="text" height={24} width="70%" />
                 </div>
-              )}
-              {!loading && course && (
-                <SectionViewer
-                  modules={course.modules}
-                  scrollRef={modalRef}
-                  currentModuleId={moduleId}
-                  programId={programId}
-                  courseId={courseId}
-                />
+              ) : (
+                course && (
+                  <SectionViewer
+                    modules={course.modules}
+                    scrollRef={modalRef}
+                    currentModuleId={moduleId}
+                    programId={programId}
+                    courseId={courseId}
+                  />
+                )
               )}
             </div>
           </motion.div>

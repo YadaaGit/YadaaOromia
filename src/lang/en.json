@@ -40,7 +40,7 @@
   "check_inbox": "Verification email sent. Please check your inbox.",
   "resend_email": "Send Verification Email",
   "resend_in": "Resend in",
-  
+  "select_country_first": "Please select a country first",
 
 
   "courses": "Courses",
@@ -90,7 +90,7 @@
   "no_content": "No content yet for",
   "take_final_quiz": "Take final quiz",
   "add_course": "+ Add Course",
-  "user_add_course": "📚 Add New Course",
+  "user_add_course": "📚 Add New Program",
 
   "_comment_2":"the next are UX texts",
   

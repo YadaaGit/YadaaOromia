@@ -38,6 +38,7 @@ export default function useAllUsers({ includeCourses = false } = {}) {
           snapshot.docs.map(async (docSnap) => {
             const data = docSnap.data();
             const formattedJoined = formatTimestampToDateString(data.joined);
+            const formattedLA = formatTimestampToDateString(data.lastActiveAt);
 
             let course_progress = {};
             if (includeCourses) {
@@ -45,7 +46,7 @@ export default function useAllUsers({ includeCourses = false } = {}) {
                 db,
                 "users",
                 docSnap.id,
-                "courses"
+                "programs"
               );
               const courseSnapshot = await getDocs(courseCollection);
               courseSnapshot.forEach((courseDoc) => {
@@ -57,6 +58,7 @@ export default function useAllUsers({ includeCourses = false } = {}) {
               id: docSnap.id,
               ...data,
               joined: formattedJoined,
+              lastActiveAt: formattedLA,
               course_progress,
             };
           })

@@ -11,3 +11,4 @@ const courseSchema = new mongoose.Schema({
 
 // Export the schema
 export default courseSchema;
+

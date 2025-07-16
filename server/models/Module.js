@@ -4,7 +4,8 @@ const moduleSchema = new mongoose.Schema({
   module_id: String,
   title: String,
   module_index: Number,
-  section_ids: Object,
+  content: Array,
+  quiz: Array,
   metadata: Object,
 });
 

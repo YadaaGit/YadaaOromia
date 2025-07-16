@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { handleLogout } from "@/utils/auth_services";
 import { useTranslation } from "@/utils/useTranslation.js";
 import { useLanguage } from "@/LanguageContext.jsx";
+import { useTelegramInitData } from "@/hooks/get_tg_data.js";
+
 import useUserData from "@/hooks/get_user_data.js";
 import ConfirmModal from "@/components/basic_ui/confirm_modal.jsx";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
@@ -13,13 +15,14 @@ import "@/style/Dashboard_user.css";
 import "@/style/general.css";
 
 // Tabs names (translatable)
-const tabs = ["info", "scores"];
+const tabs = ["info", "achivments", ];
 
 /**
  * User profile page: shows user info, editable fields, and logout
  */
 export default function ProfilePage() {
   const { t } = useTranslation();
+  const { initDataRaw, initDataState } = useTelegramInitData();
   const { dict, lang } = useLanguage();
   const navigate = useNavigate();
 
@@ -60,7 +63,7 @@ export default function ProfilePage() {
       loading: setLoadingLogout,
       error: setErrorLogout,
       navigate,
-      redirectTo: "/ww",
+      redirectTo: "/about_us",
     });
   };
 
@@ -105,7 +108,7 @@ export default function ProfilePage() {
       {/* Avatar */}
       <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-white mb-4">
         <img
-          src={user.avatar || avatarFallback}
+          src={initDataState.user.profile || avatarFallback}
           alt="Avatar"
           className="w-full h-full object-cover"
         />

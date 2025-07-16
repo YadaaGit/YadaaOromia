@@ -135,7 +135,7 @@ export const handleSignUp = async ({
 
 
     // Step 5: Navigate to verification or dashboard
-    // navigate("/verify_email");
+    navigate("/verify_email");
   } catch (err) {
     console.error("❌ Sign-up Error:", err);
     if (err.code) {
@@ -182,7 +182,7 @@ export const handleSignIn = async ({
     await signInWithEmailAndPassword(auth, email, password);
 
     // 2. Let main.jsx handle navigation
-    navigate("/");
+    navigate("/profile");
   } catch (err) {
     console.error(err);
     switch (err.message) {
@@ -237,7 +237,6 @@ export const handleLogout = async ({
   loading,
   error,
   navigate,
-  redirectTo = "/auth",
 }) => {
   try {
     loading(true);
@@ -246,7 +245,7 @@ export const handleLogout = async ({
     await signOut(auth); // Sign out from current firebase user session
 
     // Redirect to welcome page
-    if (navigate) navigate(redirectTo);
+    if (navigate) navigate("/about_us");
   } catch (err) {
     console.error("Logout error:", err);
     error("Failed to log out. Please try again.");

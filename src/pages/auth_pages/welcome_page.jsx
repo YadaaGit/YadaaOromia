@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/utils/useTranslation.js";
 import { useLanguage } from "@/LanguageContext.jsx";
 import useUserData from "@/hooks/get_user_data.js";
-import welcomeImg from "@/assets/logos/logo_transparent.png"; 
+import welcomeImg from "@/assets/logos/logo_transparent.png";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 
 export default function Welcome() {
@@ -19,11 +19,14 @@ export default function Welcome() {
 
   return (
     <div
-      className="min-h-screen flex flex-col justify-center items-center bg-white px-6"
+      className="min-h-[90vh] flex flex-col justify-center items-center bg-white px-6"
       style={{ borderRadius: 13, paddingBottom: 25 }}
     >
       {/* Top Bar with Back Button and Language Dropdown */}
-      <div className="flex w-full max-w-md justify-between items-center mb-4">
+      <div
+        className="flex w-full max-w-md items-center mb-4"
+        style={{ justifyContent: "space-evenly" }}
+      >
         <button
           onClick={() => navigate("/about_us")}
           className="bg-indigo-100 text-logo-600 px-4 py-2 rounded-full font-semibold hover:bg-indigo-200 transition"
@@ -33,34 +36,36 @@ export default function Welcome() {
         </button>
         <LanguageDropdown
           onUpdateStateChange={(state) => setUpdateState(state)}
-          style_pass={{ maxWidth: 200 }}
+          style_pass={{ maxWidth: 160 }}
         />
       </div>
 
-      <img
-        src={welcomeImg}
-        alt={t("welcome_illustration")}
-        className="w-60 mb-6"
-      />
-      <h1 className="text-2xl font-bold text-logo-800 mb-2">{t("hello")}</h1>
-      <p className="text-logo-500 text-sm text-center mb-8">
-        {t("welcome_message_auth")}
-      </p>
-      <div className="flex flex-col w-full max-w-sm gap-4">
-        <button
-          className="bg-indigo-500 text-white py-3 rounded-full font-semibold"
-          style={{ borderRadius: "calc(infinity * 1px)" }}
-          onClick={() => navigate("/login")}
-        >
-          {t("login")}
-        </button>
-        <button
-          className="border_main_1 txt_color_main border-indigo-600 text-logo-800 py-3 rounded-full font-semibold"
-          style={{ borderRadius: "calc(infinity * 1px)" }}
-          onClick={() => navigate("/register")}
-        >
-          {t("sign_up")}
-        </button>
+      <div className="flex flex-col justify-center items-center bg-white">
+        <img
+          src={welcomeImg}
+          alt={t("welcome_illustration")}
+          className="w-60 mb-6"
+        />
+        <h1 className="text-2xl font-bold text-logo-800 mb-2">{t("hello")}</h1>
+        <p className="text-logo-500 text-sm text-center mb-8">
+          {t("welcome_message_auth")}
+        </p>
+        <div className="flex flex-col w-full max-w-sm gap-4">
+          <button
+            className="bg-indigo-500 text-white py-3 rounded-full font-semibold"
+            style={{ borderRadius: "calc(infinity * 1px)" }}
+            onClick={() => navigate("/login")}
+          >
+            {t("login")}
+          </button>
+          <button
+            className="border_main_1 txt_color_main border-indigo-600 text-logo-800 py-3 rounded-full font-semibold"
+            style={{ borderRadius: "calc(infinity * 1px)" }}
+            onClick={() => navigate("/register")}
+          >
+            {t("sign_up")}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -25,7 +25,145 @@ Data models are saved in ./server/models
 Object fields (e.g., contents & questions in each sections) to store nested content — which makes your schema more adaptable.
 
 
+# Data structure (Courses)
 
+The courses are fetched in a json format and joined here in ./src/hooks/get_course_data.js into one json format that is saved in a variable
+
+
+```bash
+const dummyCourses = [
+  {
+    program_id: "program1",
+    title: "Example program",
+    courses: [
+      {
+        course_id: "course_1",
+        title: "title",
+        description:
+          "description of the course",
+        image: ill3,
+        modules: [
+          {
+            module_id: "module_1",
+            title: "title",
+            content: [
+              {
+                header: "header one",
+                text: "text",
+              },
+              {
+                header: "header two",
+                text: "text",
+              }
+              ...
+            ],
+            quiz: [
+              {
+                question:
+                  "question one?",
+                options: [
+                  "option one",
+                  "option two",
+                  "option three",
+                  "option four",
+                ],
+                answer: 2,
+                explanation: "some text explaining the question",
+              },
+              ...
+            ],
+            metadata: {
+              estimated_time: "10 minutes",
+              level: "Beginner",
+              release_date: "2025-06-01",
+            },
+          },
+          {
+            module_id: "module_2",
+            title: "title",
+            content: [
+              ...
+            ],
+            quiz: [
+              ...
+            ],
+            metadata: {
+              ...
+            },
+          },
+          {
+            module_id: "module_3",
+            title: "title",
+            content: [
+              ...
+            ],
+            quiz: [
+              ...
+            ],
+            metadata: {
+              ...
+            },
+          },
+        ],
+        metadata: {
+          no_of_lessons: 3,
+          difficulty: "Easy",
+          estimated_time: "27min",
+          author: "Novage Edu",
+          release_date: "2025-07-09",
+        },
+      },
+      {
+        course_id: "course_2",
+        title: "title",
+        description:
+          "description of the course goes here, explaining what the course is about and what learners can expect to gain from it.",
+        image: ill4,
+        modules: [
+          ...
+        ],
+        metadata: {
+          ...
+        },
+      },
+    ],
+    final_quiz: {
+      quiz_title: "program 1 final quiz",
+      quiz_description: "final quiz description",
+      quiz: [
+        {
+          question: "question one?",
+          options: [
+            "option one",
+            "option two",
+            "option three",
+            "option four",
+          ],
+          answer: 2,
+          explanation:
+            "some text explaining the question",
+        },
+        ...
+      ],
+      metadata: {
+        question_num: 5,
+        difficulty: "",
+        pass_grade_percentage: "",
+      },
+    },
+    metadata: {
+      course_num: 2,
+      difficulty: "",
+      final_pass_point: 80,
+      estimated_time: "",
+      author: "",
+      release_date: "",
+    },
+  },
+];
+```
+
+    
 # ESM import resolving
 set in vite.config.js → resolve → alias
 

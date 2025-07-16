@@ -28,8 +28,8 @@ import Courses from "./pages/user_pages/Dashboard.jsx";
 import CoursesAdmin from "./pages/admin_pages/Dashboard_admin.jsx";
 import AddModal from "./pages/admin_pages/Add_course_modal.jsx";
 import DataCenter from "./pages/admin_pages/Data_center.jsx";
-import CourseModal from "./pages/user_pages/Course_modal.jsx";
-import CourseDetails from "./pages/user_pages/Course_detail.jsx";
+import CourseModal from "./pages/course_pages/Course_modal.jsx";
+import CourseDetails from "./pages/course_pages/Course_detail.jsx";
 import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 import AboutUs from "./pages/about_us.jsx";
 import FinalQuizPage from './pages/user_pages/Final_quiz_modal.jsx';
@@ -68,7 +68,7 @@ function AppRoutes({ user }) {
 
   // Paths where tab bar should be hidden
   const shouldHideTabBar =
-    ["/auth", "/login", "/register", "/verify_email", "/", "about_us"].some((path) =>
+    ["/auth", "/login", "/register", "/verify_email", "/", "/about_us"].some((path) =>
       matchPath({ path, end: true }, location.pathname)
     ) ||
     matchPath("/courses/:programId/:courseId", location.pathname) ||

@@ -1,16 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/utils/useTranslation.js";
-import logo from "../assets/logos/logo_icon.png";
+import logo from "@/assets/logos/logo_icon.png";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
+import sponserLogo1 from "@/assets/sponsers/buildUp.png";
+import sponserLogo2 from "@/assets/sponsers/elida.png";
+import sponserLogo3 from "@/assets/sponsers/partners.png";
+import sponserLogo4 from "@/assets/sponsers/searchForCommonGround.png";
+import sponserLogo5 from "@/assets/sponsers/zeleman.png";
 
 const partners = [
-  "../assets/logos/logo_icon.png",
-  "../assets/logos/logo_icon.png",
-  "../assets/logos/logo_icon.png",
-  "../assets/logos/logo_icon.png",
-  "../assets/logos/logo_icon.png",
-  "../assets/logos/logo_icon.png"
+  sponserLogo1,
+  sponserLogo2,
+  sponserLogo3,
+  sponserLogo4,
+  sponserLogo5
 ];
 
 const AboutUs = () => {
@@ -44,7 +48,12 @@ const AboutUs = () => {
   return (
     <div
       className="min-h-screen flex flex-col items-center bg-white px-6"
-      style={{ borderRadius: 13, paddingBottom: 25, background: "#f4f7fa", paddingTop: 20}}
+      style={{
+        borderRadius: 13,
+        paddingBottom: 25,
+        background: "#f4f7fa",
+        paddingTop: 20,
+      }}
     >
       {/* Top Bar with Language Dropdown and Sign Up Button */}
       <div className="flex w-full max-w-md justify-between items-center mb-4">
@@ -71,7 +80,10 @@ const AboutUs = () => {
         className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 mb-6"
         style={{ textAlign: "center" }}
       >
-        <h1 className="text-2xl font-bold text-logo-800 mb-2" style={{ fontSize: "180%" }}>
+        <h1
+          className="text-2xl font-bold text-logo-800 mb-2"
+          style={{ fontSize: "180%" }}
+        >
           {t("about_us_title") ||
             "Empowering Education, One Line of Code at a Time"}
         </h1>
@@ -98,10 +110,12 @@ const AboutUs = () => {
             "A world where every learner, regardless of location, has the tools they need to succeed."}
         </p>
       </div>
-      
+
       {/* Values Section */}
       <div className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 mb-6">
-        <h2 className="text-xl font-bold text-logo-800 mb-4">{t("core_values") || "Our Values"}</h2>
+        <h2 className="text-xl font-bold text-logo-800 mb-4">
+          {t("core_values") || "Our Values"}
+        </h2>
         <ul className="list-disc pl-6 text-logo-500 text-sm">
           <li>{t("value_innovation") || "Innovation"}</li>
           <li>{t("value_inclusion") || "Inclusion"}</li>
@@ -140,15 +154,17 @@ const AboutUs = () => {
             }}
           >
             <img
-              src={logo}
-              alt={`Partner ${index % partners.length + 1}`}
+              src={src}
+              alt={`Partner ${(index % partners.length) + 1}`}
               style={{ maxWidth: "100%", maxHeight: "100%" }}
             />
           </div>
         ))}
       </div>
       <div className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 mb-6">
-        <h2 className="text-xl font-bold text-logo-800 mb-4">{t("contact_us") || "Contact Us"}</h2>
+        <h2 className="text-xl font-bold text-logo-800 mb-4">
+          {t("contact_us") || "Contact Us"}
+        </h2>
         <p className="text-logo-500 text-sm mb-2">
           {t("contact_email") || "Email"}: info@example.com
         </p>
@@ -161,4 +177,3 @@ const AboutUs = () => {
 };
 
 export default AboutUs;
-

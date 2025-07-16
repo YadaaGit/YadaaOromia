@@ -1,0 +1,127 @@
+\YadaaOromia
+├── eslint.config.js
+├── firebase-config.js
+├── HelpME.md
+├── index.html
+├── package-lock.json
+├── package.json
+├── public
+|  ├── fav_icon.png
+|  ├── logo_bg_white.jpg
+|  ├── logo_icon.png
+|  ├── logo_transparent.png
+|  ├── screenshots
+|  |  ├── course.jpg
+|  |  ├── login.jpg
+|  |  ├── profile.jpg
+|  |  ├── register.jpg
+|  |  └── welcome.jpg
+|  └── vite.svg
+├── README.md
+├── server
+|  ├── index.js
+|  ├── models
+|  |  ├── Course.js
+|  |  ├── FinalQuiz.js
+|  |  ├── Image.js
+|  |  ├── Module.js
+|  |  └── Program.js
+|  ├── package-lock.json
+|  ├── package.json
+|  ├── ReadMe.md
+|  └── routes
+|     └── apiRoutes.js
+├── src
+|  ├── assets
+|  |  ├── images
+|  |  |  ├── emailVerification.jpg
+|  |  |  ├── illstration_1.jpg
+|  |  |  ├── illstration_2.jpg
+|  |  |  ├── illu3.jpg
+|  |  |  ├── illu4.jpg
+|  |  |  ├── illu5.jpg
+|  |  |  ├── login.jpg
+|  |  |  ├── login_new.jpg
+|  |  |  ├── logo.jpg
+|  |  |  ├── logo_transparent.png
+|  |  |  ├── portrait.jpg
+|  |  |  ├── registration.jpg
+|  |  |  └── welcome.jpg
+|  |  ├── logos
+|  |  |  ├── logo_bg_white.jpg
+|  |  |  ├── logo_icon.png
+|  |  |  └── logo_transparent.png
+|  |  └── test_imgs
+|  |     ├── close.png
+|  |     ├── cutaway.png
+|  |     ├── mid.png
+|  |     ├── ots.png
+|  |     └── wide.png
+|  ├── components
+|  |  ├── admin_components
+|  |  |  └── Add_course.jsx
+|  |  ├── basic_ui
+|  |  |  ├── button.jsx
+|  |  |  ├── card.jsx
+|  |  |  ├── confirm_modal.jsx
+|  |  |  ├── input.jsx
+|  |  |  ├── lang_dropdown.jsx
+|  |  |  ├── Loading.jsx
+|  |  |  ├── options.jsx
+|  |  |  └── pop_up.jsx
+|  |  ├── sections
+|  |  |  ├── Quiz.jsx
+|  |  |  └── Section_viewer.jsx
+|  |  ├── SplashScreen.jsx
+|  |  └── Tabbar.jsx
+|  ├── hooks
+|  |  ├── get_admin_emails.js
+|  |  ├── get_all_user.js
+|  |  ├── get_courses.js
+|  |  ├── get_course_data.js
+|  |  ├── get_course_data_test.js
+|  |  ├── get_tg_data.js
+|  |  └── get_user_data.js
+|  ├── init.js
+|  ├── lang
+|  |  ├── am.json
+|  |  ├── en.json
+|  |  └── or.json
+|  ├── LanguageContext.jsx
+|  ├── main.jsx
+|  ├── pages
+|  |  ├── about_us.jsx
+|  |  ├── admin_pages
+|  |  |  ├── Add_course_modal.jsx
+|  |  |  ├── Dashboard_admin.jsx
+|  |  |  ├── Data_center.jsx
+|  |  |  └── EditCourseDashboard.jsx
+|  |  ├── auth_pages
+|  |  |  ├── login.jsx
+|  |  |  ├── register.jsx
+|  |  |  ├── verify_email.jsx
+|  |  |  └── welcome_page.jsx
+|  |  ├── error_pages
+|  |  |  ├── 404_error.jsx
+|  |  |  └── unknown_error.jsx
+|  |  ├── Profile.jsx
+|  |  └── user_pages
+|  |     ├── Course_detail.jsx
+|  |     ├── Course_modal.jsx
+|  |     ├── Dashboard.jsx
+|  |     └── Final_quiz_modal.jsx
+|  ├── style
+|  |  ├── Dashboard_user.css
+|  |  ├── general.css
+|  |  ├── index.css
+|  |  └── tabbar.css
+|  └── utils
+|     ├── auth_services.js
+|     ├── progress_tracking.js
+|     └── useTranslation.js
+├── vercel.json
+└── vite.config.js
+
+directory: 1560 file: 4311
+
+ignored: directory (18)

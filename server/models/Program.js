@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const courseSchema = new mongoose.Schema({
+const programSchema = new mongoose.Schema({
   program_id: String,
   title: String,
   final_quiz_id: String,

@@ -61,7 +61,7 @@ export default function createApiRoutes(models) {
     }
   });
 
-  // Create course (with language choice)
+  // Create course with language DB selector
   router.post("/:db/courses", async (req, res) => {
     const { db } = req.params;
     if (!models[db]) {
@@ -77,19 +77,27 @@ export default function createApiRoutes(models) {
     }
   });
 
-  // ✅ GeoIP & VPN detection
+  // GeoIP & VPN detection
   router.get("/get-location", async (req, res) => {
     try {
       const ip =
         req.headers["x-forwarded-for"]?.split(",")[0] ||
         req.socket.remoteAddress;
-      
-      console.log("Client IP detected:", ip);  
+
+      if (ip === "::1" || ip === "127.0.0.1") {
+        return res.json({
+          ip: "localhost",
+          country: "Local",
+          city: "Localhost",
+          region: "Local",
+          isVpn: false,
+        });
+      }
 
       const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
       const geoData = await geoRes.json();
 
-      const vpnRes = await fetch(`http://ip-api.com/json/${ip}?fields=proxy`);
+      const vpnRes = await fetch(`https://ip-api.com/json/${ip}?fields=proxy`);
       const vpnData = await vpnRes.json();
 
       const location = {
@@ -97,7 +105,7 @@ export default function createApiRoutes(models) {
         country: geoData.country_name,
         city: geoData.city,
         region: geoData.region,
-        isVpn: geoData.security?.vpn || vpnData.proxy || false,
+        isVpn: vpnData.proxy || false,
       };
 
       res.json(location);
@@ -106,6 +114,98 @@ export default function createApiRoutes(models) {
       res.status(500).json({ error: "Failed to get location data" });
     }
   });
+
+  // ✅ Custom Deep Update: update full program by program_id
+  router.put("/:db/programs/update_by_id/:program_id", async (req, res) => {
+    const { db, program_id } = req.params;
+    const updatedProgramData = req.body;
+
+    if (!models[db]) {
+      return res.status(400).json({ error: `Unknown DB: ${db}` });
+    }
+
+    try {
+      const updated = await models[db].programs.findOneAndUpdate(
+        { program_id },
+        updatedProgramData,
+        { new: true }
+      );
+
+      if (!updated) {
+        return res.status(404).json({ error: "Program not found" });
+      }
+
+      res.json({ success: true, updated });
+    } catch (err) {
+      console.error(`[${db}] Deep update error for program "${program_id}":`, err.message);
+      res.status(500).json({ error: "Failed to update program" });
+    }
+  });
+
+  // ✅ Generic CRUD routes for all collections
+  for (const [dbKey, collections] of Object.entries(models)) {
+    for (const [collectionName, model] of Object.entries(collections)) {
+      const basePath = `/${dbKey}/${collectionName}`;
+
+      // CREATE
+      router.post(basePath, async (req, res) => {
+        try {
+          const doc = await model.create(req.body);
+          res.status(201).json(doc);
+        } catch (err) {
+          console.error(`[${dbKey}] Create error in ${collectionName}:`, err.message);
+          res.status(500).json({ error: "Create failed" });
+        }
+      });
+
+      // READ ALL
+      router.get(basePath, async (req, res) => {
+        try {
+          const docs = await model.find();
+          res.json(docs);
+        } catch (err) {
+          console.error(`[${dbKey}] Read error in ${collectionName}:`, err.message);
+          res.status(500).json({ error: "Read failed" });
+        }
+      });
+
+      // READ ONE
+      router.get(`${basePath}/:id`, async (req, res) => {
+        try {
+          const doc = await model.findById(req.params.id);
+          if (!doc) return res.status(404).json({ error: "Not found" });
+          res.json(doc);
+        } catch (err) {
+          console.error(`[${dbKey}] ReadOne error in ${collectionName}:`, err.message);
+          res.status(500).json({ error: "Failed to fetch document" });
+        }
+      });
+
+      // UPDATE
+      router.put(`${basePath}/:id`, async (req, res) => {
+        try {
+          const updated = await model.findByIdAndUpdate(req.params.id, req.body, { new: true });
+          if (!updated) return res.status(404).json({ error: "Not found" });
+          res.json(updated);
+        } catch (err) {
+          console.error(`[${dbKey}] Update error in ${collectionName}:`, err.message);
+          res.status(500).json({ error: "Update failed" });
+        }
+      });
+
+      // DELETE
+      router.delete(`${basePath}/:id`, async (req, res) => {
+        try {
+          const deleted = await model.findByIdAndDelete(req.params.id);
+          if (!deleted) return res.status(404).json({ error: "Not found" });
+          res.json({ success: true });
+        } catch (err) {
+          console.error(`[${dbKey}] Delete error in ${collectionName}:`, err.message);
+          res.status(500).json({ error: "Delete failed" });
+        }
+      });
+    }
+  }
 
   return router;
 }

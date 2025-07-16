@@ -141,6 +141,7 @@ export default function Login() {
           <span
             className="txt_color_main font-medium cursor-pointer"
             onClick={() => navigate("/register")}
+            style={{ textDecoration: "underline" }}
           >
             {t("sign_up")}
           </span>

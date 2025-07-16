@@ -17,10 +17,7 @@ import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
 import { useLanguage } from "@/LanguageContext.jsx";
 import { useTranslation } from "@/utils/useTranslation.js";
-import {
-  useTelegramInitData,
-  useTelegramLaunchParams,
-} from "@/hooks/get_tg_data.js";
+import { useTelegramInitData } from "@/hooks/get_tg_data.js";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 import { getNames as getCountryNames } from "country-list";
 import * as countriesCities from "countries-cities";
@@ -97,7 +94,9 @@ export default function Register() {
 
   useEffect(() => {
     if (formData.country) {
-      const cityArr = countriesCities.getCities(formData.country) || [];
+      const cityArr = countriesCities
+        .getCities(formData.country)
+        .sort((a, b) => a.localeCompare(b)) || [t("select_country_first")];
       setCitiesList(cityArr);
 
       setFormData((prev) => ({
@@ -110,7 +109,7 @@ export default function Register() {
             : "",
       }));
     } else {
-      setCitiesList([]);
+      setCitiesList([t("select_country_first")]);
       setFormData((prev) => ({ ...prev, city: "" }));
     }
   }, [formData.country]);
@@ -171,6 +170,9 @@ export default function Register() {
         <LanguageDropdown
           onUpdateStateChange={(state) => setUpdateState(state)}
           style_pass={{ maxWidth: 200, marginTop: 20 }}
+          thisReg={true}
+          ifThis={formData.country === ""}
+          setThis={setCitiesList}
         />
       </div>
 
@@ -294,6 +296,7 @@ export default function Register() {
           <span
             className="txt_color_main font-medium cursor-pointer"
             onClick={() => navigate("/login")}
+            style={{ textDecoration: "underline" }}
           >
             {t("sign_in")}
           </span>
