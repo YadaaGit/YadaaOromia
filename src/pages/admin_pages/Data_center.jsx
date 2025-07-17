@@ -212,10 +212,24 @@ export default function UserDashboard() {
 
         // Create and download the file
         const blob = new Blob([buf], { type: "application/octet-stream" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        a.click();
+        if (window.Telegram?.WebApp) {
+          // Inside Telegram – fallback to external method
+          const fileBlob = new Blob([buf], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+
+          // Upload to Firebase or your server
+          const downloadUrl = await uploadFileToServer(fileBlob, "users.xlsx");
+
+          // Show the link or send via Telegram message (if backend supports it)
+          toast("Download your file here: " + downloadUrl, { duration: 10000 });
+        } else {
+          // Normal fallback with a.download
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "users.xlsx";
+          a.click();
+        }
         resolve(); // Success!
       } catch (err) {
         console.error("Export failed:", err);
