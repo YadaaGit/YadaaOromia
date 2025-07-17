@@ -163,7 +163,16 @@ export default function Register() {
   return (
     <div
       className="min-h-screen flex flex-col justify-center items-center px-6 bg-white"
-      style={{ borderRadius: 13, paddingBottom: "20px" }}
+      style={{
+        borderRadius: 13,
+        paddingBottom: 25,
+        borderRradius: 13,
+        paddingBottom: 25,
+        display: "flex",
+        justifyContent: "flex-start",
+        paddingTop: 25,
+        gap: 70,
+      }}
     >
       {/* Top Right Buttons */}
       <div className="flex gap-2 lang-toggle">
@@ -176,132 +185,138 @@ export default function Register() {
         />
       </div>
 
-      <div className="mb-6">
-        <img
-          src={registration_illustration}
-          alt={t("registration_illustration")}
-          className="h-45 w-auto"
-        />
-      </div>
+      <div className="flex flex-col justify-center items-center bg-white">
+        <div className="mb-6">
+          <img
+            src={registration_illustration}
+            alt={t("registration_illustration")}
+            className="h-45 w-auto"
+          />
+        </div>
 
-      <h2 className="text-2xl font-bold mb-2 text-logo-800">{t("register")}</h2>
-      <p className="text-logo-500 text-sm mb-6">{t("register_to_continue")}</p>
-
-      <form className="w-full max-w-sm space-y-4">
-        <InputField
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder={t("name")}
-          Icon={IdentificationIcon}
-        />
-        <InputField
-          name="age"
-          type="number"
-          value={formData.age}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (/^\d*$/.test(value)) {
-              setFormData((prev) => ({ ...prev, age: value }));
-            }
-          }}
-          placeholder={t("age")}
-          Icon={CalendarIcon}
-        />
-        <CustomDropdownField
-          name="sex"
-          value={{ m: t("male"), f: t("female") }[formData.sex]}
-          onChange={handleChange}
-          placeholder={t("select_gender")}
-          options={[t("male"), t("female")]}
-        />
-        <CustomDropdownField
-          name="country"
-          value={formData.country}
-          onChange={handleChange}
-          placeholder={formData.country || autoCountry || t("country")}
-          options={countries}
-          hasIconPadding={true}
-        />
-        <CustomDropdownField
-          name="city"
-          value={formData.city}
-          onChange={handleChange}
-          placeholder={formData.city || autoCity || t("city")}
-          options={citiesList}
-          hasIconPadding={true}
-        />
-        <CustomDropdownField
-          name="lang"
-          value={
-            { en: t("english"), am: t("amharic"), or: t("oromifa") }[
-              formData.lang
-            ]
-          }
-          onChange={handleChange}
-          placeholder={t("select_language")}
-          options={[t("english"), t("amharic"), t("oromifa")]}
-        />
-        <InputField
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder={t("email")}
-          Icon={EnvelopeIcon}
-        />
-        <PasswordField
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder={t("password")}
-          show={showPassword}
-          setShow={setShowPassword}
-        />
-        <PasswordField
-          name="con_password"
-          value={formData.con_password}
-          onChange={handleChange}
-          placeholder={t("confirm_password")}
-          show={showConfirmPassword}
-          setShow={setShowConfirmPassword}
-        />
-
-        {/* Error Pop-up */}
-        <PopUp
-          show={showError}
-          onClose={() => setShowError(false)}
-          message={errorHere}
-          type="error"
-        />
-
-        {/* Warning Pop-up if admin list is still loading */}
-        <PopUp
-          show={showWarning}
-          onClose={() => setShowWarning(false)}
-          message={t("admin_loading_warning")}
-          type="error"
-        />
-
-        <button
-          type="button"
-          className="w-full bg-indigo-500 text-white py-3 rounded-full font-semibold shadow-md hover:bg-indigo-700 transition"
-          onClick={handleRegister}
-        >
-          {t("sign_up")}
-        </button>
-
-        <p className="text-center text-sm text-gray-500">
-          {t("had_acc")}{" "}
-          <span
-            className="txt_color_main font-medium cursor-pointer"
-            onClick={() => navigate("/login")}
-            style={{ textDecoration: "underline" }}
-          >
-            {t("sign_in")}
-          </span>
+        <h2 className="text-2xl font-bold mb-2 text-logo-800">
+          {t("register")}
+        </h2>
+        <p className="text-logo-500 text-sm mb-6">
+          {t("register_to_continue")}
         </p>
-      </form>
+
+        <form className="w-full max-w-sm space-y-4">
+          <InputField
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder={t("name")}
+            Icon={IdentificationIcon}
+          />
+          <InputField
+            name="age"
+            type="number"
+            value={formData.age}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d*$/.test(value)) {
+                setFormData((prev) => ({ ...prev, age: value }));
+              }
+            }}
+            placeholder={t("age")}
+            Icon={CalendarIcon}
+          />
+          <CustomDropdownField
+            name="sex"
+            value={{ m: t("male"), f: t("female") }[formData.sex]}
+            onChange={handleChange}
+            placeholder={t("select_gender")}
+            options={[t("male"), t("female")]}
+          />
+          <CustomDropdownField
+            name="country"
+            value={formData.country}
+            onChange={handleChange}
+            placeholder={formData.country || autoCountry || t("country")}
+            options={countries}
+            hasIconPadding={true}
+          />
+          <CustomDropdownField
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            placeholder={formData.city || autoCity || t("city")}
+            options={citiesList}
+            hasIconPadding={true}
+          />
+          <CustomDropdownField
+            name="lang"
+            value={
+              { en: t("english"), am: t("amharic"), or: t("oromifa") }[
+                formData.lang
+              ]
+            }
+            onChange={handleChange}
+            placeholder={t("select_language")}
+            options={[t("english"), t("amharic"), t("oromifa")]}
+          />
+          <InputField
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder={t("email")}
+            Icon={EnvelopeIcon}
+          />
+          <PasswordField
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder={t("password")}
+            show={showPassword}
+            setShow={setShowPassword}
+          />
+          <PasswordField
+            name="con_password"
+            value={formData.con_password}
+            onChange={handleChange}
+            placeholder={t("confirm_password")}
+            show={showConfirmPassword}
+            setShow={setShowConfirmPassword}
+          />
+
+          {/* Error Pop-up */}
+          <PopUp
+            show={showError}
+            onClose={() => setShowError(false)}
+            message={errorHere}
+            type="error"
+          />
+
+          {/* Warning Pop-up if admin list is still loading */}
+          <PopUp
+            show={showWarning}
+            onClose={() => setShowWarning(false)}
+            message={t("admin_loading_warning")}
+            type="error"
+          />
+
+          <button
+            type="button"
+            className="w-full bg-indigo-500 text-white py-3 rounded-full font-semibold shadow-md hover:bg-indigo-700 transition"
+            onClick={handleRegister}
+          >
+            {t("sign_up")}
+          </button>
+
+          <p className="text-center text-sm text-gray-500">
+            {t("had_acc")}{" "}
+            <span
+              className="txt_color_main font-medium cursor-pointer"
+              onClick={() => navigate("/login")}
+              style={{ textDecoration: "underline" }}
+            >
+              {t("sign_in")}
+            </span>
+          </p>
+        </form>
+      </div>
 
       {loadingHere && <Loading />}
     </div>

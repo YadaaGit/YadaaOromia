@@ -19,8 +19,17 @@ export default function Welcome() {
 
   return (
     <div
-      className="min-h-[90vh] flex flex-col justify-center items-center bg-white px-6"
-      style={{ borderRadius: 13, paddingBottom: 25 }}
+      className="min-h-[98vh] flex flex-col justify-center items-center bg-white px-6"
+      style={{
+        borderRadius: 13,
+        paddingBottom: 25,
+        borderRradius: 13,
+        paddingBottom: 25,
+        display: "flex",
+        justifyContent: "flex-start",
+        paddingTop: 25,
+        gap: 70,
+      }}
     >
       {/* Top Bar with Back Button and Language Dropdown */}
       <div

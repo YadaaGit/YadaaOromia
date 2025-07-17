@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { AgGridReact } from "ag-grid-react";
 import {
   AllCommunityModule,
@@ -57,19 +58,38 @@ export default function UserDashboard() {
     const total = users.length;
     const male = users.filter((u) => u.gender === "m").length;
     const female = users.filter((u) => u.gender === "f").length;
-    const avgAge =
-      total > 0
-        ? Math.round(
-            users.reduce((sum, u) => sum + (parseInt(u.age) || 0), 0) / total
-          )
-        : 0;
+
+    // Calculate mode (most frequent age)
+    const ageCounts = {};
+    users.forEach((u) => {
+      const age = parseInt(u.age);
+      if (!isNaN(age)) {
+        ageCounts[age] = (ageCounts[age] || 0) + 1;
+      }
+    });
+
+    let mostFrequentAge = 0;
+    let maxCount = 0;
+    Object.entries(ageCounts).forEach(([age, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        mostFrequentAge = age;
+      }
+    });
 
     const startedCourses = {};
     const finishedCourses = {};
     const ageGroups = {
-      "10-15": 0, "15-20": 0, "20-25": 0, "25-30": 0,
-      "30-35": 0, "35-40": 0, "40-45": 0, "45-50": 0,
-      "50-55": 0, "55-60": 0,
+      "10-15": 0,
+      "15-20": 0,
+      "20-25": 0,
+      "25-30": 0,
+      "30-35": 0,
+      "35-40": 0,
+      "40-45": 0,
+      "45-50": 0,
+      "50-55": 0,
+      "55-60": 0,
     };
 
     users.forEach((user) => {
@@ -90,7 +110,8 @@ export default function UserDashboard() {
           (progress.current_module === 1 && progress.current_section > 1) ||
           progress.current_module > 1;
 
-        if (started) startedCourses[courseId] = (startedCourses[courseId] || 0) + 1;
+        if (started)
+          startedCourses[courseId] = (startedCourses[courseId] || 0) + 1;
         if (progress.final_quiz_score > 75)
           finishedCourses[courseId] = (finishedCourses[courseId] || 0) + 1;
       });
@@ -99,93 +120,114 @@ export default function UserDashboard() {
     const mostStarted =
       Object.entries(startedCourses).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
     const mostFinished =
-      Object.entries(finishedCourses).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
+      Object.entries(finishedCourses).sort((a, b) => b[1] - a[1])[0]?.[0] ||
+      "-";
 
-    return { total, male, female, avgAge, mostStarted, mostFinished, ageGroups };
+    return {
+      total,
+      male,
+      female,
+      avgAge: mostFrequentAge,
+      mostStarted,
+      mostFinished,
+      ageGroups,
+    };
   };
 
   const summary = !loading && getSummary();
 
   const exportToExcel = async () => {
-    setExportStatus("loading");
-
-    try {
-      const formattedUsers = users.map((user) => {
-        const progress = user.course_progress || {};
-        const programs = Object.entries(progress).map(([programId, data]) => {
-          const status = data.completed
-            ? "Completed"
-            : `Course ${data.current_course}`;
-          const score = data.final_quiz_score
-            ? ` (Score: ${data.final_quiz_score}%)`
-            : "";
-          return `${programId}: ${status}${score}`;
-        });
-
-        return {
-          Name: user.name,
-          Email: user.email,
-          Gender: user.gender,
-          Age: user.age,
-          Country: user.country,
-          City: user.city,
-          Language: user.lang,
-          Role: user.role,
-          Joined: user.joined,
-          "Telegram ID": user.telegramId,
-          "Last Active": user.lastActiveAt,
-          "Program Progress": programs.join(" | "),
-        };
-      });
-
-      const ws = XLSX.utils.json_to_sheet(formattedUsers);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Users");
-      const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-
-      // Modern file picker (desktop only)
-      if (window.showSaveFilePicker) {
-        try {
-          const fileHandle = await window.showSaveFilePicker({
-            suggestedName: "users.xlsx",
-            types: [
-              {
-                description: "Excel Files",
-                accept: {
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
-                },
-              },
-            ],
+    const exportPromise = new Promise(async (resolve, reject) => {
+      try {
+        const formattedUsers = users.map((user) => {
+          const progress = user.course_progress || {};
+          const programs = Object.entries(progress).map(([programId, data]) => {
+            const status = data.completed
+              ? "Completed"
+              : `Course ${data.current_course}`;
+            const score = data.final_quiz_score
+              ? ` (Score: ${data.final_quiz_score}%)`
+              : "";
+            return `${programId}: ${status}${score}`;
           });
 
-          if (fileHandle) {
+          return {
+            Name: user.name,
+            Email: user.email,
+            Gender: user.gender,
+            Age: user.age,
+            Country: user.country,
+            City: user.city,
+            Language: user.lang,
+            Role: user.role,
+            Joined: user.joined,
+            "Telegram ID": user.telegramId,
+            "Last Active": user.lastActiveAt,
+            "Program Progress": programs.join(" | "),
+          };
+        });
+
+        const ws = XLSX.utils.json_to_sheet(formattedUsers);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Users");
+        const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+
+        // Use modern save file picker if available
+        if (window.showSaveFilePicker) {
+          try {
+            const fileHandle = await window.showSaveFilePicker({
+              suggestedName: "users.xlsx",
+              types: [
+                {
+                  description: "Excel Files",
+                  accept: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                      [".xlsx"],
+                  },
+                },
+              ],
+            });
+
             const writable = await fileHandle.createWritable();
             await writable.write(buf);
             await writable.close();
-            setExportStatus("success");
+            resolve(); // Success!
             return;
+          } catch (pickerError) {
+            if (pickerError.name !== "AbortError") {
+              reject(pickerError);
+              return;
+            }
+            // fall through to fallback
           }
-        } catch (pickerError) {
-          if (pickerError.name !== "AbortError") {
-            throw pickerError;
-          }
-          // Else fallback to download
         }
+
+        // Fallback: Ask user for filename
+        let filename = prompt("Enter a name for the file:", "users.xlsx");
+        if (!filename) {
+          toast.error("Export cancelled.");
+          return;
+        }
+        if (!filename.endsWith(".xlsx")) filename += ".xlsx";
+
+        // Create and download the file
+        const blob = new Blob([buf], { type: "application/octet-stream" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        resolve(); // Success!
+      } catch (err) {
+        console.error("Export failed:", err);
+        reject(err); // Fail
       }
+    });
 
-      // Fallback download
-      const blob = new Blob([buf], { type: "application/octet-stream" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "users.xlsx";
-      a.click();
-      setExportStatus("success");
-    } catch (err) {
-      console.error("Export failed:", err);
-      setExportStatus("error");
-    }
-
-    setTimeout(() => setExportStatus(null), 3000); // Reset after 3s
+    toast.promise(exportPromise, {
+      loading: "Exporting...",
+      success: "Excel file downloaded successfully!",
+      error: "Something went wrong during export.",
+    });
   };
 
   if (loading || !users)
@@ -197,7 +239,12 @@ export default function UserDashboard() {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} variant="rectangular" height={100} className="rounded-xl" />
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              height={100}
+              className="rounded-xl"
+            />
           ))}
         </div>
         <Skeleton variant="rectangular" height={500} className="rounded-xl" />
@@ -226,23 +273,18 @@ export default function UserDashboard() {
         </button>
       </div>
 
-      {exportStatus === "success" && (
-        <div className="text-green-700 bg-green-100 border border-green-300 px-4 py-2 rounded">
-          Excel file downloaded successfully!
-        </div>
-      )}
-      {exportStatus === "error" && (
-        <div className="text-red-700 bg-red-100 border border-red-300 px-4 py-2 rounded">
-          Something went wrong during export.
-        </div>
-      )}
-
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <SummaryCard label="Total Users" value={summary.total} />
-        <SummaryCard label="Male %" value={`${((summary.male / summary.total) * 100).toFixed(1)}%`} />
-        <SummaryCard label="Female %" value={`${((summary.female / summary.total) * 100).toFixed(1)}%`} />
         <SummaryCard
-          label="Avg Age"
+          label="Male %"
+          value={`${((summary.male / summary.total) * 100).toFixed(1)}%`}
+        />
+        <SummaryCard
+          label="Female %"
+          value={`${((summary.female / summary.total) * 100).toFixed(1)}%`}
+        />
+        <SummaryCard
+          label="Frequent Age"
           value={summary.avgAge}
           onClick={() => setShowAgeModal(true)}
           isClickable
@@ -251,7 +293,10 @@ export default function UserDashboard() {
         <SummaryCard label="Most Finished" value={summary.mostFinished} />
       </div>
 
-      <div className="rounded-xl border border-gray-200 overflow-hidden shadow" style={{ height: 500 }}>
+      <div
+        className="rounded-xl border border-gray-200 overflow-hidden shadow"
+        style={{ height: 500 }}
+      >
         <AgGridReact
           rowData={users}
           columnDefs={columnDefs}
@@ -271,14 +316,23 @@ export default function UserDashboard() {
             className="bg-white rounded-xl p-6 w-full max-w-md mx-4 shadow-lg"
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Age Group Breakdown</h3>
-              <button onClick={() => setShowAgeModal(false)} className="text-xl font-bold text-gray-500">
+              <h3 className="text-lg font-semibold text-gray-800">
+                Age Group Breakdown
+              </h3>
+              <button
+                onClick={() => setShowAgeModal(false)}
+                className="text-xl font-bold text-gray-500"
+              >
                 ×
               </button>
             </div>
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
               {Object.entries(summary.ageGroups).map(([range, count]) => (
-                <div key={range} className="flex justify-between text-gray-700" style={{ height: 30 }}>
+                <div
+                  key={range}
+                  className="flex justify-between text-gray-700"
+                  style={{ height: 30 }}
+                >
                   <span>{range}</span>
                   <span className="font-semibold">{count}</span>
                 </div>

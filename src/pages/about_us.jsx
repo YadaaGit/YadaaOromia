@@ -59,7 +59,7 @@ const AboutUs = () => {
       <div className="flex w-full max-w-md justify-between items-center mb-4">
         <LanguageDropdown style_pass={{ maxWidth: 160 }} />
         <button
-          onClick={() => navigate("/auth")}
+          onClick={() => navigate("/welcome")}
           className="bg-indigo-500 text-white px-4 py-2 rounded-full font-semibold shadow hover:bg-indigo-600 transition"
           style={{ borderRadius: "999px" }}
         >

@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import {
   BrowserRouter as Router,
   Routes,
@@ -32,7 +33,7 @@ import CourseModal from "./pages/course_pages/Course_modal.jsx";
 import CourseDetails from "./pages/course_pages/Course_detail.jsx";
 import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 import AboutUs from "./pages/about_us.jsx";
-import FinalQuizPage from './pages/user_pages/Final_quiz_modal.jsx';
+import FinalQuizPage from './pages/course_pages/Final_quiz_modal.jsx';
 
 // Initialize client-side tools
 init({
@@ -68,7 +69,7 @@ function AppRoutes({ user }) {
 
   // Paths where tab bar should be hidden
   const shouldHideTabBar =
-    ["/auth", "/login", "/register", "/verify_email", "/", "/about_us"].some((path) =>
+    ["/welcome", "/login", "/register", "/verify_email", "/", "/about_us"].some((path) =>
       matchPath({ path, end: true }, location.pathname)
     ) ||
     matchPath("/courses/:programId/:courseId", location.pathname) ||
@@ -125,7 +126,7 @@ function AppRoutes({ user }) {
           }
         />
         <Route
-          path="/auth"
+          path="/welcome"
           element={!authenticated ? <Welcome /> : <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />}
         />
         <Route
@@ -139,19 +140,19 @@ function AppRoutes({ user }) {
         <Route path="/verify_email" element={<VerifyEmail />} />
         <Route
           path="/profile"
-          element={!authenticated ? <Navigate to="/auth" /> : <Profile />}
+          element={!authenticated ? <Navigate to="/welcome" /> : <Profile />}
         />
         <Route
           path="/courses"
-          element={!authenticated ? <Navigate to="/auth" /> : (role === "user" ? <Courses /> : <Navigate to="/courses_admin" />)}
+          element={!authenticated ? <Navigate to="/welcome" /> : (role === "user" ? <Courses /> : <Navigate to="/courses_admin" />)}
         />
         <Route
           path="/courses_admin"
-          element={!authenticated ? <Navigate to="/auth" /> : (role === "user" ? <Navigate to="/courses" /> : <CoursesAdmin />)}
+          element={!authenticated ? <Navigate to="/welcome" /> : (role === "user" ? <Navigate to="/courses" /> : <CoursesAdmin />)}
         />
         <Route
           path="/user_data"
-          element={!authenticated ? <Navigate to="/auth" /> : (role === "user" ? <Navigate to="/courses" /> : <DataCenter />)}
+          element={!authenticated ? <Navigate to="/welcome" /> : (role === "user" ? <Navigate to="/courses" /> : <DataCenter />)}
         />
 
         <Route path="/about_us" element={<AboutUs />} />
@@ -184,6 +185,17 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Router>
       <AppRoutesWrapper />
+      <Toaster
+        toastOptions={{
+          className: "bg-white text-sm font-medium shadow-md rounded-md p-3",
+          success: {
+            className: "bg-green-100 text-green-800",
+          },
+          error: {
+            className: "bg-red-100 text-red-800",
+          },
+        }}
+      />
     </Router>
   </StrictMode>
 );

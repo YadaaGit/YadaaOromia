@@ -20,7 +20,7 @@ export default function VerifyEmail() {
     const unsubscribe = auth.onAuthStateChanged((u) => {
       setUser(u);
       if (!u) {
-        navigate("/auth");
+        navigate("/welcome");
       } else if (u.emailVerified) {
         navigate("/courses");
       }
