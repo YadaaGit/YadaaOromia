@@ -222,11 +222,35 @@ export default function UserDashboard() {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           });
 
-          // Upload to Firebase or your server
-          const downloadUrl = await uploadFileToServer(fileBlob, "users.xlsx");
-
-          // Show the link or send via Telegram message (if backend supports it)
-          toast("Download your file here: " + downloadUrl, { duration: 10000 });
+          const url = URL.createObjectURL(fileBlob);
+          toast.custom(
+            (t) => (
+              <div
+                style={{
+                  padding: "8px 12px",
+                  backgroundColor: "#333",
+                  color: "white",
+                  borderRadius: 6,
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <span style={{ marginRight: 8 }}>Download your file here:</span>
+                <a
+                  href={url}
+                  download="users.xlsx"
+                  style={{ color: "#4ade80", textDecoration: "underline" }}
+                  onClick={() => {
+                    toast.dismiss(t.id);
+                    URL.revokeObjectURL(url);
+                  }} // dismiss toast and clean url on click
+                >
+                  Click to download
+                </a>
+              </div>
+            ),
+            { duration: 10000 }
+          );
         } else {
           // Normal fallback with a.download
           const a = document.createElement("a");
