@@ -123,7 +123,7 @@ export default function ProfilePage() {
       {/* Avatar */}
       <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-white mb-4">
         <img
-          src={initDataState.user?.profile || avatarFallback}
+          src={initDataState.user?.photo_url || avatarFallback}
           alt="Avatar"
           className="w-full h-full object-cover"
         />

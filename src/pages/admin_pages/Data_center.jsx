@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { useTelegramInitData } from "@/hooks/get_tg_data.js";
 import { AgGridReact } from "ag-grid-react";
 import {
   AllCommunityModule,
@@ -17,7 +18,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 export default function UserDashboard() {
   const { t } = useTranslation();
   const [showAgeModal, setShowAgeModal] = useState(false);
-  const [exportStatus, setExportStatus] = useState(null); // null | "loading" | "success" | "error"
+  const { initDataState } = useTelegramInitData();
 
   const columnDefs = useMemo(
     () => [
@@ -212,7 +213,7 @@ export default function UserDashboard() {
 
         // Create and download the file
         const blob = new Blob([buf], { type: "application/octet-stream" });
-        if (window.Telegram?.WebApp) {
+        if (initDataState.user) {
           // Inside Telegram – fallback to external method
           const fileBlob = new Blob([buf], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
