@@ -194,19 +194,19 @@ export default function UserDashboard() {
             const writable = await fileHandle.createWritable();
             await writable.write(buf);
             await writable.close();
-            resolve(); // Success!
             setExportStatus("success");
+            resolve(); // success, exit
             return;
           } catch (pickerError) {
             if (pickerError.name !== "AbortError") {
               reject(pickerError);
               return;
             }
-            // fall through to fallback
+            // else fall through to fallback
           }
         }
 
-        // Fallback: Ask user for filename
+        // Fallback: prompt user for filename
         let filename = prompt("Enter a name for the file:", "users.xlsx");
         if (!filename) {
           toast.error("Export cancelled.");
@@ -214,15 +214,19 @@ export default function UserDashboard() {
         }
         if (!filename.endsWith(".xlsx")) filename += ".xlsx";
 
-        // Create and download the file
-        const blob = new Blob([buf], { type: "application/octet-stream" });
         if (initDataState.user) {
-          // Inside Telegram – fallback to external method
+          // Telegram mini app fallback: custom toast with clickable download
           const fileBlob = new Blob([buf], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           });
-
           const url = URL.createObjectURL(fileBlob);
+
+          resolve(); // resolve here because export is ready for download
+
+          setExportStatus("success");
+
+          toast.dismiss(); // dismiss the promise toast immediately on success
+
           toast.custom(
             (t) => (
               <div
@@ -233,17 +237,31 @@ export default function UserDashboard() {
                   borderRadius: 6,
                   display: "flex",
                   alignItems: "center",
+                  gap: 8,
                 }}
               >
-                <span style={{ marginRight: 8 }}>Download your file here:</span>
+                <span>Download your file here:</span>
                 <a
                   href={url}
-                  download="users.xlsx"
-                  style={{ color: "#4ade80", textDecoration: "underline" }}
+                  download={filename}
+                  style={{
+                    color: "#4ade80",
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                  }}
                   onClick={() => {
-                    toast.dismiss(t.id);
-                    URL.revokeObjectURL(url);
-                  }} // dismiss toast and clean url on click
+                    // Show loading toast on click
+                    toast.loading("Preparing download...", {
+                      id: "download-loading",
+                    });
+                    // Wait a tick and then remove loading toast (simulate download completion)
+                    setTimeout(() => {
+                      toast.dismiss("download-loading");
+                      toast.success("Download started!");
+                      URL.revokeObjectURL(url);
+                      toast.dismiss(t.id); // dismiss this custom toast after click
+                    }, 1500);
+                  }}
                 >
                   Click to download
                 </a>
@@ -252,22 +270,27 @@ export default function UserDashboard() {
             { duration: 10000 }
           );
         } else {
-          // Normal fallback with a.download
+          // Normal fallback - automatic download click
+          const blob = new Blob([buf], { type: "application/octet-stream" });
           const a = document.createElement("a");
           a.href = URL.createObjectURL(blob);
-          a.download = "users.xlsx";
+          a.download = filename;
           a.click();
+          URL.revokeObjectURL(a.href);
+
+          setExportStatus("success");
+          resolve();
         }
-        resolve(); // Success!
       } catch (err) {
         console.error("Export failed:", err);
-        reject(err); // Fail
+        reject(err);
       }
     });
+
     setExportStatus("idle");
     toast.promise(exportPromise, {
       loading: "Exporting...",
-      success: "Excel file downloaded successfully!",
+      success: "", // suppress default success toast since we handle custom toasts
       error: "Something went wrong during export.",
     });
   };
