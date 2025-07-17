@@ -16,41 +16,40 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 export default function UserDashboard() {
   const { t } = useTranslation();
   const [showAgeModal, setShowAgeModal] = useState(false);
+  const [exportStatus, setExportStatus] = useState(null); // null | "loading" | "success" | "error"
 
-const columnDefs = useMemo(
-  () => [
-    { field: "name", sortable: true, filter: true },
-    { field: "email", sortable: true, filter: true },
-    { field: "gender", sortable: true, filter: true },
-    { field: "age", sortable: true, filter: true },
-    { field: "role", sortable: true, filter: true },
-    { field: "lang", sortable: true, filter: true },
-    {
-      headerName: "Program Progress",
-      valueGetter: (params) => {
-        const progress = params.data.course_progress || {};
-        const programs = Object.entries(progress);
-
-        if (programs.length === 0) return "—";
-
-        return programs
-          .map(([programId, data]) => {
-            const status = data.completed
-              ? "✅ Completed"
-              : `📘 Course ${data.current_course}`;
-            const score = data.final_quiz_score
-              ? ` - Score: ${data.final_quiz_score}%`
-              : "";
-            return `${programId}: ${status}${score}`;
-          })
-          .join(" | ");
+  const columnDefs = useMemo(
+    () => [
+      { field: "name", sortable: true, filter: true },
+      { field: "email", sortable: true, filter: true },
+      { field: "gender", sortable: true, filter: true },
+      { field: "age", sortable: true, filter: true },
+      { field: "role", sortable: true, filter: true },
+      { field: "lang", sortable: true, filter: true },
+      {
+        headerName: "Program Progress",
+        valueGetter: (params) => {
+          const progress = params.data.course_progress || {};
+          const programs = Object.entries(progress);
+          if (programs.length === 0) return "—";
+          return programs
+            .map(([programId, data]) => {
+              const status = data.completed
+                ? "✅ Completed"
+                : `📘 Course ${data.current_course}`;
+              const score = data.final_quiz_score
+                ? ` - Score: ${data.final_quiz_score}%`
+                : "";
+              return `${programId}: ${status}${score}`;
+            })
+            .join(" | ");
+        },
+        cellClass: "text-sm text-logo-700 whitespace-pre-wrap",
       },
-      cellClass: "text-sm text-logo-700 whitespace-pre-wrap",
-    },
-    { field: "joined", headerName: "Joined Date", sortable: true },
-  ],
-  []
-);
+      { field: "joined", headerName: "Joined Date", sortable: true },
+    ],
+    []
+  );
 
   const { users, loading, error } = useAllUsers({ includeCourses: true });
 
@@ -107,72 +106,87 @@ const columnDefs = useMemo(
 
   const summary = !loading && getSummary();
 
-const exportToExcel = async () => {
-  // Format and clean up user data before export
-  const formattedUsers = users.map((user) => {
-    const progress = user.course_progress || {};
-    const programs = Object.entries(progress).map(([programId, data]) => {
-      const status = data.completed
-        ? "Completed"
-        : `Course ${data.current_course}`;
-      const score = data.final_quiz_score
-        ? ` (Score: ${data.final_quiz_score}%)`
-        : "";
-      return `${programId}: ${status}${score}`;
-    });
+  const exportToExcel = async () => {
+    setExportStatus("loading");
 
-    return {
-      Name: user.name,
-      Email: user.email,
-      Gender: user.gender,
-      Age: user.age,
-      Country: user.country,
-      City: user.city,
-      Language: user.lang,
-      Role: user.role,
-      "Joined": user.joined,
-      "Telegram ID": user.telegramId,
-      "Last Active": user.lastActiveAt,
-      "Program Progress": programs.join(" | "),
-    };
-  });
+    try {
+      const formattedUsers = users.map((user) => {
+        const progress = user.course_progress || {};
+        const programs = Object.entries(progress).map(([programId, data]) => {
+          const status = data.completed
+            ? "Completed"
+            : `Course ${data.current_course}`;
+          const score = data.final_quiz_score
+            ? ` (Score: ${data.final_quiz_score}%)`
+            : "";
+          return `${programId}: ${status}${score}`;
+        });
 
-  const ws = XLSX.utils.json_to_sheet(formattedUsers);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Users");
+        return {
+          Name: user.name,
+          Email: user.email,
+          Gender: user.gender,
+          Age: user.age,
+          Country: user.country,
+          City: user.city,
+          Language: user.lang,
+          Role: user.role,
+          Joined: user.joined,
+          "Telegram ID": user.telegramId,
+          "Last Active": user.lastActiveAt,
+          "Program Progress": programs.join(" | "),
+        };
+      });
 
-  const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const ws = XLSX.utils.json_to_sheet(formattedUsers);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Users");
+      const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
 
-  try {
-    const fileHandle = await window.showSaveFilePicker?.({
-      suggestedName: "users.xlsx",
-      types: [
-        {
-          description: "Excel Files",
-          accept: {
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
-          },
-        },
-      ],
-    });
+      // Modern file picker (desktop only)
+      if (window.showSaveFilePicker) {
+        try {
+          const fileHandle = await window.showSaveFilePicker({
+            suggestedName: "users.xlsx",
+            types: [
+              {
+                description: "Excel Files",
+                accept: {
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+                },
+              },
+            ],
+          });
 
-    if (fileHandle) {
-      const writable = await fileHandle.createWritable();
-      await writable.write(buf);
-      await writable.close();
-    } else {
-      // fallback download
+          if (fileHandle) {
+            const writable = await fileHandle.createWritable();
+            await writable.write(buf);
+            await writable.close();
+            setExportStatus("success");
+            return;
+          }
+        } catch (pickerError) {
+          if (pickerError.name !== "AbortError") {
+            throw pickerError;
+          }
+          // Else fallback to download
+        }
+      }
+
+      // Fallback download
       const blob = new Blob([buf], { type: "application/octet-stream" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = "users.xlsx";
       a.click();
+      setExportStatus("success");
+    } catch (err) {
+      console.error("Export failed:", err);
+      setExportStatus("error");
     }
-  } catch (err) {
-    console.error("Export failed:", err);
-  }
-};
 
+    setTimeout(() => setExportStatus(null), 3000); // Reset after 3s
+  };
 
   if (loading || !users)
     return (
@@ -200,16 +214,28 @@ const exportToExcel = async () => {
     );
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="p-6 space-y-8 relative">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">{t("user_view")}</h2>
         <button
           onClick={exportToExcel}
-          className="px-4 py-2 rounded-lg bg-amber-200 text-logo-800 font-semibold shadow hover:bg-amber-300 transition"
+          disabled={exportStatus === "loading"}
+          className="px-4 py-2 rounded-lg bg-amber-200 text-logo-800 font-semibold shadow hover:bg-amber-300 transition disabled:opacity-50"
         >
-          Download Excel
+          {exportStatus === "loading" ? "Exporting..." : "Download Excel"}
         </button>
       </div>
+
+      {exportStatus === "success" && (
+        <div className="text-green-700 bg-green-100 border border-green-300 px-4 py-2 rounded">
+          Excel file downloaded successfully!
+        </div>
+      )}
+      {exportStatus === "error" && (
+        <div className="text-red-700 bg-red-100 border border-red-300 px-4 py-2 rounded">
+          Something went wrong during export.
+        </div>
+      )}
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <SummaryCard label="Total Users" value={summary.total} />
@@ -234,7 +260,6 @@ const exportToExcel = async () => {
         />
       </div>
 
-      {/* Age Group Modal */}
       {showAgeModal && (
         <div
           className="fixed inset-0 z-50 flex justify-center items-center"
