@@ -19,6 +19,7 @@ export default function UserDashboard() {
   const { t } = useTranslation();
   const [showAgeModal, setShowAgeModal] = useState(false);
   const { initDataState } = useTelegramInitData();
+  const [exportStatus, setExportStatus] = useState("idle");
 
   const columnDefs = useMemo(
     () => [
@@ -139,6 +140,7 @@ export default function UserDashboard() {
 
   const exportToExcel = async () => {
     const exportPromise = new Promise(async (resolve, reject) => {
+      setExportStatus("loading");
       try {
         const formattedUsers = users.map((user) => {
           const progress = user.course_progress || {};
@@ -193,6 +195,7 @@ export default function UserDashboard() {
             await writable.write(buf);
             await writable.close();
             resolve(); // Success!
+            setExportStatus("success");
             return;
           } catch (pickerError) {
             if (pickerError.name !== "AbortError") {
@@ -237,7 +240,7 @@ export default function UserDashboard() {
         reject(err); // Fail
       }
     });
-
+    setExportStatus("idle");
     toast.promise(exportPromise, {
       loading: "Exporting...",
       success: "Excel file downloaded successfully!",
