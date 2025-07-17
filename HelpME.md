@@ -224,3 +224,7 @@ Run the following in the terminal in the root file
 - "npm run": view all available scripts
 
     → set in ./package.json 
+
+
+# Refferences
+- [Fetch data from Telegram](https://docs.telegram-mini-apps.com/platform/init-data)
