@@ -1,12 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useCourseData } from "@/hooks/get_course_data_test.js";
+import { useCourseData } from "@/hooks/get_course_data.js";
 import { Skeleton } from "@mui/material";
 import { useTranslation } from "@/utils/useTranslation.js";
-import dummyPrograms from "@/hooks/get_course_data_test.js";
 import useUserData from "@/hooks/get_user_data.js";
 import { LockClosedIcon as Lock } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import PopUp from "@/components/basic_ui/pop_up.jsx";
+import { useAllPrograms } from "@/hooks/get_courses.js";
+import RemoteImage from "@/components/basic_ui/remoteImgDisplay.jsx";
 
 export default function CourseDetails() {
   const { t } = useTranslation();
@@ -16,14 +17,20 @@ export default function CourseDetails() {
   const navigate = useNavigate();
   const [showLockPopup, setShowLockPopup] = useState(false);
   const [lockMessage, setLockMessage] = useState("");
+  const { programsData, loading: loading_p, error: error_p } = useAllPrograms();
 
-  const program = dummyPrograms.find((p) => p.program_id === programId);
+  const program = programsData.find((p) => p.uid === programId);
   const courses = program?.courses || [];
-  const currentIndex = courses.findIndex((c) => c.course_id === courseId);
+  const currentIndex = courses.findIndex((c) => c.uid === courseId);
 
-  const programProgress = user?.course_progress?.[programId];
-  const unlockedCourseIndex = (programProgress?.current_course || 1) - 1;
-  const unlockedModuleIndex = (programProgress?.current_module || 1) - 1;
+  // ✅ Default progress if not found (course = 1, module = 1)
+  const programProgress = user?.course_progress?.[programId] || {
+    current_course: 1,
+    current_module: 1,
+  };
+
+  const unlockedCourseIndex = programProgress.current_course - 1;
+  const unlockedModuleIndex = programProgress.current_module - 1;
 
   const openModule = (moduleId, isLocked) => {
     if (isLocked) {
@@ -40,13 +47,13 @@ export default function CourseDetails() {
 
   const handlePrev = () => {
     if (currentIndex > 0) {
-      navigate(`/courses/${programId}/${courses[currentIndex - 1].course_id}`);
+      navigate(`/courses/${programId}/${courses[currentIndex - 1].uid}`);
     }
   };
 
   const handleNext = () => {
     if (currentIndex < courses.length - 1) {
-      navigate(`/courses/${programId}/${courses[currentIndex + 1].course_id}`);
+      navigate(`/courses/${programId}/${courses[currentIndex + 1].uid}`);
     } else if (program?.final_quiz) {
       navigate(`/courses/${programId}/final_quiz`);
     }
@@ -63,7 +70,7 @@ export default function CourseDetails() {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justi fy-between px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <button
             onClick={() => navigate("/courses", { replace: true })}
             className="text-2xl font-bold text-gray-500 hover:text-red-500 transition"
@@ -93,86 +100,34 @@ export default function CourseDetails() {
                 <div className="flex flex-wrap gap-6">
                   {/* Left: Course Info */}
                   <div className="flex-1 min-w-[250px]">
-                    <img
-                      src={course.image}
-                      alt={course.title}
-                      className="w-full max-w-[300px] rounded-xl shadow mb-4"
-                      style={{ alignSelf: "center", justifySelf: "center" }}
-                    />
+                    {course.cover_img && (
+                      <RemoteImage
+                        uid={course.cover_img}
+                        lang={user?.lang || "en"}
+                        alt={course.title}
+                        className="w-full max-w-[300px] rounded-xl shadow mb-4"
+                        style={{ alignSelf: "center", justifySelf: "center" }}
+                      />
+                    )}
                     <p className="text-gray-700 mb-4">{course.description}</p>
                     <div className="text-sm text-gray-600 space-y-1">
-                      <p
-                        style={{
-                          width: "100%",
-                          height: 40,
-                          backgroundColor: "#fbf9fa",
-                          borderRadius: 7,
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: "0 10px 0 10px",
-                        }}
-                      >
+                      <p className="flex justify-between items-center bg-gray-50 rounded-md px-3 py-2">
                         <span className="font-medium">Author:</span>
                         <span>{course.metadata?.author}</span>
                       </p>
-                      <p
-                        style={{
-                          width: "100%",
-                          height: 40,
-                          backgroundColor: "#fbf9fa",
-                          borderRadius: 7,
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: "0 10px 0 10px",
-                        }}
-                      >
+                      <p className="flex justify-between items-center bg-gray-50 rounded-md px-3 py-2">
                         <span className="font-medium">Modules:</span>
                         <span>{course.modules?.length}</span>
                       </p>
-                      <p
-                        style={{
-                          width: "100%",
-                          height: 40,
-                          backgroundColor: "#fbf9fa",
-                          borderRadius: 7,
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: "0 10px 0 10px",
-                        }}
-                      >
+                      <p className="flex justify-between items-center bg-gray-50 rounded-md px-3 py-2">
                         <span className="font-medium">Estimated Time:</span>
                         <span>{course.metadata?.estimated_time}</span>
                       </p>
-                      <p
-                        style={{
-                          width: "100%",
-                          height: 40,
-                          backgroundColor: "#fbf9fa",
-                          borderRadius: 7,
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: "0 10px 0 10px",
-                        }}
-                      >
+                      <p className="flex justify-between items-center bg-gray-50 rounded-md px-3 py-2">
                         <span className="font-medium">Difficulty:</span>
                         <span>{course.metadata?.difficulty}</span>
                       </p>
-                      <p
-                        style={{
-                          width: "100%",
-                          height: 40,
-                          backgroundColor: "#fbf9fa",
-                          borderRadius: 7,
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: "0 10px 0 10px",
-                        }}
-                      >
+                      <p className="flex justify-between items-center bg-gray-50 rounded-md px-3 py-2">
                         <span className="font-medium">Release:</span>
                         <span>{course.metadata?.release_date}</span>
                       </p>
@@ -181,14 +136,7 @@ export default function CourseDetails() {
 
                   {/* Right: Modules */}
                   <div className="flex-1 min-w-[250px] max-h-[400px] overflow-y-auto border border-gray-200 rounded-2xl p-4 shadow-sm bg-gray-50">
-                    <h6
-                      style={{
-                        fontWeight: "700",
-                        fontSize: "large",
-                        marginBottom: "10px",
-                        color: "#364153",
-                      }}
-                    >
+                    <h6 className="font-bold text-lg mb-3 text-gray-700">
                       Modules
                     </h6>
                     {course.modules.map((module, mIndex) => {
@@ -198,14 +146,14 @@ export default function CourseDetails() {
                           : mIndex > unlockedModuleIndex;
                       return (
                         <div
-                          key={module.module_id}
+                          key={module.uid}
                           className="relative p-3 mb-3 bg-white rounded-xl shadow-sm hover:bg-gray-100 cursor-pointer transition"
-                          onClick={() => openModule(module.module_id, isLocked)}
+                          onClick={() => openModule(module.uid, isLocked)}
                         >
                           {isLocked && (
                             <div
-                              className="absolute inset-0 flex items-center justify-center bg-opacity-50 rounded-xl"
-                              style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
+                              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-xl"
+                              style={{ opacity: 0.5 }}
                             >
                               <Lock className="w-5 h-5 text-white" />
                             </div>

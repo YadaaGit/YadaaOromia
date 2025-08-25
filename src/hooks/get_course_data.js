@@ -1,34 +1,56 @@
-/*
-  - This hook will fetch the courses and avatars (for users to choose from and use as a profile pic) uploaded to the MongoDB setup for this bot
-  - Only the courses and the avatars will be saved on the MongoDB, all other data (like user information and progress data) 
-    will be saved on the firebase firestore databsase 
-*/
+import react, { useState, useEffect } from "react";
+import { useAllPrograms } from "./get_courses.js";
 
+export const useProgramData = (programId) => {
+  const { programsData, loading_p, error_p } = useAllPrograms();
+  const [program, setProgram] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-import { useEffect, useState } from 'react';
+  useEffect(() => {
+    const program_data =
+      programsData && programsData.find((p) => p.uid === programId);
+    setTimeout(() => {
+      setProgram(program_data || null);
+      setLoading(false);
+    }, 500); // simulate loading
+  }, [programId]);
 
-export const useCourseData = (courseId) => {
+  return { program, loading, programsData };
+};
+
+export const useCourseData = (programId, courseId) => {
+  const { programsData, loading_p, error_p } = useAllPrograms();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Replace this with your actual API or DB call
-    const fetchCourse = async () => {
-      setLoading(true);
-      try {
-        // Dummy data for now
-        const response = await fetch(`/api/courses/${courseId}`);
-        const data = await response.json();
-        setCourse(data);
-      } catch (err) {
-        console.error("Error fetching course:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourse();
-  }, [courseId]);
+    const program =
+      programsData && programsData.find((p) => p.uid === programId);
+    const foundCourse = program?.courses.find((c) => c.uid === courseId);
+    setTimeout(() => {
+      setCourse(foundCourse || null);
+      setLoading(false);
+    }, 500);
+  }, [programId, courseId, programsData]);
 
   return { course, loading };
+};
+
+export const useModuleData = (programId, courseId, moduleId) => {
+  const { programsData } = useAllPrograms();
+  const [module, setModule] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const program =
+      programsData && programsData.find((p) => p.uid === programId);
+    const course = program?.courses.find((c) => c.uid === courseId);
+    const foundModule = course?.modules.find((m) => m.uid === moduleId);
+    setTimeout(() => {
+      setModule(foundModule || null);
+      setLoading(false);
+    }, 500);
+  }, [programId, courseId, moduleId, programsData]);
+
+  return { module, loading };
 };

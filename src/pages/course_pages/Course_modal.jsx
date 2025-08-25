@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCourseData } from "@/hooks/get_course_data_test.js";
+import { useCourseData, useModuleData } from "@/hooks/get_course_data.js";
 import SectionViewer from "@/components/sections/Section_viewer.jsx";
 import { useTranslation } from "@/utils/useTranslation.js";
 import { Skeleton } from "@mui/material";
@@ -66,7 +66,7 @@ export default function CourseModules() {
                 {loading ? (
                   <Skeleton variant="text" height={28} width="60%" />
                 ) : (
-                  course?.modules.find((m) => m.module_id === moduleId)?.title || "Loading..."
+                  course?.modules.find((m) => m.uid === moduleId)?.title || "Loading..."
                 )}
               </h2>
               <button

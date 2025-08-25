@@ -2,6 +2,9 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Quiz from "./Quiz";
 import { handleUpdateProgress } from "@/utils/progress_tracking.js";
+import { useAllPrograms } from "@/hooks/get_courses.js";
+import useUserData from "@/hooks/get_user_data.js";
+import RemoteImage from "@/components/basic_ui/remoteImgDisplay.jsx";
 
 export default function SectionViewer({
   modules,
@@ -10,17 +13,21 @@ export default function SectionViewer({
   programId,
   courseId,
 }) {
+  const { programsData, loading, error } = useAllPrograms("en");
   const navigate = useNavigate();
   const initialIndex = modules.findIndex(
-    (m) => m.module_id === currentModuleId
+    (m) => m.uid === currentModuleId
   );
+  console.log("Initial index:", initialIndex);
   const [currentIndex, setCurrentIndex] = useState(
     initialIndex >= 0 ? initialIndex : 0
   );
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error_int, setError_int] = useState("");
+  const [loading_int, setLoading_int] = useState(false);
   const [passedQuiz, setPassedQuiz] = useState(false);
   const currentModule = modules[currentIndex];
+  console.log("Current module:", currentModule);
+  const { user } = useUserData();
 
   const sectionQuestions = useMemo(() => {
     if (!currentModule?.quiz) return [];
@@ -37,7 +44,7 @@ export default function SectionViewer({
   const handleNext = () => {
     if (currentIndex < modules.length - 1) {
       const nextModule = modules[currentIndex + 1];
-      navigate(`/courses/${programId}/${courseId}/${nextModule.module_id}`);
+      navigate(`/courses/${programId}/${courseId}/${nextModule.uid}`);
       setCurrentIndex((prev) => prev + 1);
       setPassedQuiz(false);
     } else if (currentIndex === modules.length - 1) {
@@ -48,7 +55,7 @@ export default function SectionViewer({
   const handlePrev = () => {
     if (currentIndex > 0) {
       const prevModule = modules[currentIndex - 1];
-      navigate(`/courses/${programId}/${courseId}/${prevModule.module_id}`);
+      navigate(`/courses/${programId}/${courseId}/${prevModule.uid}`);
       setCurrentIndex((prev) => prev - 1);
       setPassedQuiz(true);
     }
@@ -74,10 +81,12 @@ export default function SectionViewer({
                 </p>
               )}
               {c.media && (
-                <img
-                  src={c.media}
-                  alt=""
+                <RemoteImage
+                  uid={c.media}
+                  lang={user?.lang || "en"}
                   className="rounded-xl mb-6 w-full max-h-72 object-fill"
+                  alt=""
+                  style={{ alignSelf: "center", justifySelf: "center" }}
                 />
               )}
               {c.breaker && (
@@ -100,8 +109,9 @@ export default function SectionViewer({
               setPassedQuiz(true);
               await handleUpdateProgress({
                 programId,
-                setError,
-                setLoading,
+                setError: setError_int,
+                setLoading: setLoading_int,
+                programsData,
               });
             }}
           />

@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-// import dummyPrograms from "@/hooks/get_course_data_test.js"; // replace later with actual DB data
+import axios from "axios";
 import "@/style/Dashboard_user.css";
 import "@/style/general.css";
 
-const EditableDashboard = ({ initialData, handleCancel }) => {
+const EditableDashboard = ({ initialData, handleCancel, language = "EN" }) => {
   const [programs, setPrograms] = useState(initialData);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const api = import.meta.env.VITE_API_URL;
 
   const handleChange = (path, value) => {
     setPrograms((prev) => {
@@ -19,9 +23,66 @@ const EditableDashboard = ({ initialData, handleCancel }) => {
     });
   };
 
-  const handleSave = () => {
-    setMessage("✅ Changes saved locally. (Backend not connected yet)");
-    console.log("SAVE DATA:", programs);
+  const handleSave = async () => {
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    try {
+      for (const program of programs) {
+        const langPrefix = language.toLowerCase();
+
+        // 1. Save/update program
+        await axios.put(`${api}/api/${langPrefix}/programs/${program.uid}`, {
+          uid: program.uid,
+          title: program.title,
+          final_quiz_id: program.final_quiz?.uid,
+          courses_ids: program.courses.map((c) => c.uid),
+          metadata: program.metadata || {},
+        });
+
+        // 2. Save/update courses
+        for (const course of program.courses || []) {
+          await axios.put(`${api}/api/${langPrefix}/courses/${course.uid}`, {
+            uid: course.uid,
+            title: course.title,
+            description: course.description,
+            module_ids: course.modules?.map((m) => m.uid),
+            metadata: course.metadata || {},
+          });
+
+          // 3. Save/update modules
+          for (const mod of course.modules || []) {
+            await axios.put(`${api}/api/${langPrefix}/modules/${mod.uid}`, {
+              uid: mod.uid,
+              title: mod.title,
+              content: mod.content || [],
+              quiz: mod.quiz || [],
+              metadata: mod.metadata || {},
+            });
+          }
+        }
+
+        // 4. Save/update final quiz
+        if (program.final_quiz) {
+          await axios.put(
+            `${api}/api/${langPrefix}/final_quiz/${program.final_quiz.uid}`,
+            {
+              uid: program.final_quiz.uid,
+              quiz_title: program.final_quiz.quiz_title,
+              quiz_description: program.final_quiz.quiz_description,
+              questions: program.final_quiz.quiz || [],
+              metadata: program.final_quiz.metadata || {},
+            }
+          );
+        }
+      }
+      setSuccess("✅ Changes saved successfully!");
+    } catch (err) {
+      setError("❌ Error saving changes.");
+      console.error("Error saving program:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {
@@ -52,7 +113,7 @@ const EditableDashboard = ({ initialData, handleCancel }) => {
             style={{ border: "2px solid #a0a0a5" }}
           />
 
-          {program.courses.map((course, cIndex) => (
+          {program.courses?.map((course, cIndex) => (
             <div
               key={cIndex}
               style={{
@@ -97,7 +158,7 @@ const EditableDashboard = ({ initialData, handleCancel }) => {
                 }}
               />
 
-              {course.modules.map((mod, mIndex) => (
+              {course.modules?.map((mod, mIndex) => (
                 <div
                   key={mIndex}
                   style={{
@@ -121,7 +182,7 @@ const EditableDashboard = ({ initialData, handleCancel }) => {
                     style={{ border: "2px solid #a0a0a5" }}
                   />
 
-                  {mod.content.map((content, ctIndex) => (
+                  {mod.content?.map((content, ctIndex) => (
                     <div key={ctIndex} style={{ marginTop: 8 }}>
                       <label>Content Header:</label>
                       <input
@@ -225,7 +286,7 @@ const EditableDashboard = ({ initialData, handleCancel }) => {
               }}
             />
 
-            {program.final_quiz.quiz.map((q, qIndex) => (
+            {program.final_quiz.questions.map((q, qIndex) => (
               <div
                 key={qIndex}
                 style={{
@@ -326,19 +387,22 @@ const EditableDashboard = ({ initialData, handleCancel }) => {
           background: "#f3f4f6",
         }}
       >
-        <button onClick={handleSave} className="btn-primary">
-          Save Changes
+        <button onClick={handleSave} className="btn-primary" disabled={loading}>
+          {loading ? "Saving..." : "Save Changes"}
         </button>
         <button
           onClick={handleClose}
           className="btn-secondary"
           style={{ marginLeft: 13 }}
+          disabled={loading}
         >
           close
         </button>
       </div>
 
-      {message && <p style={{ marginTop: 10, color: "green" }}>{message}</p>}
+      {loading && <div className="text-gray-600">Saving...</div>}
+      {error && <div className="text-red-600">{error}</div>}
+      {success && <div className="text-green-600">{success}</div>}
     </div>
   );
 };
