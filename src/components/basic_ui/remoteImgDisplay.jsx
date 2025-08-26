@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ClipLoader } from "react-spinners";
 
 const Loading = ({ className = "", style = {} }) => {
   return (
@@ -32,8 +33,8 @@ const ErrorDisplay = ({ className = "", style = {} }) => (
   <div
     className={`flex items-center justify-center ${className}`}
     style={{
-      width: "100px",
-      height: "50px",
+      width: "100%",
+      height: "100%",
       background: "#ffe5e5",
       border: "1px solid red",
       borderRadius: 8,
@@ -86,10 +87,34 @@ function RemoteImage({
     if (uid) fetchImage();
   }, [uid, lang, api]);
 
-  if (loading) return <Loading className={loadingClassName} style={loadingStyle} />;
-  if (error) return <ErrorDisplay className={errorClassName} style={errorStyle} />;
+  if (loading)
+    return (
+      <div
+        className="flex items-center justify-center w-full h-full"
+        style={{
+          height: "100%",
+          width: "100%",
+          minHeight: "100%",
+          minWidth: "100%",
+          maxHeight: "100%",
+          maxWidth: "100%",
+        }}
+      >
+        <ClipLoader
+          color={"#734A1c"}
+          loading={loading}
+          size={150}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </div>
+    );
+  if (error)
+    return <ErrorDisplay className={errorClassName} style={errorStyle} />;
 
-  return <img src={src} alt={alt} className={className} style={style} {...props} />;
+  return (
+    <img src={src} alt={alt} className={className} style={style} {...props} />
+  );
 }
 
 export default RemoteImage;

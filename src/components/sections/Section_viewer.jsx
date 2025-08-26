@@ -13,12 +13,11 @@ export default function SectionViewer({
   programId,
   courseId,
 }) {
-  const { programsData, loading, error } = useAllPrograms("en");
+  const { programsData, loading, error } = useAllPrograms();
   const navigate = useNavigate();
   const initialIndex = modules.findIndex(
     (m) => m.uid === currentModuleId
   );
-  console.log("Initial index:", initialIndex);
   const [currentIndex, setCurrentIndex] = useState(
     initialIndex >= 0 ? initialIndex : 0
   );
@@ -26,16 +25,8 @@ export default function SectionViewer({
   const [loading_int, setLoading_int] = useState(false);
   const [passedQuiz, setPassedQuiz] = useState(false);
   const currentModule = modules[currentIndex];
-  console.log("Current module:", currentModule);
   const { user } = useUserData();
 
-  const sectionQuestions = useMemo(() => {
-    if (!currentModule?.quiz) return [];
-    return [...currentModule.quiz]
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 2)
-      .map((q, i) => ({ id: i, ...q }));
-  }, [currentModule]);
 
   useEffect(() => {
     scrollRef?.current?.scrollTo({ top: 0, behavior: "smooth" });
@@ -104,7 +95,7 @@ export default function SectionViewer({
             </div>
           ))}
           <Quiz
-            questions={sectionQuestions}
+            questions={currentModule?.quiz}
             onPassed={async () => {
               setPassedQuiz(true);
               await handleUpdateProgress({

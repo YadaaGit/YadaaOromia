@@ -36,6 +36,7 @@
     "react-hot-toast": "^2.5.2",
     "react-loading-skeleton": "^3.5.0",
     "react-router-dom": "^7.6.2",
+    "react-spinners": "^0.17.0",
     "tailwind-variants": "^1.0.0",
     "tree-cli": "^0.6.7",
     "uuid": "^11.1.0",

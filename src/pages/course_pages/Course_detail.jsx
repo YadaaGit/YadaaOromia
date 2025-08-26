@@ -11,7 +11,7 @@ import RemoteImage from "@/components/basic_ui/remoteImgDisplay.jsx";
 
 export default function CourseDetails() {
   const { t } = useTranslation();
-  const { programId, courseId } = useParams();
+  const { programId, courseId, finalQuizId } = useParams();
   const { course, loading } = useCourseData(programId, courseId);
   const { user } = useUserData();
   const navigate = useNavigate();
@@ -55,7 +55,7 @@ export default function CourseDetails() {
     if (currentIndex < courses.length - 1) {
       navigate(`/courses/${programId}/${courses[currentIndex + 1].uid}`);
     } else if (program?.final_quiz) {
-      navigate(`/courses/${programId}/final_quiz`);
+      navigate(`/courses/${programId}/final_quiz/${finalQuizId}`);
     }
   };
 

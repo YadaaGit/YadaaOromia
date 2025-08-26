@@ -95,5 +95,7 @@
 
   "_comment_2":"the next are UX texts",
   
-  "fill_required_fields":"Please fill in all required fields."
+  "fill_required_fields":"Please fill in all required fields.",
+
+  "no_course_for_lang": "No courses available for the selected language."
 }

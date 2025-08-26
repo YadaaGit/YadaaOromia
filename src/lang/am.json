@@ -97,5 +97,6 @@
 
   "_comment_2":"the next are UX texts",
 
-  "fill_required_fields": "እባክዎ ሁሉንም አስፈላጊ ጥያቄዎች ይመልሱ።"
+  "fill_required_fields": "እባክዎ ሁሉንም አስፈላጊ ጥያቄዎች ይመልሱ።",
+  "no_course_for_lang": "ለተመረጠው ቋንቋ ምንም ኮርስ የለም።"
 }

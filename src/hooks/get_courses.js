@@ -1,23 +1,62 @@
 import { useState, useEffect } from "react";
+import useUserData from "./get_user_data.js";
+
+// ---------- Module-level cache to prevent multiple fetches ----------
+const cachedDataPerLang = {};
+const cachedErrorPerLang = {};
+const cachedLoadingPerLang = {};
+const subscribersPerLang = {};
 
 /**
- * Custom hook to fetch all programs with nested courses, modules, final quiz, and images
- * Assembles everything into one hierarchy
+ * Custom hook: fetch all programs with nested courses, modules, final quiz, and images
+ * Shared caching ensures only one fetch per language/session
  */
-export const useAllPrograms = (lang = "en") => {
-  const [programsData, setProgramsData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export const useAllPrograms = () => {
+  const { user } = useUserData();
+  const lang = user?.lang;
+
+  const [programsData, setProgramsData] = useState(
+    (lang && cachedDataPerLang[lang]) || []
+  );
+  const [loading, setLoading] = useState(
+    !lang || !cachedDataPerLang[lang] && !cachedErrorPerLang[lang]
+  );
+  const [error, setError] = useState((lang && cachedErrorPerLang[lang]) || null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
+    if (!user || !lang) return;
+
+    // Initialize subscribers array for this language if needed
+    if (!subscribersPerLang[lang]) subscribersPerLang[lang] = [];
+
+    // Use cached data if available for this language
+    if (cachedDataPerLang[lang]) {
+      setProgramsData(cachedDataPerLang[lang]);
+      setLoading(false);
+      return;
+    }
+
+    // Subscribe if another fetch is in progress for this language
+    if (cachedLoadingPerLang[lang]) {
+      const subscriber = (data, err) => {
+        setProgramsData(data);
+        setError(err);
+        setLoading(false);
+      };
+      subscribersPerLang[lang].push(subscriber);
+      return () => {
+        subscribersPerLang[lang] = subscribersPerLang[lang].filter(
+          (s) => s !== subscriber
+        );
+      };
+    }
+
+    cachedLoadingPerLang[lang] = true;
 
     const baseUrl = import.meta.env.VITE_API_URL || "";
 
     const fetchData = async () => {
       try {
-        // Fetch all resources in parallel
         const [programRes, courseRes, moduleRes, finalQuizRes, imagesRes] =
           await Promise.all([
             fetch(`${baseUrl}/api/${lang}/programs`),
@@ -42,9 +81,8 @@ export const useAllPrograms = (lang = "en") => {
             imagesRes.json(),
           ]);
 
-        // Assemble hierarchical structure
+        // Assemble hierarchy
         const assembledPrograms = (programData || []).map((program) => {
-          // Find program's courses
           const programCourses = (courseData || []).filter((c) =>
             Object.values(program.courses_ids || {}).includes(c.uid)
           );
@@ -63,7 +101,6 @@ export const useAllPrograms = (lang = "en") => {
             };
           });
 
-          // Attach final quiz if exists
           const finalQuiz =
             program.final_quiz_id &&
             (finalQuizData || []).find((q) => q.uid === program.final_quiz_id);
@@ -79,17 +116,30 @@ export const useAllPrograms = (lang = "en") => {
           };
         });
 
+        // Cache results for this language
+        cachedDataPerLang[lang] = assembledPrograms;
+        cachedErrorPerLang[lang] = null;
+
         setProgramsData(assembledPrograms);
-      } catch (err) {
-        console.error("❌ Error fetching hierarchical programs:", err);
-        setError(err);
-      } finally {
         setLoading(false);
+
+        // Notify subscribers
+        subscribersPerLang[lang].forEach((s) => s(assembledPrograms, null));
+        subscribersPerLang[lang] = [];
+      } catch (err) {
+        cachedErrorPerLang[lang] = err;
+        setError(err);
+        setLoading(false);
+
+        subscribersPerLang[lang].forEach((s) => s([], err));
+        subscribersPerLang[lang] = [];
+      } finally {
+        cachedLoadingPerLang[lang] = false;
       }
     };
 
     fetchData();
-  }, [lang]);
+  }, [user, lang]);
 
   return { programsData, loading, error };
 };

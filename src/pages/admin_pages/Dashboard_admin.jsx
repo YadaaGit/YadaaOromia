@@ -11,18 +11,20 @@ import PopUp from "@/components/basic_ui/pop_up.jsx";
 import EditableCourseDashboard from "./EditCourseDashboard.jsx";
 import { useAllPrograms } from "@/hooks/get_courses.js";
 import RemoteImage from "@/components/basic_ui/remoteImgDisplay.jsx";
+import quiz_ill from "@/assets/images/quiz_ill.jpg";
 
 function Courses() {
-  const { user, loading, error } = useUserData();
+  const { user, loading: userLoading, error: userError } = useUserData();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [showLockPopup, setShowLockPopup] = useState(false);
-  const [isEditabe, setIsEditabe] = useState(false);
+  const [isEditable, setIsEditable] = useState(false);
   const [lockMessage, setLockMessage] = useState("");
 
   const progress = user?.course_progress || {};
-  const { programsData, loading: loading_p, error: error_p } = useAllPrograms();
+  const { programsData, loading: programsLoading, error: programsError } =
+    useAllPrograms();
 
   const openModule = (programId, courseId, isLocked) => {
     if (isLocked) {
@@ -30,35 +32,30 @@ function Courses() {
       setShowLockPopup(true);
     } else {
       navigate(`/courses/${programId}/${courseId}`, {
-        state: {
-          background: { pathname: location.pathname, search: location.search },
-        },
+        state: { background: { pathname: location.pathname, search: location.search } },
       });
     }
   };
 
-  const openFinalQuiz = (programId, isLocked) => {
+  const openFinalQuiz = (programId, finalQuizId, isLocked) => {
     if (isLocked) {
       setLockMessage("Finish all courses before taking the final quiz");
       setShowLockPopup(true);
     } else {
-      navigate(`/courses/${programId}/final_quiz`, {
-        state: {
-          background: { pathname: location.pathname, search: location.search },
-        },
+      navigate(`/courses/${programId}/final_quiz/${finalQuizId}`, {
+        state: { background: { pathname: location.pathname, search: location.search } },
       });
     }
   };
 
   const handleAddCourse = () => {
     navigate(`/courses_admin/add_course`, {
-      state: {
-        background: { pathname: location.pathname, search: location.search },
-      },
+      state: { background: { pathname: location.pathname, search: location.search } },
     });
   };
 
-  if (loading || !user)
+  // ----- Loading or no user -----
+  if (userLoading || !user) {
     return (
       <section id="courses">
         {[...Array(2)].map((_, pIndex) => (
@@ -68,11 +65,7 @@ function Courses() {
             </h2>
             <div id="course_list">
               {[...Array(2)].map((_, cIndex) => (
-                <div
-                  key={cIndex}
-                  id="course_card"
-                  style={{ cursor: "default" }}
-                >
+                <div key={cIndex} id="course_card" style={{ cursor: "default" }}>
                   <div id="course_img">
                     <Skeleton height={80} width={120} />
                   </div>
@@ -88,24 +81,40 @@ function Courses() {
         ))}
       </section>
     );
+  }
 
-  if (error) return <p className="text-red-500">{error}</p>;
+  // ----- Error state -----
+  if (userError || programsError)
+    return <p className="text-red-500">{userError || programsError}</p>;
 
-  if (isEditabe)
+  // ----- Editable mode -----
+  if (isEditable)
     return (
       <EditableCourseDashboard
         initialData={programsData}
-        handleCancel={setIsEditabe}
+        handleCancel={setIsEditable}
       />
     );
 
+  // ----- Empty programs state -----
+  if (!programsLoading && programsData?.length === 0) {
+    return (
+      <section id="courses" className="text-center p-10">
+        <p>No courses available.</p>
+        <button onClick={handleAddCourse} className="btn-primary mt-4">
+          {t("add_course")}
+        </button>
+      </section>
+    );
+  }
+
+  // ----- Main dashboard -----
   return (
     <>
       <section id="welcome" className="mar_b_20">
         <div className="width_100p">
           <h1 className="mar_0 width_100p" style={{ fontWeight: 600 }}>
-            {t("hi")}
-            {user.name.split(" ")[0]}
+            {t("hi")} {user.name.split(" ")[0]}
           </h1>
           <h3 className="mar_0 width_100p">{t("welcome_message_home")}</h3>
         </div>
@@ -124,7 +133,7 @@ function Courses() {
           {t("add_course")}
         </button>
         <button
-          onClick={() => setIsEditabe(!isEditabe)}
+          onClick={() => setIsEditable(!isEditable)}
           className="btn-primary"
         >
           {t("edit_course")}
@@ -132,62 +141,59 @@ function Courses() {
       </section>
 
       <section id="courses">
-        {programsData &&
-          programsData.map((program, pIndex) => {
-            // ✅ Default progress if not found
-            const programProgress = progress[program.uid] || {
-              current_course: 1,
-              current_module: 1,
-              completed: false,
-            };
+        {programsData.map((program, pIndex) => {
+          const programProgress = progress[program.uid] || {
+            current_course: 1,
+            current_module: 1,
+            completed: false,
+          };
+          const unlockedCourseIndex = programProgress.current_course - 1;
+          const isFinalQuizUnlocked = programProgress.completed === true;
 
-            // Determine unlocked course & quiz
-            const unlockedCourseIndex = programProgress.current_course - 1;
-            const isFinalQuizUnlocked = programProgress.completed === true;
-
-            return (
-              <div key={pIndex} style={{ marginTop: 40 }}>
-                <h2 style={{ fontWeight: "bold", marginBottom: 10 }}>
-                  {program.title}
-                </h2>
-                <div id="course_list">
-                  {program.courses.map((course, cIndex) => {
-                    const isLocked = cIndex > unlockedCourseIndex;
-                    return (
-                      <div
-                        key={cIndex}
-                        id="course_card"
-                        onClick={() =>
-                          openModule(program.uid, course.uid, isLocked)
-                        }
-                        style={{ position: "relative" }}
-                      >
-                        {isLocked && (
-                          <div className="locked_cover">
-                            <Lock className="w-6 h-6 text-white" />
-                          </div>
+          return (
+            <div key={pIndex} style={{ marginTop: 40 }}>
+              <h2 style={{ fontWeight: "bold", marginBottom: 10 }}>
+                {program.title}
+              </h2>
+              <div id="course_list">
+                {program.courses.map((course, cIndex) => {
+                  const isLocked = cIndex > unlockedCourseIndex;
+                  return (
+                    <div
+                      key={cIndex}
+                      id="course_card"
+                      onClick={() =>
+                        openModule(program.uid, course.uid, isLocked)
+                      }
+                      style={{ position: "relative" }}
+                    >
+                      {isLocked && (
+                        <div className="locked_cover">
+                          <Lock className="w-6 h-6 text-white" />
+                        </div>
+                      )}
+                      <div id="course_img">
+                        {course.cover_img && (
+                          <RemoteImage
+                            uid={course.cover_img}
+                            lang={user?.lang || "en"}
+                            alt={course.title}
+                          />
                         )}
-                        <div id="course_img">
-                          {course.cover_img && (
-                            <RemoteImage
-                              uid={course.cover_img}
-                              lang={user?.lang || "en"}
-                              alt={course.title}
-                            />
-                          )}
-                        </div>
-                        <div id="course_info">
-                          <h4>{course.title}</h4>
-                        </div>
                       </div>
-                    );
-                  })}
+                      <div id="course_info">
+                        <h4>{course.title}</h4>
+                      </div>
+                    </div>
+                  );
+                })}
 
-                  {/* Final quiz card */}
+                {/* Final quiz card */}
+                {program.final_quiz_id && (
                   <div
                     id="course_card"
                     onClick={() =>
-                      openFinalQuiz(program.uid, !isFinalQuizUnlocked)
+                      openFinalQuiz(program.uid, program.final_quiz_id, !isFinalQuizUnlocked)
                     }
                     style={{ position: "relative" }}
                   >
@@ -196,17 +202,18 @@ function Courses() {
                         <Lock className="w-6 h-6 text-white" />
                       </div>
                     )}
-                    <div id="course_img"></div>
+                    <div id="course_img">
+                      <img src={quiz_ill} alt="Final Quiz" />
+                    </div>
                     <div id="course_info">
-                      <h4 style={{ fontWeight: 600 }}>
-                        {t("take_final_quiz")}
-                      </h4>
+                      <h4 style={{ fontWeight: 600 }}>{t("take_final_quiz")}</h4>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
-            );
-          })}
+            </div>
+          );
+        })}
       </section>
 
       <PopUp

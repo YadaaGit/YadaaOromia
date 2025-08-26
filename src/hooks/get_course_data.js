@@ -13,9 +13,9 @@ export const useProgramData = (programId) => {
       setProgram(program_data || null);
       setLoading(false);
     }, 500); // simulate loading
-  }, [programId]);
+  }, [programId, programsData]);
 
-  return { program, loading, programsData };
+  return { program, loading };
 };
 
 export const useCourseData = (programId, courseId) => {

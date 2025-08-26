@@ -1,4 +1,4 @@
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import {
   BrowserRouter as Router,
   Routes,
@@ -12,7 +12,7 @@ import { createRoot } from "react-dom/client";
 import "./style/index.css";
 
 // Context & hooks
-import { init } from './init.js';
+import { init } from "./init.js";
 import { LanguageProvider } from "./LanguageContext";
 import useUserData from "@/hooks/get_user_data.js";
 import { db } from "#/firebase-config.js";
@@ -33,7 +33,7 @@ import CourseModal from "./pages/course_pages/Course_modal.jsx";
 import CourseDetails from "./pages/course_pages/Course_detail.jsx";
 import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 import AboutUs from "./pages/about_us.jsx";
-import FinalQuizPage from './pages/course_pages/Final_quiz_modal.jsx';
+import FinalQuizPage from "./pages/course_pages/Final_quiz_modal.jsx";
 
 // Initialize client-side tools
 init({
@@ -69,11 +69,12 @@ function AppRoutes({ user }) {
 
   // Paths where tab bar should be hidden
   const shouldHideTabBar =
-    ["/welcome", "/login", "/register", "/verify_email", "/", "/about_us"].some((path) =>
-      matchPath({ path, end: true }, location.pathname)
+    ["/welcome", "/login", "/register", "/verify_email", "/", "/about_us"].some(
+      (path) => matchPath({ path, end: true }, location.pathname)
     ) ||
     matchPath("/courses/:programId/:courseId", location.pathname) ||
     matchPath("/courses/:programId/:courseId/:moduleId", location.pathname) ||
+    matchPath("/courses/:programId/final_quiz/:finalQuizId", location.pathname) ||
     matchPath("/courses_admin/:add_course", location.pathname);
 
   const background = location.state?.background || null;
@@ -91,15 +92,18 @@ function AppRoutes({ user }) {
       const userDocRef = doc(db, "users", user.uuid);
 
       if (user.lastActiveAt === yesterday) {
-        updateDoc(userDocRef, { streak: increment(1) })
-          .catch((error) => console.error("Error updating streak:", error));
+        updateDoc(userDocRef, { streak: increment(1) }).catch((error) =>
+          console.error("Error updating streak:", error)
+        );
       } else if (user.lastActiveAt < yesterday) {
-        updateDoc(userDocRef, { streak: 1 })
-          .catch((error) => console.error("Error resetting streak:", error));
+        updateDoc(userDocRef, { streak: 1 }).catch((error) =>
+          console.error("Error resetting streak:", error)
+        );
       }
 
-      updateDoc(userDocRef, { lastActiveAt: serverTimestamp() })
-        .catch((error) => console.error("Error updating last active date:", error));
+      updateDoc(userDocRef, { lastActiveAt: serverTimestamp() }).catch(
+        (error) => console.error("Error updating last active date:", error)
+      );
     }
   }, [authenticated, user.lastActiveAt]);
 
@@ -121,21 +125,39 @@ function AppRoutes({ user }) {
                 <Navigate to="/verify_email" />
               )
             ) : (
-              <Navigate to="/about_us"/>
+              <Navigate to="/about_us" />
             )
           }
         />
         <Route
           path="/welcome"
-          element={!authenticated ? <Welcome /> : <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />}
+          element={
+            !authenticated ? (
+              <Welcome />
+            ) : (
+              <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />
+            )
+          }
         />
         <Route
           path="/login"
-          element={!authenticated ? <Login /> : <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />}
+          element={
+            !authenticated ? (
+              <Login />
+            ) : (
+              <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />
+            )
+          }
         />
         <Route
           path="/register"
-          element={!authenticated ? <Register /> : <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />}
+          element={
+            !authenticated ? (
+              <Register />
+            ) : (
+              <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />
+            )
+          }
         />
         <Route path="/verify_email" element={<VerifyEmail />} />
         <Route
@@ -144,32 +166,74 @@ function AppRoutes({ user }) {
         />
         <Route
           path="/courses"
-          element={!authenticated ? <Navigate to="/welcome" /> : (role === "user" ? <Courses /> : <Navigate to="/courses_admin" />)}
+          element={
+            !authenticated ? (
+              <Navigate to="/welcome" />
+            ) : role === "user" ? (
+              <Courses />
+            ) : (
+              <Navigate to="/courses_admin" />
+            )
+          }
         />
         <Route
           path="/courses_admin"
-          element={!authenticated ? <Navigate to="/welcome" /> : (role === "user" ? <Navigate to="/courses" /> : <CoursesAdmin />)}
+          element={
+            !authenticated ? (
+              <Navigate to="/welcome" />
+            ) : role === "user" ? (
+              <Navigate to="/courses" />
+            ) : (
+              <CoursesAdmin />
+            )
+          }
         />
         <Route
           path="/user_data"
-          element={!authenticated ? <Navigate to="/welcome" /> : (role === "user" ? <Navigate to="/courses" /> : <DataCenter />)}
+          element={
+            !authenticated ? (
+              <Navigate to="/welcome" />
+            ) : role === "user" ? (
+              <Navigate to="/courses" />
+            ) : (
+              <DataCenter />
+            )
+          }
         />
 
         <Route path="/about_us" element={<AboutUs />} />
 
         {/* Direct access to course detail, module view, final quiz */}
-        <Route path="/courses/:programId/:courseId" element={<CourseDetails />} />
-        <Route path="/courses/:programId/:courseId/:moduleId" element={<CourseModal />} />
-        <Route path="/courses/:programId/final_quiz" element={<FinalQuizPage />} />
+        <Route
+          path="/courses/:programId/:courseId"
+          element={<CourseDetails />}
+        />
+        <Route
+          path="/courses/:programId/:courseId/:moduleId"
+          element={<CourseModal />}
+        />
+        <Route
+          path="/courses/:programId/final_quiz/:finalQuizId"
+          element={<FinalQuizPage />}
+        />
         <Route path="/courses_admin/:add_course" element={<AddModal />} />
       </Routes>
 
       {/* Modal overlays if background is set */}
       {background && (
         <Routes>
-          <Route path="/courses/:programId/:courseId" element={<CourseDetails />} />
-          <Route path="/courses/:programId/:courseId/:moduleId" element={<CourseModal />} />
-          <Route path="/courses/:programId/final_quiz" element={<FinalQuizPage />} />
+          <Route
+            path="/courses/:programId/:courseId"
+            element={<CourseDetails />}
+          />
+          <Route
+            path="/courses/:programId/:courseId/:moduleId"
+            element={<CourseModal />}
+          />
+          <Route
+            path="/courses/:programId/final_quiz/:finalQuizId"
+            element={<FinalQuizPage />}
+          />
           <Route path="/courses_admin/:add_course" element={<AddModal />} />
         </Routes>
       )}

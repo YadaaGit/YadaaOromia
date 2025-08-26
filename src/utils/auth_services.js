@@ -8,9 +8,7 @@ import {
 import { auth } from "#/firebase-config.js";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "#/firebase-config.js";
-import dummyCourses from "@/hooks/get_course_data_test.js";
 
-const course_data = [...dummyCourses];
 
 export const handleSignUp = async ({
   name,
@@ -108,34 +106,11 @@ export const handleSignUp = async ({
     };
     await setDoc(doc(db, "telegram_links", String(userId)), idData);
 
-    // Step 4: Add user progress for each course
-    if (!Array.isArray(course_data)) {
-      throw new Error("Internal error: course_data is not an array");
-    }
-
-    await Promise.all(
-      course_data.map((element) => {
-        if (typeof element.program_id !== "string") {
-          console.error("Invalid program_id in course_data:", element);
-          throw new Error("Invalid program data");
-        }
-        return setDoc(
-          doc(db, "users", user.uid, "programs", element.program_id),
-          {
-            current_course: 1,
-            current_module: 1,
-            final_quiz_score: 0,
-            final_pass_point: element.metadata.final_pass_point,
-            completed: false,
-            certificate_link: "",
-          }
-        );
-      })
-    );
 
 
-    // Step 5: Navigate to verification or dashboard
+    // Step 4: Navigate to verification or dashboard
     navigate("/verify_email");
+    
   } catch (err) {
     console.error("❌ Sign-up Error:", err);
     if (err.code) {
