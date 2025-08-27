@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "@/style/Dashboard_user.css";
 import "@/style/general.css";
 import useUserData from "@/hooks/get_user_data.js";
@@ -13,11 +13,15 @@ import quiz_ill from "@/assets/images/quiz_ill.jpg";
 import toast, { Toaster } from "react-hot-toast";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
+import ConfettiExplosion from "react-confetti-explosion";
+
 
 function Courses() {
   const { user, loading: userLoading, error: userError } = useUserData();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const {
     type,
     message,
@@ -251,7 +255,7 @@ function Courses() {
             <div
               style={{
                 width: "100%",
-                padding: 20,
+                paddingTop: 20,
                 borderRadius: 11,
                 display: "flex",
                 flexDirection: "row",
