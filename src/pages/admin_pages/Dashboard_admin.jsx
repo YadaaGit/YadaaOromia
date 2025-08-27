@@ -358,7 +358,7 @@ function Courses() {
             <ConfettiExplosion duration={5000} />
 
             <p style={{ fontWeight: "bold", fontSize: 20 }}>
-              CONGRAGULATIONS!!
+              CONGRATULATIONS!!
             </p>
             <br />
             <p>
