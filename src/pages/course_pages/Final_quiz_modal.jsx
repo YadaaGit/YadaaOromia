@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Skeleton } from "@mui/material";
 import { useProgramData } from "@/hooks/get_course_data.js";
 import { useTranslation } from "@/utils/useTranslation.js";
-import Quiz from "@/components/sections/Quiz";
+import Questions from "@/components/sections/Questions";
 
 export default function CourseModules() {
   const { t } = useTranslation();
@@ -108,9 +108,11 @@ export default function CourseModules() {
                 <div className="p-4 text-center">{t("No questions")}</div>
               )}
               {!loading && program?.final_quiz?.questions?.length > 0 && (
-                <Quiz
+                <Questions
                   questions={program.final_quiz.questions}
-                  onPassed={() => setPassedQuiz(true)}
+                  onFinish={() => setPassedQuiz(true)}
+                  pass_grade={program.metadata.final_pass_point}
+                  program_title={program.title}
                 />
               )}
             </div>

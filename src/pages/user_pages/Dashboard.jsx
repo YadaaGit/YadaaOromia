@@ -26,6 +26,9 @@ function Courses() {
     next_title,
     next_id,
     final_quiz_id,
+    score,
+    pass_grade,
+    program_title,
   } = location.state || {}; // optional chaining, safe access
 
   const progress = user?.course_progress || {};
@@ -278,6 +281,69 @@ function Courses() {
               >
                 Continue
               </button>
+            </div>
+          </div>
+        )}
+      </Popup>
+
+      <Popup
+        // open={type == "passed_final_quiz" && score >= pass_grade}
+        open={true}
+        modal
+        lockScroll
+        arrow
+        {...{ contentStyle, overlayStyle, arrowStyle }}
+      >
+        {(close) => (
+          <div
+            className="bg-green-100 text-green-800"
+            style={{
+              width: "80vw",
+              background: "#e7faee !important",
+              height: "auto",
+              minHeight: 100,
+              padding: 20,
+              alignSelf: "center",
+              justifySelf: "center",
+              borderRadius: 11,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <ConfettiExplosion duration={5000} />
+
+            <p style={{ fontWeight: "bold", fontSize: 20 }}>
+              CONGRAGULATIONS!!
+            </p>
+            <br />
+            <p>
+              you have completed -{" "}
+              <span style={{ fontSize: 18, fontWeight: "bold" }}>
+                {program_title}
+              </span>
+              - with a score of{" "}
+              <span style={{ fontSize: 18, fontWeight: "bold" }}>
+                {score}%.
+              </span>{" "}
+              We will send your certificate shortly.
+            </p>
+            <ConfettiExplosion />
+            <ConfettiExplosion />
+            <div
+              style={{
+                width: "100%",
+                paddingTop: 20,
+                borderRadius: 11,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                gap: 15,
+              }}
+            >
+              <button onClick={close}>Continue</button>
             </div>
           </div>
         )}
