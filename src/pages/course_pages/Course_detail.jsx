@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useCourseData } from "@/hooks/get_course_data.js";
 import { Skeleton } from "@mui/material";
 import { useTranslation } from "@/utils/useTranslation.js";
 import useUserData from "@/hooks/get_user_data.js";
 import { LockClosedIcon as Lock } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import PopUp from "@/components/basic_ui/pop_up.jsx";
 import { useAllPrograms } from "@/hooks/get_courses.js";
 import RemoteImage from "@/components/basic_ui/remoteImgDisplay.jsx";
 
@@ -35,6 +35,7 @@ export default function CourseDetails() {
   const openModule = (moduleId, isLocked) => {
     if (isLocked) {
       setLockMessage("Complete previous modules to unlock this module");
+      toast.error("Complete previous modules to unlock this module");
       setShowLockPopup(true);
     } else {
       navigate(`/courses/${programId}/${courseId}/${moduleId}`, {
@@ -103,7 +104,7 @@ export default function CourseDetails() {
                     {course.cover_img && (
                       <RemoteImage
                         uid={course.cover_img}
-                        lang={user?.lang || "en"}
+                        lang={user?.lang || "am"}
                         alt={course.title}
                         className="w-full max-w-[300px] rounded-xl shadow mb-4"
                         style={{ alignSelf: "center", justifySelf: "center" }}
@@ -199,14 +200,6 @@ export default function CourseDetails() {
           )}
         </div>
       </div>
-
-      {/* Lock Popup */}
-      <PopUp
-        show={showLockPopup}
-        onClose={() => setShowLockPopup(false)}
-        message={lockMessage}
-        type="error"
-      />
     </div>
   );
 }

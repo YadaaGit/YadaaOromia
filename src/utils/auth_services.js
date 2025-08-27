@@ -108,8 +108,8 @@ export const handleSignUp = async ({
 
 
 
-    // Step 4: Navigate to verification or dashboard
-    navigate("/verify_email");
+    // Step 4: let main.jsx handle navigation
+    navigate("/");
     
   } catch (err) {
     console.error("❌ Sign-up Error:", err);

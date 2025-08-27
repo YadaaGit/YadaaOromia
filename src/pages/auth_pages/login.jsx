@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 import {
   UserCircleIcon,
   LockClosedIcon,
@@ -8,7 +9,6 @@ import {
 } from "@heroicons/react/24/outline";
 import login_illustration from "@/assets/images/login_new.jpg";
 import { handleSignIn, handleForgotPassword } from "@/utils/auth_services.js";
-import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
 import { useTranslation } from "@/utils/useTranslation.js";
 import { useLanguage } from "@/LanguageContext.jsx";
@@ -33,12 +33,14 @@ export default function Login() {
 
   useEffect(() => {
     if (error != "") {
+      toast.error(error);
       setShowError(true);
       console.log(`ERROR: ${error}`);
     }
   }, [error]);
   useEffect(() => {
     if (success != "") {
+      toast.error(success);
       setShowSuccess(true);
     }
   }, [success]);
@@ -156,22 +158,7 @@ export default function Login() {
               {t("sign_up")}
             </span>
           </p>
-          <PopUp
-            show={showError}
-            onClose={() => {
-              setShowError(false);
-            }}
-            message={error}
-            type="error"
-          />
-          <PopUp
-            show={showSuccess}
-            onClose={() => {
-              setShowSuccess(false);
-            }}
-            message={success}
-            type="success"
-          />
+
         </form>
       </div>
       {loading && <Loading />}

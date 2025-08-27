@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+
 import registration_illustration from "@/assets/images/login_new.jpg";
 import {
   UserCircleIcon,
@@ -13,7 +15,6 @@ import {
 import { handleSignUp } from "@/utils/auth_services.js";
 import useAdminEmails from "@/hooks/get_admin_emails.js";
 import Dropdown from "@/components/basic_ui/options.jsx";
-import PopUp from "@/components/basic_ui/pop_up.jsx";
 import Loading from "@/components/basic_ui/Loading.jsx";
 import { useLanguage } from "@/LanguageContext.jsx";
 import { useTranslation } from "@/utils/useTranslation.js";
@@ -88,6 +89,7 @@ export default function Register() {
   useEffect(() => {
     if (errorHere !== "") {
       setShowError(true);
+      toast.error(errorHere);
       console.log(`ERROR: ${errorHere}`);
     }
   }, [errorHere]);
@@ -135,7 +137,7 @@ export default function Register() {
 
   const handleRegister = () => {
     if (adminLoading) {
-      setShowWarning(true);
+      toast.loading("Loading...");
       return;
     }
 
@@ -165,7 +167,6 @@ export default function Register() {
       className="min-h-screen flex flex-col justify-center items-center px-6 bg-white"
       style={{
         borderRadius: 13,
-        paddingBottom: 25,
         borderRradius: 13,
         paddingBottom: 25,
         display: "flex",
@@ -279,22 +280,6 @@ export default function Register() {
             placeholder={t("confirm_password")}
             show={showConfirmPassword}
             setShow={setShowConfirmPassword}
-          />
-
-          {/* Error Pop-up */}
-          <PopUp
-            show={showError}
-            onClose={() => setShowError(false)}
-            message={errorHere}
-            type="error"
-          />
-
-          {/* Warning Pop-up if admin list is still loading */}
-          <PopUp
-            show={showWarning}
-            onClose={() => setShowWarning(false)}
-            message={t("admin_loading_warning")}
-            type="error"
           />
 
           <button

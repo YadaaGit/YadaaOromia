@@ -85,11 +85,11 @@ const AboutUs = () => {
           style={{ fontSize: "180%" }}
         >
           {t("about_us_title") ||
-            "Empowering Education, One Line of Code at a Time"}
+            "Media Literacy for Peace"}
         </h1>
         <p className="text-logo-500 text-sm text-center mb-4">
           {t("about_us_intro") ||
-            "We are a passionate team of developers, designers, and educators who believe in transforming learning through technology. We build powerful and intuitive tools that help learners stay engaged and teachers track progress effortlessly."}
+            "Empowering young people with the knowledge and skills to engage responsibly in the digital world. Through focused training in media literacy and peacebuilding, participants learn how to identify misinformation, counter hate speech, and practice ethical storytelling that strengthens unity and resilience in their communities."}
         </p>
       </div>
 
@@ -98,16 +98,16 @@ const AboutUs = () => {
         <h2 className="text-xl font-bold text-logo-800 mb-2">
           {t("our_mission") || "Our Mission"}
         </h2>
-        <p className="text-logo-500 text-sm text-center mb-4">
+        <p className="text-logo-500 text-sm mb-4">
           {t("mission_text") ||
-            "To democratize access to quality education through smart, efficient, and scalable digital platforms."}
+            "To expand access to media literacy and peacebuilding training that equips youth with practical skills to create safe and constructive online spaces."}
         </p>
         <h2 className="text-xl font-bold text-logo-800 mb-2">
           {t("our_vision") || "Our Vision"}
         </h2>
-        <p className="text-logo-500 text-sm text-center mb-4">
+        <p className="text-logo-500 text-sm mb-4">
           {t("vision_text") ||
-            "A world where every learner, regardless of location, has the tools they need to succeed."}
+            "A society where every young person—regardless of background or location—has the tools to resist harmful content and contribute to peace, truth, and social cohesion."}
         </p>
       </div>
 
@@ -117,9 +117,9 @@ const AboutUs = () => {
           {t("core_values") || "Our Values"}
         </h2>
         <ul className="list-disc pl-6 text-logo-500 text-sm">
-          <li>{t("value_innovation") || "Innovation"}</li>
-          <li>{t("value_inclusion") || "Inclusion"}</li>
-          <li>{t("value_quality") || "Quality"}</li>
+          <li>{t("value_1") || "Empowerment"}</li>
+          <li>{t("value_2") || "Impact"}</li>
+          <li>{t("value_3") || "Peacebuilding"}</li>
         </ul>
       </div>
 

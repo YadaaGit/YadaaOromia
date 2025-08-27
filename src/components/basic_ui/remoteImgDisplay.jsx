@@ -50,7 +50,7 @@ const ErrorDisplay = ({ className = "", style = {} }) => (
 
 function RemoteImage({
   uid,
-  lang = "en",
+  lang = "am",
   alt = "Image",
   className = "",
   style = {},

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 import { v4 as uuid } from "uuid";
 import axios from "axios";
-import PopUp from "../basic_ui/pop_up.jsx";
 import { db } from "#/firebase-config.js";
 import { doc, setDoc } from "firebase/firestore";
-import Loading from "@/components/basic_ui/Loading.jsx";
+
 
 // AddProgramPage: lets admin add a program with multiple courses
 export default function AddProgramPage() {
@@ -208,6 +208,7 @@ export default function AddProgramPage() {
   // --- Full save logic conforming to DB schemas ---
   const handleSave = async () => {
     setLoadingSave(true);
+    
     setError("");
     if (
       !programFinalQuiz.quiz_title.trim() ||
@@ -342,7 +343,11 @@ export default function AddProgramPage() {
       await setDoc(programDocRef, firebaseData);
 
       setLoadingSave(false);
-      setShowCongrats(true);
+
+      toast.success("Program saved successfully");
+      setTimeout(() => {
+        navigate("/courses_admin");
+      }, 2000);
     } catch (err) {
       setLoadingSave(false);
       setError("Error saving program. Please check your data and try again.");
@@ -864,21 +869,11 @@ export default function AddProgramPage() {
         className="bg-green-500 text-logo-800 px-6 py-2 rounded-full font-semibold shadow hover:bg-green-600 transition mt-6 w-full sm:w-auto"
         onClick={handleSave}
         disabled={loadingSave}
+        style={ loadingSave ? { cursor: "not-allowed", opacity: 0.7 } : {} }
       >
         {loadingSave ? "Saving..." : "💾 Save Program"}
       </button>
-      {loadingSave && <Loading />}
       {error && <div className="text-red-600 mt-2">{error}</div>}
-
-      <PopUp
-        show={showCongrats}
-        onClose={() => {
-          setShowCongrats(false);
-          navigate("/courses_admin");
-        }}
-        message="Program saved successfully"
-        type="success"
-      />
     </div>
   );
 }

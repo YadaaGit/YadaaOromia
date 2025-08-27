@@ -9,6 +9,7 @@ export default function Quiz({ questions = [], onPassed }) {
   const [displayedQuestions, setDisplayedQuestions] = useState([]);
   const [noneDisplayed, setNoneDisplayed] = useState([]);
   const [unanswered, setUnanswered] = useState([]);
+  const [tempWrongExplanation, setTempWrongExplanation] = useState({});
 
   // Shuffle helper
   const shuffleArray = (arr) => [...arr].sort(() => 0.5 - Math.random());
@@ -47,6 +48,7 @@ export default function Quiz({ questions = [], onPassed }) {
       setPermaLocked((prev) => ({ ...prev, [slotIndex]: true }));
       setUnanswered((prev) => prev.filter((idx) => idx !== qIndex));
     } else {
+      setTempWrongExplanation((prev) => ({ ...prev, [slotIndex]: true })); // show explanation temporarily for questions answered wrong
       setTimeout(() => {
         if (!permaLocked[slotIndex]) {
           let replacement = null;
@@ -88,7 +90,13 @@ export default function Quiz({ questions = [], onPassed }) {
             return copy;
           });
         }
-      }, 1500); // short feedback delay
+        // Hide explanation after timeout
+        setTempWrongExplanation((prev) => {
+          const copy = { ...prev };
+          delete copy[slotIndex];
+          return copy;
+        });
+      }, 3000); // short feedback delay
     }
   };
 
@@ -114,7 +122,6 @@ export default function Quiz({ questions = [], onPassed }) {
       {displayedQuestions.map((q, slotIndex) => {
         const selectedIndex = answered[slotIndex];
         const isLocked = locked[slotIndex] || permaLocked[slotIndex];
-
         return (
           <div key={slotIndex} className="mb-8">
             <p className="text-lg font-medium text-gray-800 mb-3">
@@ -150,12 +157,12 @@ export default function Quiz({ questions = [], onPassed }) {
                 );
               })}
             </div>
-            {selectedIndex === q.answer && q.explanation && (
+            {(permaLocked[slotIndex] || tempWrongExplanation[slotIndex]) && (
               <div className="mt-4 bg-gray-100 text-sm text-gray-700 p-4 rounded-xl border border-gray-200">
                 <strong className="block mb-1 text-gray-800">
                   Explanation:
                 </strong>
-                {q.explanation}
+                {q.explanation ? q.explanation : "No explanation provided."}
               </div>
             )}
           </div>

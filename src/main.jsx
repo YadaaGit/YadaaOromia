@@ -7,7 +7,7 @@ import {
   Navigate,
   matchPath,
 } from "react-router-dom";
-import { StrictMode, useEffect } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./style/index.css";
 
@@ -74,7 +74,10 @@ function AppRoutes({ user }) {
     ) ||
     matchPath("/courses/:programId/:courseId", location.pathname) ||
     matchPath("/courses/:programId/:courseId/:moduleId", location.pathname) ||
-    matchPath("/courses/:programId/final_quiz/:finalQuizId", location.pathname) ||
+    matchPath(
+      "/courses/:programId/final_quiz/:finalQuizId",
+      location.pathname
+    ) ||
     matchPath("/courses_admin/:add_course", location.pathname);
 
   const background = location.state?.background || null;
@@ -115,17 +118,13 @@ function AppRoutes({ user }) {
           path="/"
           element={
             authenticated ? (
-              user.emailVerified ? (
-                role === "user" ? (
-                  <Navigate to="/courses" />
-                ) : (
-                  <Navigate to="/courses_admin" />
-                )
+              role === "user" ? (
+                <Navigate state={location.state || null} to="/courses" />
               ) : (
-                <Navigate to="/verify_email" />
+                <Navigate state={location.state || null} to="/courses_admin" />
               )
             ) : (
-              <Navigate to="/about_us" />
+              <Navigate state={location.state || null} to="/about_us" />
             )
           }
         />
@@ -135,7 +134,10 @@ function AppRoutes({ user }) {
             !authenticated ? (
               <Welcome />
             ) : (
-              <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />
+              <Navigate
+                state={location.state || null}
+                to={role === "user" ? "/courses" : "/courses_admin"}
+              />
             )
           }
         />
@@ -145,7 +147,10 @@ function AppRoutes({ user }) {
             !authenticated ? (
               <Login />
             ) : (
-              <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />
+              <Navigate
+                state={location.state || null}
+                to={role === "user" ? "/courses" : "/courses_admin"}
+              />
             )
           }
         />
@@ -155,24 +160,33 @@ function AppRoutes({ user }) {
             !authenticated ? (
               <Register />
             ) : (
-              <Navigate to={role === "user" ? "/courses" : "/courses_admin"} />
+              <Navigate
+                state={location.state || null}
+                to={role === "user" ? "/courses" : "/courses_admin"}
+              />
             )
           }
         />
         <Route path="/verify_email" element={<VerifyEmail />} />
         <Route
           path="/profile"
-          element={!authenticated ? <Navigate to="/welcome" /> : <Profile />}
+          element={
+            !authenticated ? (
+              <Navigate state={location.state || null} to="/welcome" />
+            ) : (
+              <Profile />
+            )
+          }
         />
         <Route
           path="/courses"
           element={
             !authenticated ? (
-              <Navigate to="/welcome" />
+              <Navigate state={location.state || null} to="/welcome" />
             ) : role === "user" ? (
               <Courses />
             ) : (
-              <Navigate to="/courses_admin" />
+              <Navigate state={location.state || null} to="/courses_admin" />
             )
           }
         />
@@ -180,9 +194,9 @@ function AppRoutes({ user }) {
           path="/courses_admin"
           element={
             !authenticated ? (
-              <Navigate to="/welcome" />
+              <Navigate state={location.state || null} to="/welcome" />
             ) : role === "user" ? (
-              <Navigate to="/courses" />
+              <Navigate state={location.state || null} to="/courses" />
             ) : (
               <CoursesAdmin />
             )
@@ -192,9 +206,9 @@ function AppRoutes({ user }) {
           path="/user_data"
           element={
             !authenticated ? (
-              <Navigate to="/welcome" />
+              <Navigate state={location.state || null} to="/welcome" />
             ) : role === "user" ? (
-              <Navigate to="/courses" />
+              <Navigate state={location.state || null} to="/courses" />
             ) : (
               <DataCenter />
             )

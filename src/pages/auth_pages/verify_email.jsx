@@ -22,7 +22,7 @@ export default function VerifyEmail() {
       if (!u) {
         navigate("/welcome");
       } else if (u.emailVerified) {
-        navigate("/courses");
+        navigate("/");
       }
     });
     return unsubscribe;
@@ -64,7 +64,7 @@ export default function VerifyEmail() {
     }
     await user.reload();
     if (user.emailVerified) {
-      navigate("/courses");
+      navigate("/");
     } else {
       setError(t("email_not_verified"));
     }

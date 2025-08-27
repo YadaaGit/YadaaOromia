@@ -19,9 +19,11 @@ export const useAllPrograms = () => {
     (lang && cachedDataPerLang[lang]) || []
   );
   const [loading, setLoading] = useState(
-    !lang || !cachedDataPerLang[lang] && !cachedErrorPerLang[lang]
+    !lang || (!cachedDataPerLang[lang] && !cachedErrorPerLang[lang])
   );
-  const [error, setError] = useState((lang && cachedErrorPerLang[lang]) || null);
+  const [error, setError] = useState(
+    (lang && cachedErrorPerLang[lang]) || null
+  );
 
   useEffect(() => {
     if (!user || !lang) return;
@@ -83,14 +85,18 @@ export const useAllPrograms = () => {
 
         // Assemble hierarchy
         const assembledPrograms = (programData || []).map((program) => {
-          const programCourses = (courseData || []).filter((c) =>
-            Object.values(program.courses_ids || {}).includes(c.uid)
-          );
+          const programCourses = (courseData || [])
+            .filter((c) =>
+              Object.values(program.courses_ids || {}).includes(c.uid)
+            )
+            .sort((a, b) => (a.course_index ?? 0) - (b.course_index ?? 0)); // ✅ sort courses
 
           const coursesWithModules = programCourses.map((course) => {
-            const courseModules = (moduleData || []).filter((m) =>
-              Object.values(course.module_ids || {}).includes(m.uid)
-            );
+            const courseModules = (moduleData || [])
+              .filter((m) =>
+                Object.values(course.module_ids || {}).includes(m.uid)
+              )
+              .sort((a, b) => (a.module_index ?? 0) - (b.module_index ?? 0)); // ✅ sort modules
 
             return {
               ...course,

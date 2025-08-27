@@ -6,19 +6,27 @@ import useUserData from "@/hooks/get_user_data.js";
 import { useTranslation } from "@/utils/useTranslation.js";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import PopUp from "@/components/basic_ui/pop_up.jsx";
 import { LockClosedIcon as Lock } from "@heroicons/react/24/outline";
 import { useAllPrograms } from "@/hooks/get_courses.js";
 import RemoteImage from "@/components/basic_ui/remoteImgDisplay.jsx";
 import quiz_ill from "@/assets/images/quiz_ill.jpg";
+import toast, { Toaster } from "react-hot-toast";
+import Popup from "reactjs-popup";
+import "reactjs-popup/dist/index.css";
 
 function Courses() {
   const { user, loading: userLoading, error: userError } = useUserData();
   const { t } = useTranslation();
   const navigate = useNavigate();
-
-  const [showLockPopup, setShowLockPopup] = useState(false);
-  const [lockMessage, setLockMessage] = useState("");
+  const {
+    type,
+    message,
+    current_programId,
+    next_is_final_quiz,
+    next_title,
+    next_id,
+    final_quiz_id,
+  } = location.state || {}; // optional chaining, safe access
 
   const progress = user?.course_progress || {};
   const {
@@ -29,8 +37,7 @@ function Courses() {
 
   const openModule = (programId, courseId, isLocked) => {
     if (isLocked) {
-      setLockMessage("Complete previous courses to unlock this course");
-      setShowLockPopup(true);
+      toast.error("Complete previous courses to unlock this course");
     } else {
       navigate(`/courses/${programId}/${courseId}`, {
         state: {
@@ -42,8 +49,7 @@ function Courses() {
 
   const openFinalQuiz = (programId, finalQuizId, isLocked) => {
     if (isLocked) {
-      setLockMessage("Finish all courses before taking the final quiz");
-      setShowLockPopup(true);
+      toast.error("Finish all courses before taking the final quiz");
     } else {
       navigate(`/courses/${programId}/final_quiz/${finalQuizId}`, {
         state: {
@@ -89,6 +95,21 @@ function Courses() {
   // ----- Error state -----
   if (userError || programsError)
     return <p className="text-red-500">{userError || programsError}</p>;
+
+  // popup style
+  const contentStyle = {
+    padding: 0,
+    background: "none",
+    border: "none",
+    alignSelf: "center",
+    justifySelf: "center",
+  };
+  const overlayStyle = {
+    background: "rgba(0,0,0,0.5  )",
+    justifyContent: "center",
+    alignItems: "center",
+  };
+  const arrowStyle = { color: "#000" };
 
   // ----- Main dashboard -----
   return (
@@ -140,7 +161,7 @@ function Courses() {
                           {course.cover_img && (
                             <RemoteImage
                               uid={course.cover_img}
-                              lang={user?.lang || "en"}
+                              lang={user?.lang || "am"}
                               alt={course.title}
                             />
                           )}
@@ -191,12 +212,76 @@ function Courses() {
         </section>
       )}
 
-      <PopUp
-        show={showLockPopup}
-        onClose={() => setShowLockPopup(false)}
-        message={lockMessage}
-        type="error"
-      />
+      <Popup
+        open={type == "for_next_course"}
+        modal
+        lockScroll
+        arrow
+        {...{ contentStyle, overlayStyle, arrowStyle }}
+      >
+        {(close) => (
+          <div
+            className="bg-green-100 text-green-800"
+            style={{
+              width: 300,
+              height: "auto",
+              minHeight: 100,
+              padding: 20,
+              alignSelf: "center",
+              justifySelf: "center",
+              borderRadius: 11,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <p>
+              {message}
+              <br />
+              <br />
+              {next_is_final_quiz
+                ? ` Continue to final quiz?`
+                : `Continue to ${next_title}?`}
+            </p>
+            <ConfettiExplosion />
+            <div
+              style={{
+                width: "100%",
+                padding: 20,
+                borderRadius: 11,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 15,
+              }}
+            >
+              <button
+                onClick={close}
+                style={{
+                  backgroundColor: "#ccc",
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  navigate(
+                    next_is_final_quiz
+                      ? `/courses/${current_programId}/final_quiz/${final_quiz_id}`
+                      : `/courses/${current_programId}/${next_id}`
+                  );
+                }}
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        )}
+      </Popup>
     </>
   );
 }

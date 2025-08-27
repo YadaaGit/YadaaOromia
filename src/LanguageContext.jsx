@@ -6,7 +6,7 @@ import or from "./lang/or.json";
 const translations = { en, am, or };
 const LanguageContext = createContext();
 
-export const LanguageProvider = ({ userLang = "en", children }) => {
+export const LanguageProvider = ({ userLang = "am", children }) => {
   const [lang, setLang] = useState(userLang);
   const [dict, setDict] = useState(translations[lang]);
 
