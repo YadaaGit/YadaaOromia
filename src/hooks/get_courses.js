@@ -13,7 +13,7 @@ const subscribersPerLang = {};
  */
 export const useAllPrograms = () => {
   const { user } = useUserData();
-  const lang = user?.lang;
+  const lang = user?.lang || "am";
 
   const [programsData, setProgramsData] = useState(
     (lang && cachedDataPerLang[lang]) || []
