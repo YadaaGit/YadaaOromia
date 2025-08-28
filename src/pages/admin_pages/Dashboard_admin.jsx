@@ -439,7 +439,7 @@ function Courses() {
             </p>
             <br />
             <p>
-              {t("completed_with_score_1")} - {" "}
+              {t("completed_with_score_1")} -{" "}
               <span style={{ fontSize: 18, fontWeight: "bold" }}>
                 {program_title}
               </span>
@@ -465,6 +465,51 @@ function Courses() {
               }}
             >
               <button onClick={close}>{t("continue")}</button>
+            </div>
+          </div>
+        )}
+      </Popup>
+      <Popup
+        // open={type == "passed_final_quiz" && score < pass_grade}
+        open={true}
+        modal
+        lockScroll
+        arrow
+        {...{ contentStyle, overlayStyle, arrowStyle }}
+      >
+        {(close) => (
+          <div
+            className="bg-red-100 text-red-800"
+            style={{
+              width: "80vw",
+              height: "auto",
+              minHeight: 100,
+              padding: 20,
+              alignSelf: "center",
+              justifySelf: "center",
+              borderRadius: 11,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <p style={{ fontWeight: "bold", fontSize: 20 }}>{t("sorry")}</p>
+              <p>{t("you_did_not_pass")}</p>
+
+            <div
+              style={{
+                width: "100%",
+                paddingTop: 7,
+                borderRadius: 11,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                gap: 15,
+              }}
+            >
+              <button onClick={close}>{t("retake")}</button>
             </div>
           </div>
         )}

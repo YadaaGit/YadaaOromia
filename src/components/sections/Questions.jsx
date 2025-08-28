@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Questions({
@@ -10,13 +10,19 @@ export default function Questions({
   const [answers, setAnswers] = useState({});
   const navigate = useNavigate();
 
+  // ✅ Pick 5 random questions once (memoized so it doesn't change on re-render)
+  const selectedQuestions = useMemo(() => {
+    const shuffled = [...questions].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 5);
+  }, [questions]);
+
   const handleSelect = (qIndex, selectedIndex) => {
     setAnswers((prev) => ({ ...prev, [qIndex]: selectedIndex }));
   };
 
   const handleSubmit = () => {
-    const total = questions.length;
-    const correct = questions.reduce(
+    const total = selectedQuestions.length;
+    const correct = selectedQuestions.reduce(
       (acc, q, i) => acc + (answers[i] === q.answer ? 1 : 0),
       0
     );
@@ -27,9 +33,9 @@ export default function Questions({
     navigate(`/courses`, {
       state: {
         type: "passed_final_quiz",
-        score: score,
-        pass_grade: pass_grade,
-        program_title: program_title,
+        score,
+        pass_grade,
+        program_title,
       },
     });
   };
@@ -37,9 +43,11 @@ export default function Questions({
   return (
     <div className="mt-10 border-t border-gray-200 pt-6">
       <h4 className="text-2xl font-semibold mb-6 text-gray-800">Questions</h4>
-      {questions.map((q, qIndex) => (
+      {selectedQuestions.map((q, qIndex) => (
         <div key={qIndex} className="mb-8">
-          <p className="text-lg font-medium text-gray-800 mb-3">{q.question}</p>
+          <p className="text-lg font-medium text-gray-800 mb-3">
+            {q.question}
+          </p>
           <div className="flex flex-col gap-3">
             {q.options.map((opt, idx) => {
               const isSelected = answers[qIndex] === idx;

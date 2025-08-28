@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/utils/useTranslation.js";
 import logo from "@/assets/logos/logo_icon.png";
+import logo_t from "@/assets/logos/logo_transparent.png";
 import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 import sponserLogo1 from "@/assets/sponsers/buildUp.png";
 import sponserLogo2 from "@/assets/sponsers/elida.png";
@@ -15,6 +16,7 @@ const partners = [
   sponserLogo3,
   sponserLogo4,
   sponserLogo5,
+  logo_t,
 ];
 
 const AboutUs = () => {
@@ -155,7 +157,11 @@ const AboutUs = () => {
             <img
               src={src}
               alt={`Partner ${(index % partners.length) + 1}`}
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
+              style={
+                src == logo_t
+                  ? { maxWidth: "100%", width: "80%",    maxHeight: "100%" }
+                  : { maxWidth: "100%", maxHeight: "100%" }
+              }
             />
           </div>
         ))}

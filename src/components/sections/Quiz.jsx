@@ -100,7 +100,7 @@ export default function Quiz({ questions = [], onPassed }) {
           delete copy[slotIndex];
           return copy;
         });
-      }, 3000); // short feedback delay
+      }, 5000); // short feedback delay
     }
   };
 
@@ -174,7 +174,7 @@ export default function Quiz({ questions = [], onPassed }) {
                 <strong className="block mb-1 text-gray-800">
                   Correct Answer:
                 </strong>
-                {[t("A"), t("B"), t("C"), t("D")][q.answer]}
+                {q.options[q.answer]}
               </div>
             )}
           </div>
