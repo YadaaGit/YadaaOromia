@@ -43,7 +43,6 @@
   "select_country_first": "Mee dura biyya filadhu",
   "edit_course": "Koorso gulaali",
 
-
   "courses": "Koorsoota",
   "courses_admin": "Koorso Bulchaa",
   "user_data": "Daataa fayyadamaa",
@@ -51,7 +50,6 @@
   "loading": "Fe’amaa jira...",
   "module_not_found": "Moduuliin hin argamne",
   "no_content_yet_for": "Qabiyyeen ammaaf hin jiru",
-
 
   "hi": "Akkam, ",
   "welcome_message_home": "Har’a waan haaraa barachuuf qophii taattee?",
@@ -81,12 +79,10 @@
   "phone_number": "Lakkoofsa Bilbilaa",
   "take_final_quiz": "Final Quiz",
 
-
   "hi": "Hi, ",
   "welcome_message_home": "Ready to learn something new today?",
   "admin_loading_warning": "⚠️ Our system is loading admin data. Please wait a moment and try again.",
   "user_view": "User Overview",
-
 
   "info": "Odeeffannoo",
   "scores": "Bu’aan",
@@ -107,9 +103,21 @@
   "add_course": "+ Koorso ida’i",
   "user_add_course": "📚 Sagantaa Haaraa Ida’i",
 
-
   "_comment_2": "the next are UX texts",
-  
+
   "fill_required_fields": "Mee bakka dirqama hunda guuti.",
-  "no_course_for_lang": "Afaan filatameef koorso hin jiru."
+  "no_course_for_lang": "Afaan filatameef koorso hin jiru.",
+  "_comment_3": "popup / certificate messages",
+
+  "continue_to": "Itti fufi gara",
+  "continue_to_final_quiz": "Itti fufi gara final quiz?",
+  "congratulations": "BAGA GAMMADDAN!!",
+  "completed_with_score_1": "Ati",
+  "completed_with_score_2": "xumurte bu’aa waliin.",
+  "certificate_soon": "Waraqaa ragaa kee Telegram irratti siif erginna dhihoo kana.",
+  "continue": "Itti fufi",
+  "A": "A",
+  "B": "B",
+  "C": "C",
+  "D": "D"
 }

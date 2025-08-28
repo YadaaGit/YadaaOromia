@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "@/utils/useTranslation.js";
+
 
 export default function Quiz({ questions = [], onPassed }) {
   const [answered, setAnswered] = useState({});
   const [locked, setLocked] = useState({});
   const [permaLocked, setPermaLocked] = useState({});
   const [hasPassed, setHasPassed] = useState(false);
+  const { t } = useTranslation();
 
   const [displayedQuestions, setDisplayedQuestions] = useState([]);
   const [noneDisplayed, setNoneDisplayed] = useState([]);
@@ -42,7 +45,7 @@ export default function Quiz({ questions = [], onPassed }) {
     const isCorrect = selectedIndex === question.answer;
     setAnswered((prev) => ({ ...prev, [slotIndex]: selectedIndex }));
     setLocked((prev) => ({ ...prev, [slotIndex]: true }));
-    
+
     if (isCorrect) {
       // Permanently lock the slot
       setIsCorrectTemp((prev) => ({ ...prev, [slotIndex]: true }));
@@ -171,7 +174,7 @@ export default function Quiz({ questions = [], onPassed }) {
                 <strong className="block mb-1 text-gray-800">
                   Correct Answer:
                 </strong>
-                {["A", "B", "C", "D"][q.answer]}
+                {[t("A"), t("B"), t("C"), t("D")][q.answer]}
               </div>
             )}
           </div>

@@ -7,6 +7,8 @@ import useUserData from "@/hooks/get_user_data.js";
 import RemoteImage from "@/components/basic_ui/remoteImgDisplay.jsx";
 import { useProgramData } from "@/hooks/get_course_data.js";
 import { useCourseData } from "@/hooks/get_course_data.js";
+import { useTranslation } from "@/utils/useTranslation.js";
+
 
 export default function SectionViewer({
   modules,
@@ -21,11 +23,13 @@ export default function SectionViewer({
   const [currentIndex, setCurrentIndex] = useState(
     initialIndex >= 0 ? initialIndex : 0
   );
+  const { t } = useTranslation();
   const [error_int, setError_int] = useState("");
   const [loading_int, setLoading_int] = useState(false);
   const [passedQuiz, setPassedQuiz] = useState(false);
   const currentModule = modules[currentIndex];
   const { user } = useUserData();
+
   const { program, loading: loading_this_program } = useProgramData(programId);
   const { course, loading: loading_this_course } = useCourseData(
     programId,
@@ -46,7 +50,7 @@ export default function SectionViewer({
       navigate(`/courses`, {
         state: {
           type: "for_next_course",
-          message: "Congratulations on completing the course!",
+          message: t("congra_for_finishing"),
           current_programId: programId,
           next_is_final_quiz: program.courses[course.course_index + 1]
             ? false
@@ -77,7 +81,7 @@ export default function SectionViewer({
               {c.header && (
                 <h4
                   className="font-bold"
-                  style={{ fontSize: "large", marginBottom: "7px" }}
+                  style={{ fontSize: "x-large", marginBottom: "7px" }}
                 >
                   {c.header}
                 </h4>

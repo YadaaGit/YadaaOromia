@@ -53,7 +53,6 @@
   "course_not_found": "Course not found",
   "no_content_yet_for": "No content yet for",
 
-
   "hi": "Hi, ",
   "welcome_message_home": "Ready to learn something new today?",
   "admin_loading_warning": "⚠️ Our system is loading admin data. Please wait a moment and try again.",
@@ -84,7 +83,6 @@
   "admin": "Admin",
   "edit": "Edit",
   "save": "Save",
-  "cancel": "Cancel",
   "country": "Country",
   "city": "City",
   "log_out": "Log Out",
@@ -94,9 +92,25 @@
   "add_course": "+ Add Course",
   "user_add_course": "📚 Add New Program",
 
-  "_comment_2":"the next are UX texts",
-  
-  "fill_required_fields":"Please fill in all required fields.",
+  "_comment_2": "the next are UX texts",
 
-  "no_course_for_lang": "No courses available for the selected language."
+  "fill_required_fields": "Please fill in all required fields.",
+
+  "no_course_for_lang": "No courses available for the selected language.",
+
+  "_comment_3": "popup / certificate messages",
+
+  "continue_to": "Continue to",
+  "continue_to_final_quiz": "Continue to final quiz?",
+  "congratulations": "CONGRATULATIONS!!",
+  "congra_for_finishing": "Congratulations on completing the course!",
+  "completed_with_score_1": "You have completed",
+  "completed_with_score_2": "with a score of",
+  "certificate_soon": "We will send your certificate on Telegram shortly.",
+  "cancel": "Cancel",
+  "continue": "Continue",
+  "A": "A",
+  "B": "B",
+  "C": "C",
+  "D": "D"
 }

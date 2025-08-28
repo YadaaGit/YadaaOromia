@@ -286,6 +286,7 @@ function Courses() {
             className="bg-green-100 text-green-800"
             style={{
               width: 300,
+              background: "#e9fff1 !important",
               height: "auto",
               minHeight: 100,
               padding: 20,
@@ -298,13 +299,13 @@ function Courses() {
               justifyContent: "space-between",
             }}
           >
-            <p>
+            <p style={{ fontWeight: "bold" }}>
               {message}
               <br />
               <br />
               {next_is_final_quiz
-                ? ` Continue to final quiz?`
-                : `Continue to ${next_title}?`}
+                ? (` ${t("continue_to_final_quiz")}`)
+                : `${t("continue_to")} ${next_title}?`}
             </p>
             <ConfettiExplosion />
             <div
@@ -327,7 +328,7 @@ function Courses() {
                   borderRadius: 8,
                 }}
               >
-                Cancel
+                {t("cancel")}
               </button>
               <button
                 onClick={() => {
@@ -338,7 +339,7 @@ function Courses() {
                   );
                 }}
               >
-                Continue
+                {t("continue")}
               </button>
             </div>
           </div>
@@ -346,8 +347,8 @@ function Courses() {
       </Popup>
 
       <Popup
-        open={type == "passed_final_quiz" && score >= pass_grade}
-        // open={true}
+        // open={type == "passed_final_quiz" && score >= pass_grade}
+        open={true}
         modal
         lockScroll
         arrow
@@ -374,20 +375,21 @@ function Courses() {
             <ConfettiExplosion duration={5000} />
 
             <p style={{ fontWeight: "bold", fontSize: 20 }}>
-              CONGRATULATIONS!!
+              {t("congratulations")}
             </p>
             <br />
             <p>
-              you have completed -{" "}
+              {t("completed_with_score_1")} - {" "}
               <span style={{ fontSize: 18, fontWeight: "bold" }}>
                 {program_title}
               </span>
-              - with a score of{" "}
+              - {t("completed_with_score_2")}{" "}
               <span style={{ fontSize: 18, fontWeight: "bold" }}>
                 {score}%.
               </span>{" "}
-              We will send your certificate shortly.
+              {t("certificate_soon")}
             </p>
+
             <ConfettiExplosion />
             <ConfettiExplosion />
             <div
@@ -402,7 +404,7 @@ function Courses() {
                 gap: 15,
               }}
             >
-              <button onClick={close}>Continue</button>
+              <button onClick={close}>{t("continue")}</button>
             </div>
           </div>
         )}
