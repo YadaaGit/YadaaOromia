@@ -74,7 +74,10 @@
   "contact_us": "ያግኙን",
   "contact_email": "ኢሜል",
   "contact_phone": "ስልክ",
-  
+  "phone_number": "ስልክ ቁጥር",
+  "take_final_quiz": "የመጨረሻ ፈተና ውስጥ ይውሰዱ",
+
+
   "user_view": "የተጠቃሚ መረጃ",
   "info": "መረጃ",
   "scores": "ውጤቶች",

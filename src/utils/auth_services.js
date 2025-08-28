@@ -16,6 +16,7 @@ export const handleSignUp = async ({
   sex,
   lang,
   email,
+  phone_number,
   password,
   con_password,
   country,
@@ -37,6 +38,7 @@ export const handleSignUp = async ({
     !con_password ||
     !age ||
     !sex ||
+    !phone_number ||
     !country ||
     !city ||
     !lang
@@ -87,6 +89,7 @@ export const handleSignUp = async ({
       lang,
       gender: sex,
       email,
+      phone_number,
       uuid: user.uid,
       joined: serverTimestamp(),
       role: role || "user",
@@ -157,7 +160,7 @@ export const handleSignIn = async ({
     await signInWithEmailAndPassword(auth, email, password);
 
     // 2. Let main.jsx handle navigation
-    navigate("/profile");
+    navigate("/");
   } catch (err) {
     console.error(err);
     switch (err.message) {

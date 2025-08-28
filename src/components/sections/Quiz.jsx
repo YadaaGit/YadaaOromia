@@ -10,6 +10,7 @@ export default function Quiz({ questions = [], onPassed }) {
   const [noneDisplayed, setNoneDisplayed] = useState([]);
   const [unanswered, setUnanswered] = useState([]);
   const [tempWrongExplanation, setTempWrongExplanation] = useState({});
+  const [isCorrectTemp, setIsCorrectTemp] = useState({});
 
   // Shuffle helper
   const shuffleArray = (arr) => [...arr].sort(() => 0.5 - Math.random());
@@ -39,12 +40,12 @@ export default function Quiz({ questions = [], onPassed }) {
     const question = displayedQuestions[slotIndex];
     const qIndex = questions.indexOf(question);
     const isCorrect = selectedIndex === question.answer;
-
     setAnswered((prev) => ({ ...prev, [slotIndex]: selectedIndex }));
     setLocked((prev) => ({ ...prev, [slotIndex]: true }));
-
+    
     if (isCorrect) {
       // Permanently lock the slot
+      setIsCorrectTemp((prev) => ({ ...prev, [slotIndex]: true }));
       setPermaLocked((prev) => ({ ...prev, [slotIndex]: true }));
       setUnanswered((prev) => prev.filter((idx) => idx !== qIndex));
     } else {
@@ -130,6 +131,7 @@ export default function Quiz({ questions = [], onPassed }) {
             <div className="flex flex-col gap-3">
               {q.options.map((opt, idx) => {
                 const isCorrect = idx === q.answer;
+
                 const isSelected = idx === selectedIndex;
 
                 let base = "bg-white border-gray-300";
@@ -158,11 +160,18 @@ export default function Quiz({ questions = [], onPassed }) {
               })}
             </div>
             {(permaLocked[slotIndex] || tempWrongExplanation[slotIndex]) && (
-              <div className="mt-4 bg-gray-100 text-sm text-gray-700 p-4 rounded-xl border border-gray-200">
+              <div
+                className="mt-4 bg-gray-100 text-sm text-gray-700 p-4 rounded-xl border border-gray-200"
+                style={
+                  !isCorrectTemp[slotIndex]
+                    ? { backgroundColor: "#ffa4c2ff" }
+                    : { backgroundColor: "#76ff6a78" }
+                }
+              >
                 <strong className="block mb-1 text-gray-800">
-                  Explanation:
+                  Correct Answer:
                 </strong>
-                {q.explanation ? q.explanation : "No explanation provided."}
+                {["A", "B", "C", "D"][q.answer]}
               </div>
             )}
           </div>

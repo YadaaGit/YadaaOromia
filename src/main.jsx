@@ -33,6 +33,7 @@ import CourseModal from "./pages/course_pages/Course_modal.jsx";
 import CourseDetails from "./pages/course_pages/Course_detail.jsx";
 import VerifyEmail from "./pages/auth_pages/verify_email.jsx";
 import AboutUs from "./pages/about_us.jsx";
+import CertificateVerify from "./pages/CertificateVerify.jsx";
 import FinalQuizPage from "./pages/course_pages/Final_quiz_modal.jsx";
 
 // Initialize client-side tools
@@ -69,9 +70,15 @@ function AppRoutes({ user }) {
 
   // Paths where tab bar should be hidden
   const shouldHideTabBar =
-    ["/welcome", "/login", "/register", "/verify_email", "/", "/about_us"].some(
-      (path) => matchPath({ path, end: true }, location.pathname)
-    ) ||
+    [
+      "/welcome",
+      "/login",
+      "/register",
+      "/verify_email",
+      "/",
+      "/about_us",
+      "/certificates/:certId",
+    ].some((path) => matchPath({ path, end: true }, location.pathname)) ||
     matchPath("/courses/:programId/:courseId", location.pathname) ||
     matchPath("/courses/:programId/:courseId/:moduleId", location.pathname) ||
     matchPath(
@@ -79,6 +86,7 @@ function AppRoutes({ user }) {
       location.pathname
     ) ||
     matchPath("/courses_admin/:add_course", location.pathname);
+  matchPath("/certificates/:certId", location.pathname);
 
   const background = location.state?.background || null;
 
@@ -218,6 +226,7 @@ function AppRoutes({ user }) {
         <Route path="/about_us" element={<AboutUs />} />
 
         {/* Direct access to course detail, module view, final quiz */}
+        <Route path="/certificates/:certId" element={<CertificateVerify />} />
         <Route
           path="/courses/:programId/:courseId"
           element={<CourseDetails />}

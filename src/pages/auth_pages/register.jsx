@@ -11,6 +11,7 @@ import {
   CalendarIcon,
   EyeIcon,
   EyeSlashIcon,
+  PhoneIcon,
 } from "@heroicons/react/24/outline";
 import { handleSignUp } from "@/utils/auth_services.js";
 import useAdminEmails from "@/hooks/get_admin_emails.js";
@@ -55,6 +56,7 @@ export default function Register() {
     sex: "",
     lang: "",
     email: "",
+    phone_number: "",
     password: "",
     con_password: "",
     country: "",
@@ -118,10 +120,17 @@ export default function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     if (name === "country") {
       if (value === "" || countries.includes(value)) {
         setFormData((prev) => ({ ...prev, [name]: value }));
       }
+      return;
+    }
+
+    if (name === "phone_number") {
+      const numericValue = value.replace(/\D/g, ""); // Only keep digits
+      setFormData((prev) => ({ ...prev, phone_number: numericValue }));
       return;
     }
 
@@ -150,6 +159,7 @@ export default function Register() {
       sex: formData.sex,
       lang: formData.lang,
       email: formData.email,
+      phone_number: formData.phone_number,
       country: formData.country,
       city: formData.city,
       password: formData.password,
@@ -264,6 +274,14 @@ export default function Register() {
             onChange={handleChange}
             placeholder={t("email")}
             Icon={EnvelopeIcon}
+          />
+          <InputField
+            name="phone_number"
+            type="tel"
+            value={formData.phone_number}
+            onChange={handleChange}
+            placeholder={t("phone_number")}
+            Icon={PhoneIcon}
           />
           <PasswordField
             name="password"

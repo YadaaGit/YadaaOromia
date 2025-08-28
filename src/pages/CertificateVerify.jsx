@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "@/utils/useTranslation.js";
+import { useParams, useNavigate } from "react-router-dom";
 import logo from "@/assets/logos/logo_icon.png";
-import LanguageDropdown from "@/components/basic_ui/lang_dropdown";
 import sponserLogo1 from "@/assets/sponsers/buildUp.png";
 import sponserLogo2 from "@/assets/sponsers/elida.png";
 import sponserLogo3 from "@/assets/sponsers/partners.png";
 import sponserLogo4 from "@/assets/sponsers/searchForCommonGround.png";
 import sponserLogo5 from "@/assets/sponsers/zeleman.png";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 
 const partners = [
   sponserLogo1,
@@ -17,13 +16,23 @@ const partners = [
   sponserLogo5,
 ];
 
-const AboutUs = () => {
+const CertificateVerify = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const carouselRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
+  const { certId } = useParams();
+  const [certData, setCertData] = useState({});
+
+  const baseUrl = import.meta.env.VITE_API_URL || "";
+
+  useEffect(() => {
+    fetch(`${baseUrl}/api/certificates/${certId}`)
+      .then((res) => res.json())
+      .then(setCertData);
+  }, []);
 
   // Duplicate partners for seamless looping
+
   const scrollingPartners = [...partners, ...partners];
 
   useEffect(() => {
@@ -58,13 +67,12 @@ const AboutUs = () => {
       {/* Top Bar with Language Dropdown and Sign Up Button */}
       <div className="flex w-full max-w-md justify-between items-center mb-4">
         <button
-          onClick={() => navigate("/welcome")}
+          onClick={() => navigate("/")}
           className="bg-indigo-500 text-white px-4 py-2 rounded-full font-semibold shadow hover:bg-indigo-600 transition"
           style={{ borderRadius: "999px" }}
         >
-          {t("sign_up")}
+          ← Home
         </button>
-        <LanguageDropdown style_pass={{ maxWidth: 160 }} />
       </div>
 
       {/* Logo */}
@@ -76,51 +84,94 @@ const AboutUs = () => {
       />
 
       {/* Hero Section */}
-      <div
-        className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 mb-6"
-        style={{ textAlign: "center" }}
-      >
-        <h1
-          className="text-2xl font-bold text-logo-800 mb-2"
-          style={{ fontSize: "180%" }}
-        >
-          {t("about_us_title") || "Media Literacy for Peace"}
-        </h1>
-        <p className="text-logo-500 text-sm text-center mb-4">
-          {t("about_us_intro") ||
-            "Empowering young people with the knowledge and skills to engage responsibly in the digital world. Through focused training in media literacy and peacebuilding, participants learn how to identify misinformation, counter hate speech, and practice ethical storytelling that strengthens unity and resilience in their communities."}
-        </p>
-      </div>
-
-      {/* Mission and Vision */}
-      <div className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 mb-6">
-        <h2 className="text-xl font-bold text-logo-800 mb-2">
-          {t("our_mission") || "Our Mission"}
-        </h2>
-        <p className="text-logo-500 text-sm mb-4">
-          {t("mission_text") ||
-            "To expand access to media literacy and peacebuilding training that equips youth with practical skills to create safe and constructive online spaces."}
-        </p>
-        <h2 className="text-xl font-bold text-logo-800 mb-2">
-          {t("our_vision") || "Our Vision"}
-        </h2>
-        <p className="text-logo-500 text-sm mb-4">
-          {t("vision_text") ||
-            "A society where every young person—regardless of background or location—has the tools to resist harmful content and contribute to peace, truth, and social cohesion."}
-        </p>
-      </div>
-
-      {/* Values Section */}
-      <div className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 mb-6">
-        <h2 className="text-xl font-bold text-logo-800 mb-4">
-          {t("core_values") || "Our Values"}
-        </h2>
-        <ul className="list-disc pl-6 text-logo-500 text-sm">
-          <li>{t("value_1") || "Empowerment"}</li>
-          <li>{t("value_2") || "Impact"}</li>
-          <li>{t("value_3") || "Peacebuilding"}</li>
-        </ul>
-      </div>
+      {certData != {} ? (
+        <div className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 mb-6">
+          <div className="certificate-verification ">
+            <p
+              style={{
+                display: "flex",
+                gap: 10,
+                fontSize: 20,
+                fontWeight: "bold",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {" "}
+              <CheckCircleIcon
+                className="w-5 h-5 text-green-800"
+                style={{ fontWeight: "bolder" }}
+              />
+              Certificate Verified
+            </p>
+            <br />
+            <p>
+              This certificate was officially issued by our platform, below are
+              the details:
+            </p>
+            <br />
+            <p>
+              <strong>Student Name:</strong> {certData.userName}
+            </p>
+            <p>
+              <strong>Course:</strong> {certData.courseTitle}
+            </p>
+            <p>
+              <strong>Final Score:</strong> {certData.score}%
+            </p>
+            <p>
+              <strong>Issued on:</strong>{" "}
+              {new Date(certData.issueDate).toDateString()}
+            </p>
+            <br />
+            <br />
+            <p
+              style={{
+                fontSize: 12,
+                color: "rgb(234 65 65 / 71%)",
+                fontWeight: 600,
+              }}
+            >
+              <strong>NOTE:</strong> If the details on the certificate and on
+              this site doesnt match then the certificate is not valid
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 mb-6">
+          <div className="certificate-verification">
+            <p
+              style={{
+                display: "flex",
+                gap: 10,
+                fontSize: 20,
+                fontWeight: "bold",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {" "}
+              <XCircleIcon
+                className="w-5 h-5 text-red-800"
+                style={{ fontWeight: "bolder" }}
+              />
+              This certificate is not knowen!!
+            </p>
+            <br />
+            <p
+              style={{
+                fontSize: 14,
+                color: "#ea4141",
+                fontWeight: 600,
+                textAlign: "center",
+              }}
+            >
+              <strong>NOTE:</strong> Our platform never issued a certificate
+              with this ID
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Partners Carousel */}
       <div
@@ -160,19 +211,8 @@ const AboutUs = () => {
           </div>
         ))}
       </div>
-      <div className="w-full max-w-md bg-white rounded-xl shadow px-6 py-5 mb-6">
-        <h2 className="text-xl font-bold text-logo-800 mb-4">
-          {t("contact_us") || "Contact Us"}
-        </h2>
-        <p className="text-logo-500 text-sm mb-2">
-          {t("contact_email") || "Email"}: info@example.com
-        </p>
-        <p className="text-logo-500 text-sm">
-          {t("contact_phone") || "Phone"}: +251-123-456-789
-        </p>
-      </div>
     </div>
   );
 };
 
-export default AboutUs;
+export default CertificateVerify;

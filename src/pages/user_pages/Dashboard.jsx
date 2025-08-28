@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "@/style/Dashboard_user.css";
 import "@/style/general.css";
@@ -14,11 +14,12 @@ import toast, { Toaster } from "react-hot-toast";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import ConfettiExplosion from "react-confetti-explosion";
-
+import { useTelegramInitData } from "@/hooks/get_tg_data.js";
 
 function Courses() {
   const { user, loading: userLoading, error: userError } = useUserData();
   const { t } = useTranslation();
+  const { initDataState } = useTelegramInitData();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -66,6 +67,59 @@ function Courses() {
     }
   };
 
+  const api = import.meta.env.VITE_API_URL;
+
+  async function handleIssueCertificate({ userName, courseTitle, score }) {
+    try {
+      const certId = `cert-${Date.now()}`;
+      const res = await fetch(`${api}/api/certificates`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userName, courseTitle, score, certId }),
+      });
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error || "Issue failed");
+
+      console.log("✅ Certificate issued:", json);
+
+      // Send URL only
+      const chatId = initDataState.user.id;
+      const fileUrl = `${api}/api/certificates/${certId}/image`; // external URL
+
+      const sendRes = await fetch(`${api}/api/send-document`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chatId,
+          fileUrl,
+          caption: "🎓 Here is your certificate!",
+        }),
+      });
+      const data = await sendRes.json();
+      console.log("Document sent:", data);
+      toast.success("Certificate sent successfully!");
+      return json;
+    } catch (err) {
+      console.error("❌ Certificate issue/send failed:", err);
+      toast.error("Failed to issue or send certificate");
+    }
+  }
+
+  // useEffect to trigger once
+  useEffect(() => {
+    if (
+      user?.name &&
+      type === "passed_final_quiz" &&
+      score >= pass_grade &&
+      program_title
+    ) {
+      handleIssueCertificate({
+        userName: user.name,
+        courseTitle: program_title,
+        score: score,
+      });
+    }
+  }, [user, type, score, pass_grade, program_title]);
   // ----- Loading or no user -----
   if (userLoading || !user || programsLoading) {
     return (
