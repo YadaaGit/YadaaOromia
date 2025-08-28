@@ -108,6 +108,7 @@ function Courses() {
   // useEffect to trigger once
   useEffect(() => {
     if (
+      initDataState.user &&
       user?.name &&
       type === "passed_final_quiz" &&
       score >= pass_grade &&

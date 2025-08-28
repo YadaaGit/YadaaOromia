@@ -105,7 +105,7 @@
 
         console.log("✅ Certificate issued:", json);
 
-        const chatId = 1543249076; // or initDataState.user.id
+        const chatId = initDataState.user.id; 
         const fileUrl = `${api}/api/certificates/${certId}/image`; // public URL to certificate
 
         // Send document via Telegram bot
@@ -139,7 +139,7 @@
         program_title
       );
       if (
-        // initDataState.user &&
+        initDataState.user &&
         user?.name &&
         type === "passed_final_quiz" &&
         score &&
