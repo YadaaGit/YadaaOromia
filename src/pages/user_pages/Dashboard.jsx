@@ -32,11 +32,12 @@ function Courses() {
     next_id,
     final_quiz_id,
     score,
-    pass_grade,
     program_title,
   } = location.state || {}; // optional chaining, safe access
 
   const progress = user?.course_progress || {};
+  const pass_grade = 70; // could also come from backend per program
+
   const {
     programsData,
     loading: programsLoading,
@@ -411,8 +412,8 @@ function Courses() {
       </Popup>
 
       <Popup
-        // open={type == "passed_final_quiz" && score < pass_grade}
-        open={true}
+        open={type == "passed_final_quiz" && score < pass_grade}
+        // open={true}
         modal
         lockScroll
         arrow
@@ -450,7 +451,17 @@ function Courses() {
                 gap: 15,
               }}
             >
-              <button onClick={close}>{t("retake")}</button>
+              <button
+                onClick={() => {
+                  navigate(
+                    next_is_final_quiz
+                      ? `/courses/${current_programId}/final_quiz/${final_quiz_id}`
+                      : `/courses/${current_programId}/${next_id}`
+                  );
+                }}
+              >
+                {t("retake")}
+              </button>
             </div>
           </div>
         )}

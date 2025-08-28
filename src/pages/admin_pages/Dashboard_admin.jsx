@@ -32,10 +32,9 @@ function Courses() {
     next_id,
     final_quiz_id,
     score,
-    pass_grade,
     program_title,
   } = location.state || {}; // optional chaining, safe access
-
+  const pass_grade = 70; // could also come from backend per program
   const [isEditable, setIsEditable] = useState(false);
 
   const progress = user?.course_progress || {};
@@ -470,8 +469,8 @@ function Courses() {
         )}
       </Popup>
       <Popup
-        // open={type == "passed_final_quiz" && score < pass_grade}
-        open={true}
+        open={type == "passed_final_quiz" && score < pass_grade}
+        // open={true}
         modal
         lockScroll
         arrow
@@ -495,7 +494,7 @@ function Courses() {
             }}
           >
             <p style={{ fontWeight: "bold", fontSize: 20 }}>{t("sorry")}</p>
-              <p>{t("you_did_not_pass")}</p>
+            <p>{t("you_did_not_pass")}</p>
 
             <div
               style={{
