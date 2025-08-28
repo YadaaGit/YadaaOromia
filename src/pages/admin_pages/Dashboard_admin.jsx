@@ -335,7 +335,7 @@ function Courses() {
       )}
 
       <Popup
-        open={true}
+        open={type == "for_next_course"}
         modal
         lockScroll
         arrow
