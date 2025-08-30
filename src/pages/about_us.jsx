@@ -171,10 +171,10 @@ const AboutUs = () => {
           {t("contact_us") || "Contact Us"}
         </h2>
         <p className="text-logo-500 text-sm mb-2">
-          {t("contact_email") || "Email"}: info@example.com
+          {t("contact_email") || "Email"}: Eftane2@gmail.com
         </p>
         <p className="text-logo-500 text-sm">
-          {t("contact_phone") || "Phone"}: +251-123-456-789
+          {t("contact_phone") || "Phone"}: +251-980486389
         </p>
       </div>
     </div>

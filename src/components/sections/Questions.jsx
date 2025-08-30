@@ -45,9 +45,7 @@ export default function Questions({
       <h4 className="text-2xl font-semibold mb-6 text-gray-800">Questions</h4>
       {selectedQuestions.map((q, qIndex) => (
         <div key={qIndex} className="mb-8">
-          <p className="text-lg font-medium text-gray-800 mb-3">
-            {q.question}
-          </p>
+          <p className="text-lg font-medium text-gray-800 mb-3">{q.question}</p>
           <div className="flex flex-col gap-3">
             {q.options.map((opt, idx) => {
               const isSelected = answers[qIndex] === idx;
