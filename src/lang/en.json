@@ -1,5 +1,5 @@
 {
-  "_comment_1": "the next are UI texts",
+  "_comment_1": "UI texts",
 
   "hello": "Hello",
   "back": "Back",
@@ -35,14 +35,14 @@
   "email_send_failed": "Failed to send email. Please try again later.",
   "email_not_verified": "Your email is not verified. Please check your inbox and verify your email address.",
   "verify_email": "Verify Your Email",
-  "email_sent": "We’ve sent a verification email to: ",
-  "I_verified_email": "I’ve Verified My Email",
+  "email_sent": "We’ve sent a verification email to:",
+  "i_verified_email": "I’ve Verified My Email",
   "check_inbox": "Verification email sent. Please check your inbox.",
   "resend_email": "Send Verification Email",
   "resend_in": "Resend in",
   "select_country_first": "Please select a country first",
   "edit_course": "Edit Course",
-  "achivments": "Achievements",
+  "achievements": "Achievements",
 
   "courses": "Courses",
   "courses_admin": "Courses Admin",
@@ -77,7 +77,7 @@
   "scores": "Scores",
   "joined": "Joined",
   "role": "Role",
-  "User": "User",
+  "user": "User",
   "last_active": "Last Active",
   "streak": "Streak",
   "admin": "Admin",
@@ -92,10 +92,9 @@
   "add_course": "+ Add Course",
   "user_add_course": "📚 Add New Program",
 
-  "_comment_2": "the next are UX texts",
+  "_comment_2": "UX texts",
 
   "fill_required_fields": "Please fill in all required fields.",
-
   "no_course_for_lang": "No courses available for the selected language.",
 
   "_comment_3": "popup / certificate messages",
@@ -115,5 +114,31 @@
   "A": "A",
   "B": "B",
   "C": "C",
-  "D": "D"
+  "D": "D",
+
+  "_comment_4": "auth & system error messages",
+
+  "fill_required": "Please fill in all required fields.",
+  "invalid_age": "Please enter a valid age between 13 and 60.",
+  "password_mismatch": "Passwords do not match.",
+  "telegram_required": "This app must be opened inside Telegram to sign up.",
+  "email_in_use": "This email is already in use, try to sign in instead.",
+  "invalid_email": "Invalid email format.",
+  "weak_password": "Password must be at least 6 characters.",
+  "unexpected_error": "An unexpected error occurred, please try again later.",
+  "no_user": "No user found with this email.",
+  "invalid_credentials": "Incorrect credentials. Please try again.",
+  "network_failed": "Network failed to connect, reconnect and try again.",
+  "enter_email_reset": "Please enter your email address to reset your password.",
+  "reset_email_sent": "Password reset email sent. Check your inbox.",
+  "reset_failed": "Failed to send reset email. Please try again later.",
+  "logout_failed": "Failed to log out. Please try again.",
+  "profile_updated": "Profile updated!",
+  "profile_update_failed": "Failed to update profile.",
+  "program_saved": "Program saved successfully",
+  "unlock_prev_courses": "Complete previous courses to unlock this course",
+  "unlock_final_quiz": "Finish all courses before taking the final quiz",
+  "certificate_sent": "Certificate sent successfully!",
+  "certificate_failed": "Failed to issue or send certificate",
+  "unlock_prev_modules": "Complete previous modules to unlock this module"
 }

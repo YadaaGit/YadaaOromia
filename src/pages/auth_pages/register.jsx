@@ -91,7 +91,7 @@ export default function Register() {
   useEffect(() => {
     if (errorHere !== "") {
       setShowError(true);
-      toast.error(errorHere);
+      toast.error(t(errorHere));
       console.log(`ERROR: ${errorHere}`);
     }
   }, [errorHere]);
@@ -146,7 +146,7 @@ export default function Register() {
 
   const handleRegister = () => {
     if (adminLoading) {
-      toast.loading("Loading...");
+      toast.loading(t(loading));
       return;
     }
 

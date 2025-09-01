@@ -33,14 +33,14 @@ export default function Login() {
 
   useEffect(() => {
     if (error != "") {
-      toast.error(error);
+      toast.error(t(error));
       setShowError(true);
       console.log(`ERROR: ${error}`);
     }
   }, [error]);
   useEffect(() => {
     if (success != "") {
-      toast.error(success);
+      toast.error(t(success));
       setShowSuccess(true);
     }
   }, [success]);
@@ -122,7 +122,7 @@ export default function Login() {
             setShow={setShowPassword}
           />
 
-          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+          {/* {error && <p className="text-sm text-red-500 text-center">{t(`${error}`)}</p>} */}
           {success && (
             <p className="text-sm text-green-500 text-center">{success}</p>
           )}
