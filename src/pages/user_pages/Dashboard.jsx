@@ -33,6 +33,8 @@ function Courses() {
     final_quiz_id,
     score,
     program_title,
+    correct,
+    total,
   } = location.state || {}; // optional chaining, safe access
 
   const progress = user?.course_progress || {};
@@ -47,7 +49,6 @@ function Courses() {
   const openModule = (programId, courseId, isLocked) => {
     if (isLocked) {
       toast.error(t("unlock_prev_courses"));
-      
     } else {
       navigate(`/courses/${programId}/${courseId}`, {
         state: {
@@ -439,6 +440,10 @@ function Courses() {
           >
             <p style={{ fontWeight: "bold", fontSize: 20 }}>{t("sorry")}</p>
             <p>{t("you_did_not_pass")}</p>
+            <p style={{ fontSize: 12 }}>
+              `{t("you_scored")}: {score}% ({correct}/{total}),{" "}
+              {t("at_least_to_pass")}`
+            </p>
 
             <div
               style={{

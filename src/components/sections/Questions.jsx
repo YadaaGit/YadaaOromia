@@ -36,6 +36,8 @@ export default function Questions({
         score,
         pass_grade,
         program_title,
+        correct,
+        total
       },
     });
   };
