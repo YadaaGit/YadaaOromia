@@ -146,7 +146,7 @@ export default function Register() {
 
   const handleRegister = () => {
     if (adminLoading) {
-      toast.loading(t(loading));
+      toast.loading(t("loading"));
       return;
     }
 

@@ -46,7 +46,7 @@ function Courses() {
 
   const openModule = (programId, courseId, isLocked) => {
     if (isLocked) {
-      toast.error("Complete previous courses to unlock this course");
+      toast.error(t("unlock_prev_courses"));
     } else {
       navigate(`/courses/${programId}/${courseId}`, {
         state: {
@@ -58,7 +58,7 @@ function Courses() {
 
   const openFinalQuiz = (programId, finalQuizId, isLocked) => {
     if (isLocked) {
-      toast.error("Finish all courses before taking the final quiz");
+      toast.error(t("unlock_final_quiz"));
     } else {
       navigate(`/courses/${programId}/final_quiz/${finalQuizId}`, {
         state: {
@@ -117,12 +117,12 @@ function Courses() {
       });
 
       const data = await sendRes.json();
-      toast.success("Certificate sent successfully!");
+      toast.success(t("certificate_sent"));
 
       return json;
     } catch (err) {
       console.error("❌ Certificate issue/send failed:", err);
-      toast.error("Failed to issue or send certificate");
+      toast.error(t("certificate_failed"));
     }
   }
 

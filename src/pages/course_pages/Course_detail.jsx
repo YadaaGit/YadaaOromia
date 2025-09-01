@@ -35,7 +35,7 @@ export default function CourseDetails() {
   const openModule = (moduleId, isLocked) => {
     if (isLocked) {
       setLockMessage("Complete previous modules to unlock this module");
-      toast.error("Complete previous modules to unlock this module");
+      toast.error(t("unlock_prev_modules"));
       setShowLockPopup(true);
     } else {
       navigate(`/courses/${programId}/${courseId}/${moduleId}`, {
