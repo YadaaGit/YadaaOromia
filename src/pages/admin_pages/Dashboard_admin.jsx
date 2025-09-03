@@ -471,8 +471,8 @@ function Courses() {
         )}
       </Popup>
       <Popup
-        // open={type == "passed_final_quiz" && score < pass_grade}
-        open={true}
+        open={type == "passed_final_quiz" && score < pass_grade}
+        // open={true}
         modal
         lockScroll
         arrow

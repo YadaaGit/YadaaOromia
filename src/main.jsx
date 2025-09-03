@@ -126,11 +126,10 @@ function AppRoutes({ user }) {
           path="/"
           element={
             authenticated ? (
-              role === "user" ? (
-                <Navigate state={location.state || null} to="/courses" />
-              ) : (
-                <Navigate state={location.state || null} to="/courses_admin" />
-              )
+              <Navigate
+                state={location.state || null}
+                to={role === "user" ? "/courses" : "/courses_admin"}
+              />
             ) : (
               <Navigate state={location.state || null} to="/about_us" />
             )
