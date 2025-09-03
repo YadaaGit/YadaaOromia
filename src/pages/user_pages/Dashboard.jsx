@@ -86,7 +86,7 @@ function Courses() {
       console.log("✅ Certificate issued:", json);
 
       // Send URL only
-      const chatId = initDataState.user.id;
+      const chatId = initDataState?.user.id;
       const fileUrl = `${api}/api/certificates/${certId}/image`; // external URL
 
       const sendRes = await fetch(`${api}/api/send-document`, {
@@ -111,7 +111,7 @@ function Courses() {
   // useEffect to trigger once
   useEffect(() => {
     if (
-      initDataState.user &&
+      initDataState?.user &&
       user?.name &&
       type === "passed_final_quiz" &&
       score >= pass_grade &&

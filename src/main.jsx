@@ -38,8 +38,8 @@ import FinalQuizPage from "./pages/course_pages/Final_quiz_modal.jsx";
 
 // Initialize client-side tools
 init({
-  debug: true,
-  eruda: true,
+  debug: false,
+  eruda: false,
   mockForMacOS: false,
 });
 

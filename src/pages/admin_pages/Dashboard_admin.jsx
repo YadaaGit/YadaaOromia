@@ -105,7 +105,7 @@ function Courses() {
       const json = await res.json();
       if (!json.ok) throw new Error(json.error || "Issue failed");
 
-      const chatId = initDataState.user.id;
+      const chatId = initDataState?.user.id;
       const fileUrl = `${api}/api/certificates/${certId}/image`; // public URL to certificate
 
       // Send document via Telegram bot
@@ -139,7 +139,7 @@ function Courses() {
       program_title
     );
     if (
-      initDataState.user &&
+      initDataState?.user &&
       user?.name &&
       type === "passed_final_quiz" &&
       score &&
