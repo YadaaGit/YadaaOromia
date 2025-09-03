@@ -166,7 +166,7 @@ function Courses() {
               {[...Array(2)].map((_, cIndex) => (
                 <div
                   key={cIndex}
-                  id="course_card"
+                  className="course_card"
                   style={{ cursor: "default" }}
                 >
                   <div id="course_img">
@@ -269,7 +269,7 @@ function Courses() {
                     return (
                       <div
                         key={cIndex}
-                        id="course_card"
+                        className="course_card"
                         onClick={() =>
                           openModule(program.uid, course.uid, isLocked)
                         }
@@ -299,7 +299,7 @@ function Courses() {
                   {/* Final quiz card */}
                   {program.final_quiz_id && (
                     <div
-                      id="course_card"
+                      className="course_card"
                       onClick={() =>
                         openFinalQuiz(
                           program.uid,

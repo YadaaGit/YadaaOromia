@@ -64,7 +64,7 @@
   gap: 17px;
   -webkit-overflow-scrolling: touch;
 }
-#course_card {
+.course_card {
   min-width: 260px;
   height: auto;
   border-radius: 15px;
@@ -76,7 +76,7 @@
   padding: 0px;
 }
 
-#course_card:hover {
+.course_card:hover {
   filter: drop-shadow(0 0 0.2em #181a3baa);
 }
 
