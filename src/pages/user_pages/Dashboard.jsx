@@ -22,7 +22,7 @@ function Courses() {
   const { initDataState } = useTelegramInitData();
   const navigate = useNavigate();
   const location = useLocation();
-
+  const state = location.state || {};
   const {
     type,
     message,
@@ -35,7 +35,7 @@ function Courses() {
     program_title,
     correct,
     total,
-  } = location.state || {}; // optional chaining, safe access
+  } = state;
 
   const progress = user?.course_progress || {};
   const pass_grade = 70; // could also come from backend per program
@@ -277,201 +277,197 @@ function Courses() {
         </section>
       )}
 
-      <Popup
-        open={type == "for_next_course"}
-        modal
-        lockScroll
-        arrow
-        {...{ contentStyle, overlayStyle, arrowStyle }}
-      >
-        {(close) => (
-          <div
-            className="bg-green-100 text-green-800"
-            style={{
-              width: 300,
-              background: "#e9fff1 !important",
-              height: "auto",
-              minHeight: 100,
-              padding: 20,
-              alignSelf: "center",
-              justifySelf: "center",
-              borderRadius: 11,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <p style={{ fontWeight: "bold" }}>
-              {message}
-              <br />
-              <br />
-              {next_is_final_quiz
-                ? ` ${t("continue_to_final_quiz")}`
-                : `${t("continue_to")} ${next_title}?`}
-            </p>
-            <ConfettiExplosion />
+      {type && current_programId && next_id && (
+        <Popup
+          open={type == "for_next_course"}
+          modal
+          lockScroll
+          arrow
+          {...{ contentStyle, overlayStyle, arrowStyle }}
+        >
+          {(close) => (
             <div
+              className="bg-green-100 text-green-800"
               style={{
-                width: "100%",
-                paddingTop: 20,
+                width: 300,
+                background: "#e9fff1 !important",
+                height: "auto",
+                minHeight: 100,
+                padding: 20,
+                alignSelf: "center",
+                justifySelf: "center",
                 borderRadius: 11,
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "space-between",
-                gap: 15,
               }}
             >
-              <button
-                onClick={close}
+              <p style={{ fontWeight: "bold" }}>
+                {message}
+                <br />
+                <br />
+                {next_is_final_quiz
+                  ? ` ${t("continue_to_final_quiz")}`
+                  : `${t("continue_to")} ${next_title}?`}
+              </p>
+              <ConfettiExplosion />
+              <div
                 style={{
-                  backgroundColor: "#ccc",
-                  padding: "8px 16px",
-                  borderRadius: 8,
+                  width: "100%",
+                  paddingTop: 20,
+                  borderRadius: 11,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 15,
                 }}
               >
-                {t("cancel")}
-              </button>
-              <button
-                onClick={() => {
-                  navigate(
-                    next_is_final_quiz
-                      ? `/courses/${current_programId}/final_quiz/${final_quiz_id}`
-                      : `/courses/${current_programId}/${next_id}`
-                  );
-                }}
-              >
-                {t("continue")}
-              </button>
+                <button
+                  onClick={close}
+                  style={{
+                    backgroundColor: "#ccc",
+                    padding: "8px 16px",
+                    borderRadius: 8,
+                  }}
+                >
+                  {t("cancel")}
+                </button>
+                <button
+                  onClick={() => {
+                    navigate(
+                      next_is_final_quiz
+                        ? `/courses/${current_programId}/final_quiz/${final_quiz_id}`
+                        : `/courses/${current_programId}/${next_id}`
+                    );
+                  }}
+                >
+                  {t("continue")}
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-      </Popup>
+          )}
+        </Popup>
+      )}
 
-      <Popup
-        open={type == "passed_final_quiz" && score >= pass_grade}
-        // open={true}
-        modal
-        lockScroll
-        arrow
-        {...{ contentStyle, overlayStyle, arrowStyle }}
-      >
-        {(close) => (
-          <div
-            className="bg-green-100 text-green-800"
-            style={{
-              width: "80vw",
-              background: "#e7faee !important",
-              height: "auto",
-              minHeight: 100,
-              padding: 20,
-              alignSelf: "center",
-              justifySelf: "center",
-              borderRadius: 11,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <ConfettiExplosion duration={5000} />
-
-            <p style={{ fontWeight: "bold", fontSize: 20 }}>
-              {t("congratulations")}
-            </p>
-            <br />
-            <p>
-              {t("completed_with_score_1")} -{" "}
-              <span style={{ fontSize: 18, fontWeight: "bold" }}>
-                {program_title}
-              </span>
-              - {t("completed_with_score_2")}{" "}
-              <span style={{ fontSize: 18, fontWeight: "bold" }}>
-                {score}%.
-              </span>{" "}
-              {t("certificate_soon")}
-            </p>
-
-            <ConfettiExplosion />
-            <ConfettiExplosion />
+      {type && score && (
+        <Popup
+          open={type == "passed_final_quiz" && score >= pass_grade}
+          // open={true}
+          modal
+          lockScroll
+          arrow
+          {...{ contentStyle, overlayStyle, arrowStyle }}
+        >
+          {(close) => (
             <div
+              className="bg-green-100 text-green-800"
               style={{
-                width: "100%",
-                paddingTop: 20,
+                width: "80vw",
+                background: "#e7faee !important",
+                height: "auto",
+                minHeight: 100,
+                padding: 20,
+                alignSelf: "center",
+                justifySelf: "center",
                 borderRadius: 11,
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "flex-end",
-                gap: 15,
+                justifyContent: "space-between",
               }}
             >
-              <button onClick={close}>{t("continue")}</button>
-            </div>
-          </div>
-        )}
-      </Popup>
+              <ConfettiExplosion duration={5000} />
 
-      <Popup
-        open={type == "passed_final_quiz" && score < pass_grade}
-        // open={true}
-        modal
-        lockScroll
-        arrow
-        {...{ contentStyle, overlayStyle, arrowStyle }}
-      >
-        {(close) => (
-          <div
-            className="bg-red-100 text-red-800"
-            style={{
-              width: "80vw",
-              height: "auto",
-              minHeight: 100,
-              padding: 20,
-              alignSelf: "center",
-              justifySelf: "center",
-              borderRadius: 11,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <p style={{ fontWeight: "bold", fontSize: 20 }}>{t("sorry")}</p>
-            <p>{t("you_did_not_pass")}</p>
-            <p style={{ fontSize: 12 }}>
-              `{t("you_scored")}: {score}% ({correct}/{total}),{" "}
-              {t("at_least_to_pass")}`
-            </p>
+              <p style={{ fontWeight: "bold", fontSize: 20 }}>
+                {t("congratulations")}
+              </p>
+              <br />
+              <p>
+                {t("completed_with_score_1")} -{" "}
+                <span style={{ fontSize: 18, fontWeight: "bold" }}>
+                  {program_title}
+                </span>
+                - {t("completed_with_score_2")}{" "}
+                <span style={{ fontSize: 18, fontWeight: "bold" }}>
+                  {score}%.
+                </span>{" "}
+                {t("certificate_soon")}
+              </p>
 
-            <div
-              style={{
-                width: "100%",
-                paddingTop: 7,
-                borderRadius: 11,
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "flex-end",
-                gap: 15,
-              }}
-            >
-              <button
-                onClick={() => {
-                  navigate(
-                    next_is_final_quiz
-                      ? `/courses/${current_programId}/final_quiz/${final_quiz_id}`
-                      : `/courses/${current_programId}/${next_id}`
-                  );
+              <ConfettiExplosion />
+              <ConfettiExplosion />
+              <div
+                style={{
+                  width: "100%",
+                  paddingTop: 20,
+                  borderRadius: 11,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                  gap: 15,
                 }}
               >
-                {t("retake")}
-              </button>
+                <button onClick={close}>{t("continue")}</button>
+              </div>
             </div>
-          </div>
-        )}
-      </Popup>
+          )}
+        </Popup>
+      )}
+
+      {type && score && (
+        <Popup
+          open={type == "passed_final_quiz" && score < pass_grade}
+          // open={true}
+          modal
+          lockScroll
+          arrow
+          {...{ contentStyle, overlayStyle, arrowStyle }}
+        >
+          {(close) => (
+            <div
+              className="bg-red-100 text-red-800"
+              style={{
+                width: "80vw",
+                height: "auto",
+                minHeight: 100,
+                padding: 20,
+                alignSelf: "center",
+                justifySelf: "center",
+                borderRadius: 11,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <p style={{ fontWeight: "bold", fontSize: 20 }}>{t("sorry")}</p>
+              <p>{t("you_did_not_pass")}</p>
+              <p style={{ fontSize: 12 }}>
+                `{t("you_scored")}: {score}% ({correct}/{total}),{" "}
+                {t("at_least_to_pass")}`
+              </p>
+
+              <div
+                style={{
+                  width: "100%",
+                  paddingTop: 7,
+                  borderRadius: 11,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                  gap: 15,
+                }}
+              >
+                <button onClick={close}>{t("retake")}</button>
+              </div>
+            </div>
+          )}
+        </Popup>
+      )}
     </>
   );
 }
