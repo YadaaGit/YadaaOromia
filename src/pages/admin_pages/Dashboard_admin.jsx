@@ -190,7 +190,11 @@ function Courses() {
 
   // ----- Error state -----
   if (userError || programsError) {
-    return <p className="text-red-500">{userError || programsError}</p>;
+    const errMessage =
+      userError?.message ||
+      programsError?.message ||
+      String(userError || programsError);
+    return <p className="text-red-500">{errMessage}</p>;
   }
   // ----- Editable mode -----
   if (isEditable) {
