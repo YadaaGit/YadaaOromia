@@ -110,7 +110,7 @@ export const handleSignUp = async ({
     await setDoc(doc(db, "telegram_links", String(userId)), idData);
 
     // Step 4: let main.jsx handle navigation
-    navigate("/");
+    navigate("/courses");
     
   } catch (err) {
     console.error("❌ Sign-up Error:", err);
