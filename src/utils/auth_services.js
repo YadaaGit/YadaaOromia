@@ -112,7 +112,7 @@ export const handleSignUp = async ({
 
 
     // Step 4: let main.jsx handle navigation
-    navigate("/");
+    navigate("/courses");
     
   } catch (err) {
     console.error("❌ Sign-up Error:", err);
@@ -160,7 +160,7 @@ export const handleSignIn = async ({
     await signInWithEmailAndPassword(auth, email, password);
 
     // 2. Let main.jsx handle navigation
-    navigate("/");
+    navigate("/courses");
   } catch (err) {
     console.error(err);
     switch (err.message) {

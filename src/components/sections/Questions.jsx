@@ -10,10 +10,10 @@ export default function Questions({
   const [answers, setAnswers] = useState({});
   const navigate = useNavigate();
 
-  // ✅ Pick 5 random questions once (memoized so it doesn't change on re-render)
+  // Pick 10 random questions once (memoized so it doesn't change on re-render)
   const selectedQuestions = useMemo(() => {
     const shuffled = [...questions].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 5);
+    return shuffled.slice(0, 10);
   }, [questions]);
 
   const handleSelect = (qIndex, selectedIndex) => {
