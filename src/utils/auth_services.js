@@ -27,8 +27,8 @@ export const handleSignUp = async ({
   setLoading,
   setError,
 }) => {
-  setError("");
-  setLoading(true);
+  await setError("");
+  await setLoading(true);
 
   // Validate required fields
   if (
@@ -43,7 +43,7 @@ export const handleSignUp = async ({
     !city ||
     !lang
   ) {
-    setError("Please fill in all required fields.");
+    setError("fill_required");
     setLoading(false);
     return;
   }
@@ -51,21 +51,21 @@ export const handleSignUp = async ({
   // Validate age
   const ageNumber = parseInt(age);
   if (isNaN(ageNumber) || ageNumber < 13 || ageNumber > 60) {
-    setError("Please enter a valid age between 13 and 60.");
+    setError("invalid_age");
     setLoading(false);
     return;
   }
 
   // Check password match
   if (password !== con_password) {
-    setError("Passwords do not match.");
+    setError("password_mismatch");
     setLoading(false);
     return;
   }
 
   // Check Telegram userId presence
   if (!userId) {
-    setError("This app must be opened inside Telegram to sign up.");
+    setError("telegram_required");
     setLoading(false);
     return;
   }
@@ -109,10 +109,8 @@ export const handleSignUp = async ({
     };
     await setDoc(doc(db, "telegram_links", String(userId)), idData);
 
-
-
     // Step 4: let main.jsx handle navigation
-    navigate("/courses");
+    navigate("/");
     
   } catch (err) {
     console.error("❌ Sign-up Error:", err);
@@ -120,19 +118,19 @@ export const handleSignUp = async ({
       // Firebase error codes
       switch (err.code) {
         case "auth/email-already-in-use":
-          setError("This email is already in use, try to sign in instead.");
+          setError("email_in_use");
           break;
         case "auth/invalid-email":
-          setError("Invalid email format.");
+          setError("invalid_email");
           break;
         case "auth/weak-password":
-          setError("Password must be at least 6 characters.");
+          setError("weak_password");
           break;
         default:
-          setError("An unexpected error occurred, please try again later.");
+          setError("unexpected_error");
       }
     } else {
-      setError(err.message || "An unexpected error occurred.");
+      setError(err.message || "unexpected_error");
     }
   } finally {
     setLoading(false);
@@ -149,7 +147,7 @@ export const handleSignIn = async ({
   await setError("");
 
   if (!email || !password) {
-    setError("Please fill in all required fields.");
+    setError("fill_required");
     return;
   }
 
@@ -163,21 +161,21 @@ export const handleSignIn = async ({
     navigate("/courses");
   } catch (err) {
     console.error(err);
-    switch (err.message) {
+    switch (err.code) {
       case "auth/user-not-found":
-        setError("No user found with this email.");
+        setError("no_user");
         break;
       case "auth/invalid-credential":
-        setError("Incorrect credentials. Please try again.");
+        setError("invalid_credentials");
         break;
       case "auth/invalid-email":
-        setError("Invalid email format.");
+        setError("invalid_email");
         break;
       case "auth/network-request-failed":
-        setError("Network failed to connect, reconnect and try again.");
+        setError("network_failed");
         break;
       default:
-        setError("An unexpected error occurred. Please try again later.");
+        setError("unexpected_error");
     }
   } finally {
     setLoading(false);
@@ -189,33 +187,29 @@ export const handleForgotPassword = async (email, setError, setSuccess) => {
   await setSuccess("");
 
   if (!email) {
-    setError("Please enter your email address to reset your password.");
+    setError("enter_email_reset");
     return;
   }
 
   try {
     await sendPasswordResetEmail(auth, email);
-    setSuccess("Password reset email sent. Check your inbox.");
+    setSuccess("reset_email_sent");
   } catch (err) {
     console.error(err);
     switch (err.code) {
       case "auth/user-not-found":
-        setError("No user found with this email.");
+        setError("no_user");
         break;
       case "auth/invalid-email":
-        setError("Invalid email format.");
+        setError("invalid_email");
         break;
       default:
-        setError("Failed to send reset email. Please try again later.");
+        setError("reset_failed");
     }
   }
 };
 
-export const handleLogout = async ({
-  loading,
-  error,
-  navigate,
-}) => {
+export const handleLogout = async ({ loading, error, navigate }) => {
   try {
     loading(true);
     error("");
@@ -226,7 +220,7 @@ export const handleLogout = async ({
     if (navigate) navigate("/about_us");
   } catch (err) {
     console.error("Logout error:", err);
-    error("Failed to log out. Please try again.");
+    error("logout_failed");
   } finally {
     loading(false);
   }

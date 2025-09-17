@@ -1,6 +1,4 @@
 {
-  "_comment_1": "the next are UI texts",
-
   "hello": "Akkam",
   "back": "Duubatti",
   "welcome_message_auth": "Baga nagaan dhuftan gara platform keenyaatti, guyyaa guyyaatti waan haaraa barattu!",
@@ -42,7 +40,21 @@
   "resend_in": "Itti deebi’i keessatti",
   "select_country_first": "Mee dura biyya filadhu",
   "edit_course": "Koorso gulaali",
-
+  "fill_required": "Maaloo dirree barbaachisoo hunda guutaa.",
+  "invalid_age": "Maaloo umrii sirrii gidduu 13 fi 60 galchi.",
+  "password_mismatch": "Jecha darbii walfakkaataa miti.",
+  "telegram_required": "Galmaa’uuf appiin kun Telegraam keessa banamuu qaba.",
+  "email_in_use": "Emailiin kun duraanii fayyadamaa jira, maaloo seenuuf yaali.",
+  "invalid_email": "Faayiliin email dogoggora.",
+  "weak_password": "Jecha darbii dheeraa xiqqaa 6 ta’uu qaba.",
+  "unexpected_error": "Dogoggorri hin eegamne uumameera, maaloo boodarra yaali.",
+  "no_user": "Email kanaan fayyadamaan hin argamne.",
+  "invalid_credentials": "Galmee dogoggora. Maaloo irra deebi’ii yaali.",
+  "network_failed": "Network walitti hidhamiinsa dadhabe, maaloo irra deebi’ii yaali.",
+  "enter_email_reset": "Jecha darbii deebi’ii haaromsuuf maaloo email kee galchi.",
+  "reset_email_sent": "Imeeliin haaromsa jecha darbii ergameera. Inboksii kee ilaali.",
+  "reset_failed": "Imeeliin haaromsa erguu hin milkoofne, maaloo booda irra deebi’ii yaali.",
+  "logout_failed": "Ba’uun hin milkoofne. Maaloo irra deebi’ii yaali.",
   "courses": "Koorsoota",
   "courses_admin": "Koorso Bulchaa",
   "user_data": "Daataa fayyadamaa",
@@ -50,7 +62,6 @@
   "loading": "Fe’amaa jira...",
   "module_not_found": "Moduuliin hin argamne",
   "no_content_yet_for": "Qabiyyeen ammaaf hin jiru",
-
   "hi": "Akkam, ",
   "welcome_message_home": "Har’a waan haaraa barachuuf qophii taattee?",
   "admin_loading_warning": "⚠️ Sirni keenya daataa bulchaa fe’aa jira. Mee xiqqoo eegiitii irra deebi’i.",
@@ -62,7 +73,6 @@
   "loading": "Loading...",
   "module_not_found": "Module not found",
   "no_content_yet_for": "No content yet for",
-
   "about_us_title": "Barnoota Jabeessu, Sarara Koodii Tokkoo Ittiin",
   "about_us_intro": "Nuti garee devaaloparoota, diizaayinaroota fi barsiisota teknooloojii fayyadamuun barnoota jijjiiru danda’u jennee amannu dha. Uumama meeshaalee cimaa fi salphaa ta’an kan barattoonni ittiin hirmaatanii fi barsiisoonni guddina isaanii hordofuu danda’an hojjenna.",
   "our_mission": "Kaayyoo keenya",
@@ -78,12 +88,10 @@
   "contact_phone": "Bilbila",
   "phone_number": "Lakkoofsa Bilbilaa",
   "take_final_quiz": "Final Quiz",
-
   "hi": "Hi, ",
   "welcome_message_home": "Ready to learn something new today?",
   "admin_loading_warning": "⚠️ Our system is loading admin data. Please wait a moment and try again.",
   "user_view": "User Overview",
-
   "info": "Odeeffannoo",
   "scores": "Bu’aan",
   "joined": "Yeroo seene",
@@ -102,13 +110,8 @@
   "no_content": "Qabiyyeen ammaaf hin jiru",
   "add_course": "+ Koorso ida’i",
   "user_add_course": "📚 Sagantaa Haaraa Ida’i",
-
-  "_comment_2": "the next are UX texts",
-
   "fill_required_fields": "Mee bakka dirqama hunda guuti.",
   "no_course_for_lang": "Afaan filatameef koorso hin jiru.",
-  "_comment_3": "popup / certificate messages",
-
   "continue_to": "Itti fufi gara",
   "continue_to_final_quiz": "Itti fufi gara final quiz?",
   "congratulations": "BAGA GAMMADDAN!!",

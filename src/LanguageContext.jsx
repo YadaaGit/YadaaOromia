@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import en from "./lang/en.json";
-import am from "./lang/am.json";
-import or from "./lang/or.json";
+import en from "./lang/en_new.json";
+import am from "./lang/am_new.json";
+import or from "./lang/or_new.json";
 
 const translations = { en, am, or };
 const LanguageContext = createContext();

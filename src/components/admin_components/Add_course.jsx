@@ -344,7 +344,7 @@ export default function AddProgramPage() {
 
       setLoadingSave(false);
 
-      toast.success("Program saved successfully");
+      toast.success(t("program_saved"));
       setTimeout(() => {
         navigate("/courses_admin");
       }, 2000);

@@ -53,9 +53,9 @@ export default function ProfilePage() {
         }
       );
       setEditMode(false);
-      toast.success("Profile updated!");
+      toast.success(t("profile_updated"));
     } catch (error) {
-      toast.error("Failed to update profile.");
+      toast.error(t("profile_update_failed"));
     } finally {
       setUpdateState((prev) => ({ ...prev, updating: false }));
     }
