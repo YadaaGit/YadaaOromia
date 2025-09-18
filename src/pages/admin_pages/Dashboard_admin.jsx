@@ -87,7 +87,9 @@ function Courses() {
       return;
     }
 
-    const certId = `cert-${Date.now()}`;
+      // Send lang in POST body for certificate
+      const lang = user?.lang || "am";
+      const certId = `cert-${Date.now()}`;
     const apiUrl = `${api}/api/certificates`;
 
     try {
@@ -99,6 +101,7 @@ function Courses() {
           courseTitle,
           score,
           certId,
+            lang,
         }),
       });
 

@@ -73,12 +73,14 @@ function Courses() {
   const api = import.meta.env.VITE_API_URL;
 
   async function handleIssueCertificate({ userName, courseTitle, score }) {
+    // Send lang in POST body for certificate
+    const lang = user?.lang || "am";
     try {
       const certId = `cert-${Date.now()}`;
       const res = await fetch(`${api}/api/certificates`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userName, courseTitle, score, certId }),
+        body: JSON.stringify({ userName, courseTitle, score, certId, lang }),
       });
       const json = await res.json();
       if (!json.ok) throw new Error(json.error || "Issue failed");
