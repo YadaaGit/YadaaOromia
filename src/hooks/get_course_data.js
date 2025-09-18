@@ -9,10 +9,8 @@ export const useProgramData = (programId) => {
   useEffect(() => {
     const program_data =
       programsData && programsData.find((p) => p.uid === programId);
-    setTimeout(() => {
       setProgram(program_data || null);
       setLoading(false);
-    }, 500); // simulate loading
   }, [programId, programsData]);
 
   return { program, loading };
@@ -27,10 +25,8 @@ export const useCourseData = (programId, courseId) => {
     const program =
       programsData && programsData.find((p) => p.uid === programId);
     const foundCourse = program?.courses.find((c) => c.uid === courseId);
-    setTimeout(() => {
       setCourse(foundCourse || null);
       setLoading(false);
-    }, 500);
   }, [programId, courseId, programsData]);
 
   return { course, loading };
@@ -46,10 +42,8 @@ export const useModuleData = (programId, courseId, moduleId) => {
       programsData && programsData.find((p) => p.uid === programId);
     const course = program?.courses.find((c) => c.uid === courseId);
     const foundModule = course?.modules.find((m) => m.uid === moduleId);
-    setTimeout(() => {
       setModule(foundModule || null);
       setLoading(false);
-    }, 500);
   }, [programId, courseId, moduleId, programsData]);
 
   return { module, loading };

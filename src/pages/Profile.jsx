@@ -16,7 +16,7 @@ import "@/style/Dashboard_user.css";
 import "@/style/general.css";
 
 // Tab labels
-const tabKeys = ["info", "achivments"];
+const tabKeys = ["info"];
 
 export default function ProfilePage() {
   const { t } = useTranslation();

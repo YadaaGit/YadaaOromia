@@ -73,6 +73,7 @@
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
+  max-width: 300px;
   padding: 0px;
 }
 
@@ -82,7 +83,7 @@
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
- display: none;
+  display: none;
 }
 #course_list::-webkit-scrollbar {
   width: 8px;
@@ -96,35 +97,35 @@
 }
 
 #course_list::-webkit-scrollbar-thumb {
-  background: #734A1Ca4;
+  background: #734a1ca4;
   border-radius: 10px;
-  
+
   border: 2px solid #f1f1f1;
 }
 
 #course_list::-webkit-scrollbar-thumb:hover {
-  background: #734A1Cbd;
+  background: #734a1cbd;
 }
 
-#course_img{
+#course_img {
   max-width: 100%;
   height: 200px;
   border-radius: 15px 15px 0px 0px;
 }
-#course_img img{
+#course_img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 15px 15px 0px 0px;
 }
-#course_info{
+#course_info {
   max-width: 100%;
   height: auto;
   padding: 15px;
   border-radius: 0px 0px 15px 15px;
 }
 
-#course_info h3{
+#course_info h3 {
   margin: 0;
   border-radius: 0px 0px 15px 15px;
 }
