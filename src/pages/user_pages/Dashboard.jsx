@@ -198,7 +198,7 @@ function Courses() {
       
     );
   } */}
-      {programsData && programsData.length != 0 ? (
+      {Array.isArray(programsData) && programsData.length > 0 ? (
         <section id="courses">
           {programsData.map((program, pIndex) => {
             const programProgress = progress[program.uid];
@@ -212,7 +212,7 @@ function Courses() {
                   {program.title}
                 </h2>
                 <div id="course_list">
-                  {program.courses.map((course, cIndex) => {
+                  {Array.isArray(program.courses) && program.courses.map((course, cIndex) => {
                     const isLocked = cIndex > unlockedCourseIndex;
                     return (
                       <div
