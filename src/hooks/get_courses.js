@@ -75,49 +75,7 @@ export const useAllPrograms = () => {
         courseRes.json(),
       ]);
 
-      // Assemble programs and courses
-      const assembledPrograms = Array.isArray(programData) ? programData.map((program) => {
-        const programCourses = Array.isArray(courseData)
-          ? courseData.filter((c) => Object.values(program.courses_ids || {}).includes(c.uid)).sort((a, b) => (a.course_index ?? 0) - (b.course_index ?? 0))
-          : [];
-
-        return {
-          ...program,
-          courses: programCourses,
-        };
-      }) : [];
-
-      // Cache the results for the current language
-      cachedDataPerLang[lang] = assembledPrograms;
-      cachedErrorPerLang[lang] = null;
-
-      setProgramsData(assembledPrograms);
-      setLoading(false);
-
-      // Step 2: Fetch modules, final quiz, and images in parallel
-      fetchAdditionalData(programData, courseData);
-
-      // Notify subscribers with the assembled programs data
-      subscribersPerLang[lang].forEach((subscriber) => subscriber(assembledPrograms, null));
-      subscribersPerLang[lang] = [];
-    } catch (err) {
-      cachedErrorPerLang[lang] = err;
-      setError(err);
-      setLoading(false);
-
-      // Notify any subscribers about the error
-      subscribersPerLang[lang].forEach((subscriber) => subscriber([], err));
-      subscribersPerLang[lang] = [];
-    } finally {
-      cachedLoadingPerLang[lang] = false;
-    }
-  }, [user, lang]);
-
-  // Step 2: Fetch the remaining data (modules, final quiz, and images)
-  const fetchAdditionalData = async (programData, courseData) => {
-    const baseUrl = import.meta.env.VITE_API_URL || "";
-
-    try {
+      // Step 2: Only after programs and courses are loaded, fetch modules, final quiz, and images
       const [moduleRes, finalQuizRes, imagesRes] = await Promise.all([
         fetch(`${baseUrl}/api/${lang}/modules`),
         fetch(`${baseUrl}/api/${lang}/final_quiz`),
@@ -177,15 +135,20 @@ export const useAllPrograms = () => {
       // Cache and update state with detailed programs
       cachedDataPerLang[lang] = assembledProgramsWithDetails;
       setProgramsData(assembledProgramsWithDetails);
+      setLoading(false);
+
+      // Notify subscribers with the assembled programs data
+      subscribersPerLang[lang].forEach((subscriber) => subscriber(assembledProgramsWithDetails, null));
+      subscribersPerLang[lang] = [];
     } catch (err) {
-      setError(err);
       cachedErrorPerLang[lang] = err;
+      setError(err);
+      setLoading(false);
+
+      // Notify any subscribers about the error
+      subscribersPerLang[lang].forEach((subscriber) => subscriber([], err));
+      subscribersPerLang[lang] = [];
+    } finally {
+      cachedLoadingPerLang[lang] = false;
     }
-  };
-
-  useEffect(() => {
-    fetchProgramsAndCourses();
-  }, [fetchProgramsAndCourses]);
-
-  return { programsData, loading, error };
-};
+  }, [user, lang]);

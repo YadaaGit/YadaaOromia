@@ -22,6 +22,8 @@ export default function CourseDetails() {
   // Wait for all programs to load before accessing program/courses
 
   // Wait for all programs and course data to load
+
+  // Wait for all programs and course data to load and be valid before rendering modules
   if (loading_p || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -30,16 +32,18 @@ export default function CourseDetails() {
     );
   }
   if (error_p) {
+    console.error('Error loading programs:', error_p);
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <span className="text-red-500 text-lg">Failed to load courses. Please try again later.</span>
+        <span className="text-red-500 text-lg">Failed to load courses. Please try again later.<br/>Error: {String(error_p)}</span>
       </div>
     );
   }
   if (!programsData || !Array.isArray(programsData) || programsData.length === 0) {
+    console.error('No programs data loaded:', programsData);
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <span className="text-gray-400 text-lg">No course data available.</span>
+        <span className="text-gray-400 text-lg">No course data available. (Programs data missing)</span>
       </div>
     );
   }
@@ -61,6 +65,7 @@ export default function CourseDetails() {
       </div>
     );
   }
+  // Only now is it safe to use course and modules
   const currentIndex = courses.findIndex((c) => c.uid === courseId);
 
   // ✅ Default progress if not found (course = 1, module = 1)
@@ -180,9 +185,7 @@ export default function CourseDetails() {
                     <h6 className="font-bold text-lg mb-3 text-gray-700">
                       Modules
                     </h6>
-                    {loading || loading_p || !course.modules ? (
-                      <Skeleton variant="rectangular" height={120} width="100%" />
-                    ) : Array.isArray(course.modules) && course.modules.length > 0 ? (
+                    {Array.isArray(course.modules) && course.modules.length > 0 ? (
                       course.modules.map((module, mIndex) => {
                         const isLocked =
                           currentIndex < unlockedCourseIndex
