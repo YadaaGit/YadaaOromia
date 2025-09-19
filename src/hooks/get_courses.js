@@ -15,9 +15,16 @@ export const useAllPrograms = () => {
   const { user } = useUserData();
   const lang = user?.lang || "am";
 
-  const [programsData, setProgramsData] = useState(cachedDataPerLang[lang] || []);
-  const [loading, setLoading] = useState(!lang || !cachedDataPerLang[lang]);
-  const [error, setError] = useState(cachedErrorPerLang[lang] || null);
+  const [programsData, setProgramsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Reset state when language changes
+  useEffect(() => {
+    setProgramsData([]);
+    setLoading(true);
+    setError(null);
+  }, [lang]);
 
   const fetchProgramsAndCourses = useCallback(async () => {
     if (!user || !lang) return;
@@ -27,7 +34,7 @@ export const useAllPrograms = () => {
 
     // Use cached data if available for this language
     if (cachedDataPerLang[lang]) {
-      setProgramsData(cachedDataPerLang[lang]);
+      setProgramsData(Array.isArray(cachedDataPerLang[lang]) ? cachedDataPerLang[lang] : []);
       setLoading(false);
       return;
     }
@@ -35,7 +42,7 @@ export const useAllPrograms = () => {
     // Subscribe if another fetch is in progress for this language
     if (cachedLoadingPerLang[lang]) {
       const subscriber = (data, err) => {
-        setProgramsData(data);
+        setProgramsData(Array.isArray(data) ? data : []);
         setError(err);
         setLoading(false);
       };
@@ -69,16 +76,16 @@ export const useAllPrograms = () => {
       ]);
 
       // Assemble programs and courses
-      const assembledPrograms = programData.map((program) => {
-        const programCourses = courseData
-          .filter((c) => Object.values(program.courses_ids || {}).includes(c.uid))
-          .sort((a, b) => (a.course_index ?? 0) - (b.course_index ?? 0));
+      const assembledPrograms = Array.isArray(programData) ? programData.map((program) => {
+        const programCourses = Array.isArray(courseData)
+          ? courseData.filter((c) => Object.values(program.courses_ids || {}).includes(c.uid)).sort((a, b) => (a.course_index ?? 0) - (b.course_index ?? 0))
+          : [];
 
         return {
           ...program,
           courses: programCourses,
         };
-      });
+      }) : [];
 
       // Cache the results for the current language
       cachedDataPerLang[lang] = assembledPrograms;
@@ -128,15 +135,15 @@ export const useAllPrograms = () => {
       ]);
 
       // Assemble programs with modules, quizzes, and images
-      const assembledProgramsWithDetails = programData.map((program) => {
-        const programCourses = courseData
-          .filter((c) => Object.values(program.courses_ids || {}).includes(c.uid))
-          .sort((a, b) => (a.course_index ?? 0) - (b.course_index ?? 0));
+      const assembledProgramsWithDetails = Array.isArray(programData) ? programData.map((program) => {
+        const programCourses = Array.isArray(courseData)
+          ? courseData.filter((c) => Object.values(program.courses_ids || {}).includes(c.uid)).sort((a, b) => (a.course_index ?? 0) - (b.course_index ?? 0))
+          : [];
 
         const coursesWithModules = programCourses.map((course) => {
-          const courseModules = moduleData
-            .filter((m) => Object.values(course.module_ids || {}).includes(m.uid))
-            .sort((a, b) => (a.module_index ?? 0) - (b.module_index ?? 0));
+          const courseModules = Array.isArray(moduleData)
+            ? moduleData.filter((m) => Object.values(course.module_ids || {}).includes(m.uid)).sort((a, b) => (a.module_index ?? 0) - (b.module_index ?? 0))
+            : [];
 
           return {
             ...course,
@@ -148,19 +155,22 @@ export const useAllPrograms = () => {
         });
 
         const finalQuiz =
-          program.final_quiz_id &&
-          finalQuizData.find((q) => q.uid === program.final_quiz_id);
+          program.final_quiz_id && Array.isArray(finalQuizData)
+            ? finalQuizData.find((q) => q.uid === program.final_quiz_id)
+            : null;
 
         return {
           ...program,
           courses: coursesWithModules,
           final_quiz: finalQuiz || null,
-          images: imagesData.map((img) => ({
-            ...img,
-            coverImage: img.coverImage || null,
-          })),
+          images: Array.isArray(imagesData)
+            ? imagesData.map((img) => ({
+                ...img,
+                coverImage: img.coverImage || null,
+              }))
+            : [],
         };
-      });
+      }) : [];
 
       // Cache and update state with detailed programs
       cachedDataPerLang[lang] = assembledProgramsWithDetails;
