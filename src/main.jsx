@@ -266,22 +266,52 @@ function AppRoutes({ user }) {
   );
 }
 
+// Global error boundary to catch rendering errors
+import React from "react";
+class GlobalErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    // Optionally log error to a service
+    // console.error("Global error boundary caught:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 40, color: "red", fontSize: 20 }}>
+          <h2>Something went wrong in the app.</h2>
+          <pre style={{ whiteSpace: "pre-wrap" }}>{String(this.state.error)}</pre>
+          <p>Please reload the page or contact support.</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // Mount the app
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Router>
-      <AppRoutesWrapper />
-      <Toaster
-        toastOptions={{
-          className: "bg-white text-sm font-medium shadow-md rounded-md p-3",
-          success: {
-            className: "bg-green-100 text-green-800",
-          },
-          error: {
-            className: "bg-red-100 text-red-800",
-          },
-        }}
-      />
-    </Router>
+    <GlobalErrorBoundary>
+      <Router>
+        <AppRoutesWrapper />
+        <Toaster
+          toastOptions={{
+            className: "bg-white text-sm font-medium shadow-md rounded-md p-3",
+            success: {
+              className: "bg-green-100 text-green-800",
+            },
+            error: {
+              className: "bg-red-100 text-red-800",
+            },
+          }}
+        />
+      </Router>
+    </GlobalErrorBoundary>
   </StrictMode>
 );
