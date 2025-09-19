@@ -161,3 +161,10 @@ export const useAllPrograms = () => {
       cachedLoadingPerLang[lang] = false;
     }
   }, [user, lang]);
+
+  useEffect(() => {
+    fetchProgramsAndCourses();
+  }, [fetchProgramsAndCourses]);
+
+  return { programsData, loading, error };
+}
