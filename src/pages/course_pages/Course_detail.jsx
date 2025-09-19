@@ -19,6 +19,29 @@ export default function CourseDetails() {
   const [lockMessage, setLockMessage] = useState("");
   const { programsData, loading: loading_p, error: error_p } = useAllPrograms();
 
+  // Wait for all programs to load before accessing program/courses
+  if (loading_p) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="text-gray-500 text-lg">Loading courses...</span>
+      </div>
+    );
+  }
+  if (error_p) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="text-red-500 text-lg">Failed to load courses. Please try again later.</span>
+      </div>
+    );
+  }
+  if (!programsData || !Array.isArray(programsData) || programsData.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="text-gray-400 text-lg">No course data available.</span>
+      </div>
+    );
+  }
+
   const program = programsData.find((p) => p.uid === programId);
   const courses = program?.courses || [];
   const currentIndex = courses.findIndex((c) => c.uid === courseId);
