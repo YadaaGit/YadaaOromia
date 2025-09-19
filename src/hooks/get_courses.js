@@ -62,6 +62,7 @@ export const useAllPrograms = () => {
 
     try {
       // Step 1: Fetch programs and courses first
+      console.log('[get_courses.js] Fetching programs and courses for lang:', lang);
       const [programRes, courseRes] = await Promise.all([
         fetch(`${baseUrl}/api/${lang}/programs`),
         fetch(`${baseUrl}/api/${lang}/courses`),
@@ -74,8 +75,11 @@ export const useAllPrograms = () => {
         programRes.json(),
         courseRes.json(),
       ]);
+      console.log('[get_courses.js] Programs:', programData);
+      console.log('[get_courses.js] Courses:', courseData);
 
       // Step 2: Only after programs and courses are loaded, fetch modules, final quiz, and images
+      console.log('[get_courses.js] Fetching modules, final_quiz, images for lang:', lang);
       const [moduleRes, finalQuizRes, imagesRes] = await Promise.all([
         fetch(`${baseUrl}/api/${lang}/modules`),
         fetch(`${baseUrl}/api/${lang}/final_quiz`),
@@ -91,6 +95,9 @@ export const useAllPrograms = () => {
         finalQuizRes.json(),
         imagesRes.json(),
       ]);
+      console.log('[get_courses.js] Modules:', moduleData);
+      console.log('[get_courses.js] FinalQuizzes:', finalQuizData);
+      console.log('[get_courses.js] Images:', imagesData);
 
       // Assemble programs with modules, quizzes, and images
       const assembledProgramsWithDetails = Array.isArray(programData) ? programData.map((program) => {
@@ -131,6 +138,7 @@ export const useAllPrograms = () => {
             : [],
         };
       }) : [];
+      console.log('[get_courses.js] Assembled programs with details:', assembledProgramsWithDetails);
 
       // Cache and update state with detailed programs
       cachedDataPerLang[lang] = assembledProgramsWithDetails;
@@ -141,6 +149,7 @@ export const useAllPrograms = () => {
       subscribersPerLang[lang].forEach((subscriber) => subscriber(assembledProgramsWithDetails, null));
       subscribersPerLang[lang] = [];
     } catch (err) {
+      console.error('[get_courses.js] Fetch or assembly error:', err);
       cachedErrorPerLang[lang] = err;
       setError(err);
       setLoading(false);
