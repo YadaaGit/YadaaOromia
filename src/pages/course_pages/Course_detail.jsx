@@ -140,31 +140,35 @@ export default function CourseDetails() {
                     <h6 className="font-bold text-lg mb-3 text-gray-700">
                       Modules
                     </h6>
-                    {course.modules.map((module, mIndex) => {
-                      const isLocked =
-                        currentIndex < unlockedCourseIndex
-                          ? false
-                          : mIndex > unlockedModuleIndex;
-                      return (
-                        <div
-                          key={module.uid}
-                          className="relative p-3 mb-3 bg-white rounded-xl shadow-sm hover:bg-gray-100 cursor-pointer transition"
-                          onClick={() => openModule(module.uid, isLocked)}
-                        >
-                          {isLocked && (
-                            <div
-                              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-xl"
-                              style={{ opacity: 0.5 }}
-                            >
-                              <Lock className="w-5 h-5 text-white" />
-                            </div>
-                          )}
-                          <span className="text-gray-800 font-medium">
-                            {module.title}
-                          </span>
-                        </div>
-                      );
-                    })}
+                    {Array.isArray(course.modules) && course.modules.length > 0 ? (
+                      course.modules.map((module, mIndex) => {
+                        const isLocked =
+                          currentIndex < unlockedCourseIndex
+                            ? false
+                            : mIndex > unlockedModuleIndex;
+                        return (
+                          <div
+                            key={module.uid}
+                            className="relative p-3 mb-3 bg-white rounded-xl shadow-sm hover:bg-gray-100 cursor-pointer transition"
+                            onClick={() => openModule(module.uid, isLocked)}
+                          >
+                            {isLocked && (
+                              <div
+                                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-xl"
+                                style={{ opacity: 0.5 }}
+                              >
+                                <Lock className="w-5 h-5 text-white" />
+                              </div>
+                            )}
+                            <span className="text-gray-800 font-medium">
+                              {module.title}
+                            </span>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-gray-400 italic text-center">No modules available.</div>
+                    )}
                   </div>
                 </div>
 

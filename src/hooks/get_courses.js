@@ -147,10 +147,12 @@ export const useAllPrograms = () => {
 
           return {
             ...course,
-            modules: courseModules.map((m) => ({
-              ...m,
-              quiz: m.quiz || [],
-            })),
+            modules: Array.isArray(courseModules)
+              ? courseModules.map((m) => ({
+                  ...m,
+                  quiz: m.quiz || [],
+                }))
+              : [],
           };
         });
 
