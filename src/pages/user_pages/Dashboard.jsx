@@ -206,13 +206,24 @@ function Courses() {
               (programProgress?.current_course || 1) - 1;
             const isFinalQuizUnlocked = programProgress?.completed === true;
 
+            // Extra logging for debugging
+            if (!Array.isArray(program.courses)) {
+              console.error("Program.courses is not an array:", program.courses, program);
+              return (
+                <div key={pIndex} style={{ color: 'red', padding: 20 }}>
+                  <h3>Error: Courses data is missing or invalid for this program.</h3>
+                  <pre style={{ fontSize: 12, whiteSpace: 'pre-wrap' }}>{JSON.stringify(program, null, 2)}</pre>
+                </div>
+              );
+            }
+
             return (
               <div key={pIndex} style={{ marginTop: 40 }}>
                 <h2 style={{ fontWeight: "bold", marginBottom: 10 }}>
                   {program.title}
                 </h2>
                 <div id="course_list">
-                  {Array.isArray(program.courses) && program.courses.map((course, cIndex) => {
+                  {program.courses.map((course, cIndex) => {
                     const isLocked = cIndex > unlockedCourseIndex;
                     return (
                       <div
