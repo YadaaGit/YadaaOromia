@@ -20,10 +20,12 @@ export default function CourseDetails() {
   const { programsData, loading: loading_p, error: error_p } = useAllPrograms();
 
   // Wait for all programs to load before accessing program/courses
-  if (loading_p) {
+
+  // Wait for all programs and course data to load
+  if (loading_p || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <span className="text-gray-500 text-lg">Loading courses...</span>
+        <span className="text-gray-500 text-lg">Loading course details...</span>
       </div>
     );
   }
@@ -43,7 +45,22 @@ export default function CourseDetails() {
   }
 
   const program = programsData.find((p) => p.uid === programId);
-  const courses = program?.courses || [];
+  if (!program) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="text-gray-400 text-lg">Program not found.</span>
+      </div>
+    );
+  }
+  const courses = program.courses || [];
+  const courseInProgram = courses.find((c) => c.uid === courseId);
+  if (!courseInProgram) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="text-gray-400 text-lg">Course not found in this program.</span>
+      </div>
+    );
+  }
   const currentIndex = courses.findIndex((c) => c.uid === courseId);
 
   // ✅ Default progress if not found (course = 1, module = 1)
