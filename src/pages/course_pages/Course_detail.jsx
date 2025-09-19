@@ -180,7 +180,9 @@ export default function CourseDetails() {
                     <h6 className="font-bold text-lg mb-3 text-gray-700">
                       Modules
                     </h6>
-                    {Array.isArray(course.modules) && course.modules.length > 0 ? (
+                    {loading || loading_p || !course.modules ? (
+                      <Skeleton variant="rectangular" height={120} width="100%" />
+                    ) : Array.isArray(course.modules) && course.modules.length > 0 ? (
                       course.modules.map((module, mIndex) => {
                         const isLocked =
                           currentIndex < unlockedCourseIndex
