@@ -1,7 +1,6 @@
 {
   "hello": "ሰላም",
   "back": "ተመለስ",
-  "streak": "በተከታታይ የገቡት",
   "welcome_message_auth": "እንኳን ወደ በደህና መጡ!",
   "login": "ይግቡ",
   "sign_up": "ይመዝገቡ",
@@ -35,13 +34,13 @@
   "email_not_verified": "ኢሜይልዎ አልተረጋገጠም። እባክዎ የመልእክትዎን ሳጥን ይመልከቱና ኢሜይሉን ያረጋግጡ።",
   "verify_email": "ኢሜይልዎን ያረጋግጡ",
   "email_sent": "የማረጋገጫ ኢሜይል ወደ ቀጣዩ ኢሜይል ተልክዋል",
-  "I_verified_email": "ኢሜይሌን አረጋግጫለሁ",
+  "i_verified_email": "ኢሜይሌን አረጋግጫለሁ",
   "check_inbox": "የማረጋገጫ ኢሜይል ተልክዋል። እባክዎ ኢንቦክስዎን ይመልከቱ።",
   "resend_email": "የማረጋገጫ ኢሜይል ይላክ",
   "resend_in": "ሰከንድ በኋላ እንደገና ላክ",
   "select_country_first": "እባክዎ መጀመሪያ ሀገር ይምረጡ",
   "edit_course": "ኮርስ አስተካክል",
-  "achivments": "ስኬቶች",
+  "achievements": "ስኬቶች",
   "fill_required": "እባኮትን አስፈላጊ መስኮችን ሁሉ ይሙሉ።",
   "invalid_age": "እባኮትን ከ13 እስከ 60 ዓመት መካከል ያለ ትክክለኛ ዕድሜ ያስገቡ።",
   "password_mismatch": "የይለፍ ቃሉ አይዛመድም።",
@@ -63,6 +62,7 @@
   "profile": "ተጠቃሚ",
   "loading": "በመጫን ላይ...",
   "module_not_found": "ሞጁል አልተገኘም",
+  "course_not_found": "ስልጠናው አልተገኘም",
   "no_content_yet_for": "ስለሚቀጥለው ምንም ይዘት የለም",
   "hi": "ሰላም,",
   "welcome_message_home": "አዲስ ነገር ለማማር ዝግጁ ነዎት?",
@@ -87,7 +87,7 @@
   "scores": "ውጤቶች",
   "joined": "የጀመረበት ቀን",
   "role": "ሚና",
-  "User": "ተጠቃሚ",
+  "user": "ተጠቃሚ",
   "last_active": "የመጨረሻ እንቅስቃሴ",
   "streak": "የተያያዘ ቀናት",
   "admin": "አስተዳዳሪ",
@@ -117,5 +117,24 @@
   "A": "ሀ",
   "B": "ለ",
   "C": "ሐ",
-  "D": "መ"
+  "D": "መ",
+  "location" : "አድራሻ",
+  "gender": "ፆታ"
+  ,
+  "questions": {
+    "title": "ጥያቄዎች",
+    "finish": "ፈተናውን ይጨርሱ",
+    "no_questions": "ጥያቄዎች የሉም"
+  }
+  ,
+  "profile_updated": "መረጃዎ ወቅታዊ ተደርጓል፡፡",
+  "profile_update_failed": "መረጃዎን ወቅታዊ ለማድረግ አልተቻለም፡፡ ",
+  "program_saved": "ፕሮግራሙ በተሳካ ሁኔታ ተይዟል፡፡ ",
+  "unlock_prev_courses": "ይህንን ትምህርት ለመክፈት ከዚህ ቀደም የነበሩ ትምህርቶችን ያጠናቁ፡፡",
+  "unlock_final_quiz": "የመጨረሻውን ፈተና ከመውሰድዎ አስቀድሞ ሁሉንም ስልጠናዎች ያጠናቁ፡፡",
+  "certificate_sent": "ምስክር ወረቀትዎ በተሳካ ሁኔታ ተልኳል ",
+  "certificate_failed": "ምስክር ወረቀት ለመስጠት ወይም ለመላክ አልተቻለም፡፡",
+  "unlock_prev_modules": "ይህንን ምእራፍ ለመክፈት የቀድሞ ምእራፎችን ያጠናቁ፡፡ ",
+  "at_least_to_pass": "ለማለፍ ቢያንስ 60% ውጤት ማስመዝገብ አለብዎት፡፡ ",
+  "you_scored": "ያገኙት ውጤት "
 }

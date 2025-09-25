@@ -47,7 +47,7 @@
   "course_not_found": "Leenjichi hin argamne",
   "no_content_yet_for": "Hanga ammaatti odeeffannoon fuulicharraa hin mul'atu",
   "hi": "Nagaan isiniif Haata'u",
-  "welcome_message_home": "Har'a",
+  "welcome_message_home": "Har'a waa haaraa barachuuf qophooftee jirtaa?",
   "admin_loading_warning": "Siyisteemiin keenya ragaalee bulchiinsaa fe'aa jira waan ta'eef Irra deebi'aa yaalaa",
   "user_view": "Odeeffannoo seensa fayyadamaa",
   "contact_us": "Kan armaan gadiin nu argadhaa",
@@ -111,7 +111,7 @@
   "unlock_prev_modules": "Boqonnaa kana banuudhaaf dura boqonnaa duraan jalqabdan xumuraa",
   "at_least_to_pass": "Darbuudhaaf yoo xiqqaate qabxii % argachuu qabdu",
   "you_scored": "Qabxiin Keessan",
-  
+
   "A": "A",
   "B": "B",
   "C": "C",
@@ -128,7 +128,15 @@
   "our_vision": "Mul’ata keenya",
   "vision_text": "Addunyaa barataan kamuu bakka jiru irraa hin eeggin, meeshaalee barnootaaf barbaachisan hunda argachuu danda’u.",
   "core_values": "Gatiiwwan keenya",
-  "value_innovation": "Haaraa uumuu",
-  "value_inclusion": "Hirmaachisummaa",
-  "value_quality": "Qulqullina"
+  "value_1": "Haaraa uumuu",
+  "value_2": "Hirmaachisummaa",
+  "value_3": "Qulqullina",
+  "location": "Bakki",
+  "gender": "Saala"
+  ,
+  "questions": {
+    "title": "Gaaffilee",
+    "finish": "Qormaata Xumuri",
+    "no_questions": "Gaaffileen hin jiru"
+  }
 }

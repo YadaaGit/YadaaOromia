@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 
+// simple in-memory cache: key -> { uid, src, promise, timestamp }
+const imageCache = new Map();
+const DEFAULT_RETRIES = 3;
+const CACHE_TTL_MS = 1000 * 60 * 5; // 5 minutes
+
 const Loading = ({ className = "", style = {} }) => {
   return (
     <div
@@ -50,7 +55,7 @@ const ErrorDisplay = ({ className = "", style = {} }) => (
 
 function RemoteImage({
   uid,
-  lang = "am",
+  lang,
   alt = "Image",
   className = "",
   style = {},
@@ -66,25 +71,135 @@ function RemoteImage({
   const api = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    async function fetchImage() {
-      setLoading(true);
-      setError(false);
-      try {
-        const res = await fetch(`${api}/api/${lang}/images/${uid}`);
-        const imageDoc = await res.json();
-        if (!imageDoc.data || !imageDoc.contentType)
-          throw new Error("Invalid image data");
+    let mounted = true;
+    const key = `${lang}|${String(uid)}`;
+    const uidStr = String(uid);
 
-        setSrc(`data:${imageDoc.contentType};base64,${imageDoc.data}`);
-      } catch (err) {
-        console.error("Error loading image:", err);
-        setError(true);
-      } finally {
-        setLoading(false);
+    // helper to determine if cache entry is still fresh
+    function isFresh(entry) {
+      if (!entry || !entry.timestamp) return false;
+      return Date.now() - entry.timestamp < CACHE_TTL_MS;
+    }
+
+    // actual fetch with retries, returns dataUrl or throws
+    async function fetchImageData(retries = DEFAULT_RETRIES) {
+      let attempt = 0;
+      const baseUrl = `${api}/api/${encodeURIComponent(lang)}/images/${encodeURIComponent(
+        uidStr
+      )}`;
+
+      while (attempt < retries) {
+        attempt++;
+        try {
+          // on retries, add a cache-buster to avoid hitting CDN/browser cached 304s
+          const url = attempt > 1 ? `${baseUrl}?_=${Date.now()}` : baseUrl;
+          const res = await fetch(url);
+          // Immediately handle 404 as non-retriable (image missing)
+          if (res.status === 404) {
+            const msg = `Image ${key} not found (404)`;
+            const err = new Error(msg);
+            err.noRetry = true;
+            throw err;
+          }
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const imageDoc = await res.json();
+          if (!imageDoc.data || !imageDoc.contentType)
+            throw new Error("Invalid image data");
+          return `data:${imageDoc.contentType};base64,${imageDoc.data}`;
+        } catch (err) {
+          console.error(
+            `Attempt ${attempt} failed to load image ${key}:`,
+            err.message || err
+          );
+          if (err && err.noRetry) throw err;
+          if (attempt >= retries) throw err;
+          await new Promise((r) => setTimeout(r, 200 * attempt));
+        }
       }
     }
 
-    if (uid) fetchImage();
+    async function load() {
+      setLoading(true);
+      setError(false);
+
+      const entry = imageCache.get(key);
+
+      // If we have a fresh src for the exact uid, use it immediately
+      if (entry && entry.uid === uidStr && entry.src && isFresh(entry)) {
+        if (mounted) {
+          setSrc(entry.src);
+          setLoading(false);
+        }
+        return;
+      }
+
+      // If there's an in-flight promise for the same uid, reuse it
+      if (entry && entry.uid === uidStr && entry.promise) {
+        try {
+          const dataUrl = await entry.promise;
+          if (mounted) {
+            setSrc(dataUrl);
+            setLoading(false);
+            setError(false);
+          }
+        } catch (err) {
+          if (mounted) {
+            setError(true);
+            setLoading(false);
+          }
+        }
+        return;
+      }
+
+      // Start a new fetch and store the promise (include uid so reads can validate)
+      const promise = (async () => {
+        try {
+          const dataUrl = await fetchImageData(DEFAULT_RETRIES);
+          // store successful result with uid and timestamp
+          imageCache.set(key, { uid: uidStr, src: dataUrl, timestamp: Date.now() });
+          return dataUrl;
+        } catch (err) {
+          // remove failed entry to allow future retries
+          imageCache.delete(key);
+          throw err;
+        } finally {
+          // ensure promise field removed if present (replace with src on success)
+          const cur = imageCache.get(key);
+          if (cur && cur.promise) {
+            const newEntry = { ...cur };
+            delete newEntry.promise;
+            imageCache.set(key, newEntry);
+          }
+        }
+      })();
+
+      // set the promise so concurrent callers wait for same request; store uid too
+      imageCache.set(key, { uid: uidStr, promise });
+
+      try {
+        const dataUrl = await promise;
+        if (mounted) {
+          setSrc(dataUrl);
+          setLoading(false);
+          setError(false);
+        }
+      } catch (err) {
+        if (mounted) {
+          setError(true);
+          setLoading(false);
+        }
+      }
+    }
+
+    if (uid) {
+      load();
+    } else {
+      setLoading(false);
+    }
+
+    return () => {
+      mounted = false;
+    };
   }, [uid, lang, api]);
 
   if (loading)
@@ -109,12 +224,9 @@ function RemoteImage({
         />
       </div>
     );
-  if (error)
-    return <ErrorDisplay className={errorClassName} style={errorStyle} />;
+  if (error) return <ErrorDisplay className={errorClassName} style={errorStyle} />;
 
-  return (
-    <img src={src} alt={alt} className={className} style={style} {...props} />
-  );
+  return <img src={src} alt={alt} className={className} style={style} {...props} />;
 }
 
 export default RemoteImage;

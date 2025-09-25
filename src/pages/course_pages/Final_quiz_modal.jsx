@@ -67,7 +67,7 @@ export default function CourseModules() {
               <h2 className="text-xl font-bold">
                 {loading
                   ? <Skeleton variant="text" height={32} width="60%" />
-                  : program?.final_quiz?.quiz_title || t("No title")}
+                  : program?.final_quiz?.quiz_title || t("questions.title")}
               </h2>
               <button
                 onClick={() => setVisible(false)}
@@ -105,7 +105,7 @@ export default function CourseModules() {
 
               {/* Quiz Component */}
               {!loading && program?.final_quiz?.questions?.length <= 0 && (
-                <div className="p-4 text-center">{t("No questions")}</div>
+                <div className="p-4 text-center">{t("questions.no_questions")}</div>
               )}
               {!loading && program?.final_quiz?.questions?.length > 0 && (
                 <Questions

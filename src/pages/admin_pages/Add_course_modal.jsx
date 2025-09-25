@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useModuleData } from "@/hooks/get_course_data_test.js";
 import Add_course_modal from "@/components/admin_components/Add_course.jsx";
 import { useTranslation } from "@/utils/useTranslation.js";
 
@@ -25,7 +24,6 @@ export default function CourseModal() {
   }, []);
 
   const { courseId, moduleId } = useParams();
-  const { module, loading } = useModuleData(courseId, moduleId);
   const navigate = useNavigate();
   const [visible, setVisible] = useState(true);
 

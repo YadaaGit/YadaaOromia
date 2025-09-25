@@ -91,10 +91,10 @@ export default function SectionViewer({
                   {c.text}
                 </p>
               )}
-              {c.media && (
+              {user?.lang && c.media && (
                 <RemoteImage
                   uid={c.media}
-                  lang={user?.lang || "am"}
+                  lang={user?.lang}
                   className="rounded-xl mb-6 w-full max-h-72 object-fill"
                   alt=""
                   style={{ alignSelf: "center", justifySelf: "center" }}

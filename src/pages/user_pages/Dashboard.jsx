@@ -240,10 +240,10 @@ function Courses() {
                           </div>
                         )}
                         <div id="course_img">
-                          {course.cover_img && (
+                          {user?.lang && course.cover_img && (
                             <RemoteImage
                               uid={course.cover_img}
-                              lang={user?.lang || "am"}
+                              lang={user?.lang}
                               alt={course.title}
                             />
                           )}

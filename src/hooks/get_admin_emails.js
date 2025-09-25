@@ -1,39 +1,94 @@
-/**
- * React hook: fetch list of admin emails from Firestore once.
- * Document: admin_emails/emails, field: admin_emails_list
- */
-
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "#/firebase-config.js";
 
+// Module-level cache and subscribers
+let cachedAdminEmails = null; // null = not loaded yet, [] = loaded but empty
+let cachedError = null;
+let listening = false; // indicates the snapshot listener was started
+let loading = false; // indicates first-load is in progress
+let subscribers = [];
+let unsubscribeFn = null;
+
+// Start listener only once and keep it for app lifetime
+function startListening() {
+  if (listening) return; // Already started
+
+  listening = true;
+  loading = true;
+
+  const docRef = doc(db, "admin_emails", "emails");
+
+  // onSnapshot returns an unsubscribe function
+  unsubscribeFn = onSnapshot(
+    docRef,
+    (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        cachedAdminEmails = data.admin_emails_list || [];
+        cachedError = null;
+      } else {
+        cachedAdminEmails = [];
+        cachedError = new Error("No admin_emails/emails document found.");
+      }
+      loading = false;
+      notifySubscribers();
+    },
+    (error) => {
+      cachedAdminEmails = [];
+      cachedError = error;
+      loading = false;
+      notifySubscribers();
+    }
+  );
+}
+
+function notifySubscribers() {
+  subscribers.forEach((callback) => {
+    try {
+      callback(cachedAdminEmails, cachedError);
+    } catch (e) {
+      // swallow subscriber errors to avoid breaking others
+      console.error("Subscriber callback error in useAdminEmails:", e);
+    }
+  });
+}
+
 export default function useAdminEmails() {
-  const [adminEmails, setAdminEmails] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [adminEmails, setAdminEmails] = useState(() =>
+    cachedAdminEmails === null ? [] : cachedAdminEmails
+  );
+  const [error, setError] = useState(cachedError);
+  const [isLoading, setIsLoading] = useState(() => cachedAdminEmails === null);
 
   useEffect(() => {
-    const fetchAdminEmails = async () => {
-      try {
-        const docRef = doc(db, "admin_emails", "emails");
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setAdminEmails(data.admin_emails_list);
-        } else {
-          throw new Error("No admin_emails/emails document found.");
-        }
-      } catch (err) {
-        console.error("Error fetching admin emails:", err);
-        setError(err.message || "Failed to fetch admin emails.");
-      } finally {
-        setLoading(false);
-      }
+    // Subscriber to receive updates from the shared listener
+    const subscriber = (emails, err) => {
+      setAdminEmails(emails || []);
+      setError(err);
+      setIsLoading(false);
     };
+    subscribers.push(subscriber);
 
-    fetchAdminEmails();
+    // If we already have cached data/error, apply immediately
+    if (cachedAdminEmails !== null || cachedError !== null) {
+      setAdminEmails(cachedAdminEmails || []);
+      setError(cachedError);
+      setIsLoading(false);
+    } else {
+      // Not loaded yet: ensure listener is started so it will load once
+      setIsLoading(true);
+    }
+
+    // Start the listener (only once for the app)
+    startListening();
+
+    // Cleanup: remove this subscriber but do NOT stop the listener;
+    // listener persists for app lifetime so future mounts get cached data.
+    return () => {
+      subscribers = subscribers.filter((s) => s !== subscriber);
+    };
   }, []);
 
-  return { adminEmails, loading, error };
+  return { adminEmails, loading: isLoading, error };
 }

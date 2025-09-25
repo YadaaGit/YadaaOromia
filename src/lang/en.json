@@ -127,5 +127,13 @@
   "certificate_failed": "Failed to issue or send certificate",
   "unlock_prev_modules": "Complete previous modules to unlock this module",
   "at_least_to_pass": "You need at least 60% to pass!",
-  "you_scored": "you scored"
+  "you_scored": "you scored",
+  "location" : "Location",
+  "gender": "Gender"
+  ,
+  "questions": {
+    "title": "Questions",
+    "finish": "Finish Quiz",
+    "no_questions": "No questions available"
+  }
 }

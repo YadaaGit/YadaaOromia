@@ -139,7 +139,7 @@ export default function ProfilePage() {
       </p>
 
       {/* Tab Switcher */}
-      <div
+      {/* <div
         className="flex justify-center gap-2 bg-white shadow mb-4"
         style={{ padding: 12, borderRadius: 10 }}
       >
@@ -156,7 +156,7 @@ export default function ProfilePage() {
             {t(tab)}
           </button>
         ))}
-      </div>
+      </div> */}
 
       {/* Info Tab */}
       {activeTabIndex === 0 ? (
@@ -201,7 +201,7 @@ export default function ProfilePage() {
               value={`${user.city} ${user.country}`}
             />
             <InfoRow
-              label={t("Streak")}
+              label={t("streak")}
               value={user.streak > 2 ? `${user.streak} 🔥` : user.streak}
             />
             <InfoRow label={t("role")} value={user.role} />

@@ -6,7 +6,6 @@ import axios from "axios";
 import { db } from "#/firebase-config.js";
 import { doc, setDoc } from "firebase/firestore";
 
-
 // AddProgramPage: lets admin add a program with multiple courses
 export default function AddProgramPage() {
   const navigate = useNavigate();
@@ -208,7 +207,7 @@ export default function AddProgramPage() {
   // --- Full save logic conforming to DB schemas ---
   const handleSave = async () => {
     setLoadingSave(true);
-    
+
     setError("");
     if (
       !programFinalQuiz.quiz_title.trim() ||
@@ -345,9 +344,7 @@ export default function AddProgramPage() {
       setLoadingSave(false);
 
       toast.success(t("program_saved"));
-      setTimeout(() => {
-        navigate("/courses_admin");
-      }, 2000);
+      navigate("/courses_admin");
     } catch (err) {
       setLoadingSave(false);
       setError("Error saving program. Please check your data and try again.");
@@ -869,7 +866,7 @@ export default function AddProgramPage() {
         className="bg-green-500 text-logo-800 px-6 py-2 rounded-full font-semibold shadow hover:bg-green-600 transition mt-6 w-full sm:w-auto"
         onClick={handleSave}
         disabled={loadingSave}
-        style={ loadingSave ? { cursor: "not-allowed", opacity: 0.7 } : {} }
+        style={loadingSave ? { cursor: "not-allowed", opacity: 0.7 } : {}}
       >
         {loadingSave ? "Saving..." : "💾 Save Program"}
       </button>

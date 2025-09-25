@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "@/utils/useTranslation.js";
 
 export default function Questions({
   questions = [],
@@ -7,6 +8,7 @@ export default function Questions({
   program_title,
   pass_grade,
 }) {
+  const { t } = useTranslation();
   const [answers, setAnswers] = useState({});
   const navigate = useNavigate();
 
@@ -44,7 +46,7 @@ export default function Questions({
 
   return (
     <div className="mt-10 border-t border-gray-200 pt-6">
-      <h4 className="text-2xl font-semibold mb-6 text-gray-800">Questions</h4>
+      <h4 className="text-2xl font-semibold mb-6 text-gray-800">{t("questions.title")}</h4>
       {selectedQuestions.map((q, qIndex) => (
         <div key={qIndex} className="mb-8">
           <p className="text-lg font-medium text-gray-800 mb-3">{q.question}</p>
@@ -86,7 +88,7 @@ export default function Questions({
           fontWeight: "bolder",
         }}
       >
-        Finish Quiz
+        {t("questions.finish")}
       </button>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useTelegramInitData } from "@/hooks/get_tg_data.js";
 import { AgGridReact } from "ag-grid-react";
@@ -12,6 +12,7 @@ import { useTranslation } from "@/utils/useTranslation.js";
 import { Skeleton } from "@mui/material";
 import useAllUsers from "@/hooks/get_all_user.js";
 import "@/style/ag-grid.css";
+import { useAllPrograms } from "@/hooks/get_courses.js";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -20,6 +21,23 @@ export default function UserDashboard() {
   const [showAgeModal, setShowAgeModal] = useState(false);
   const { initDataState } = useTelegramInitData();
   const [exportStatus, setExportStatus] = useState("idle");
+  
+
+  // helper: map a program/course uid to a human-friendly title when possible
+  const idToLabel = (id) => {
+    if (!id || id === "-") return "-";
+    if (programsData && !Array.isArray(programsData)) return id;
+    const p = programsData.find((pr) => pr.uid === id);
+    if (p) return p.title || p.name || id;
+    // search courses inside programs
+    for (const pr of programsData) {
+      if (Array.isArray(pr.courses)) {
+        const c = pr.courses.find((co) => co.uid === id);
+        if (c) return c.title || c.name || id;
+      }
+    }
+    return id;
+  };
 
   const columnDefs = useMemo(
     () => [
@@ -31,22 +49,29 @@ export default function UserDashboard() {
       { field: "lang", sortable: true, filter: true },
       {
         headerName: "Program Progress",
-        valueGetter: (params) => {
-          const progress = params.data.course_progress || {};
-          const programs = Object.entries(progress);
-          if (programs.length === 0) return "—";
-          return programs
-            .map(([programId, data]) => {
-              const status = data.completed
-                ? "✅ Completed"
-                : `📘 Course ${data.current_course}`;
-              const score = data.final_quiz_score
-                ? ` - Score: ${data.final_quiz_score}%`
-                : "";
-              return `${programId}: ${status}${score}`;
-            })
-            .join(" | ");
-        },
+          valueGetter: (params) => {
+            const progress = params.data.course_progress || {};
+            const programs = Object.entries(progress);
+            if (programs.length === 0) return "—";
+            return programs
+              .map(([programId, data]) => {
+                // prefer human-friendly program title when available
+                const programObj = programsData &&  Array.isArray(programsData)
+                  ? programsData.find((p) => p.uid === programId)
+                  : undefined;
+                const programLabel = programObj
+                  ? programObj.title || programObj.name || programId
+                  : programId;
+                const status = data.completed
+                  ? "✅ Completed"
+                  : `📘 Course ${data.current_course}`;
+                const score = data.final_quiz_score
+                  ? ` - Score: ${data.final_quiz_score}%`
+                  : "";
+                return `${programLabel}: ${status}${score}`;
+              })
+              .join(" | ");
+          },
         cellClass: "text-sm text-logo-700 whitespace-pre-wrap",
       },
       { field: "joined", headerName: "Joined Date", sortable: true },
@@ -55,6 +80,7 @@ export default function UserDashboard() {
   );
 
   const { users, loading, error } = useAllUsers({ includeCourses: true });
+  const { programsData } = useAllPrograms();
 
   const getSummary = () => {
     const total = users.length;
@@ -122,16 +148,19 @@ export default function UserDashboard() {
     const mostStarted =
       Object.entries(startedCourses).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
     const mostFinished =
-      Object.entries(finishedCourses).sort((a, b) => b[1] - a[1])[0]?.[0] ||
-      "-";
+      Object.entries(finishedCourses).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
+
+    // map uids to friendly labels when possible
+    const mostStartedLabel = idToLabel(mostStarted);
+    const mostFinishedLabel = idToLabel(mostFinished);
 
     return {
       total,
       male,
       female,
       avgAge: mostFrequentAge,
-      mostStarted,
-      mostFinished,
+      mostStarted: mostStartedLabel,
+      mostFinished: mostFinishedLabel,
       ageGroups,
     };
   };
@@ -145,13 +174,14 @@ export default function UserDashboard() {
         const formattedUsers = users.map((user) => {
           const progress = user.course_progress || {};
           const programs = Object.entries(progress).map(([programId, data]) => {
+            const programLabel = idToLabel(programId);
             const status = data.completed
               ? "Completed"
               : `Course ${data.current_course}`;
             const score = data.final_quiz_score
               ? ` (Score: ${data.final_quiz_score}%)`
               : "";
-            return `${programId}: ${status}${score}`;
+            return `${programLabel}: ${status}${score}`;
           });
 
           return {

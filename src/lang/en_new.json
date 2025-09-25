@@ -127,5 +127,13 @@
   "core_values": "Our Values",
   "value_1": "Empowerment",
   "value_2": "Impact",
-  "value_3": "Peacebuilding"
+  "value_3": "Peacebuilding",
+  "location": "Location",
+  "gender": "Gender"
+  ,
+  "questions": {
+    "title": "Questions",
+    "finish": "Finish Quiz",
+    "no_questions": "No questions available"
+  }
 }

@@ -146,10 +146,10 @@ export default function CourseDetails() {
                 <div className="flex flex-wrap gap-6">
                   {/* Left: Course Info */}
                   <div className="flex-1 min-w-[250px]">
-                    {course.cover_img && (
+                    { user?.lang && course.cover_img && (
                       <RemoteImage
                         uid={course.cover_img}
-                        lang={user?.lang || "am"}
+                        lang={user?.lang}
                         alt={course.title}
                         className="w-full max-w-[300px] rounded-xl shadow mb-4"
                         style={{ alignSelf: "center", justifySelf: "center" }}
@@ -215,34 +215,6 @@ export default function CourseDetails() {
                       <div className="text-gray-400 italic text-center">No modules available.</div>
                     )}
                   </div>
-                </div>
-
-                {/* Navigation Buttons */}
-                <div className="flex justify-between mt-8">
-                  <button
-                    onClick={handlePrev}
-                    disabled={currentIndex === 0}
-                    className={`px-4 py-2 rounded-xl text-white transition ${
-                      currentIndex === 0
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700"
-                    }`}
-                  >
-                    Previous Course
-                  </button>
-                  <button
-                    onClick={handleNext}
-                    disabled={unlockedCourseIndex <= currentIndex}
-                    className={`px-4 py-2 rounded-xl text-white transition ${
-                      unlockedCourseIndex <= currentIndex
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-green-600 hover:bg-green-700"
-                    }`}
-                  >
-                    {currentIndex < courses.length - 1
-                      ? "Next Course"
-                      : "Final Quiz"}
-                  </button>
                 </div>
               </>
             )

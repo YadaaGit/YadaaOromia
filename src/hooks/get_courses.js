@@ -8,45 +8,50 @@ const cachedLoadingPerLang = {};
 const subscribersPerLang = {};
 
 /**
- * Custom hook: fetch programs and courses first, followed by modules, quizzes, and images.
+ * Custom hook: fetch programs and courses first, followed by modules and quizzes.
  * Shared caching ensures only one fetch per language/session
  */
 export const useAllPrograms = () => {
   const { user } = useUserData();
   const lang = user?.lang || "am";
 
-  const [programsData, setProgramsData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [programsData, setProgramsData] = useState(() =>
+    cachedDataPerLang[lang] ? cachedDataPerLang[lang] : []
+  );
+  const [loading, setLoading] = useState(() =>
+    cachedDataPerLang[lang] ? false : true
+  );
+  const [error, setError] = useState(() => cachedErrorPerLang[lang] || null);
 
-  // Reset state when language changes
+  // Reset state when language changes (but prefer cached values)
   useEffect(() => {
-    setProgramsData([]);
-    setLoading(true);
-    setError(null);
+    setProgramsData(cachedDataPerLang[lang] || []);
+    setLoading(!cachedDataPerLang[lang]);
+    setError(cachedErrorPerLang[lang] || null);
   }, [lang]);
 
   const fetchProgramsAndCourses = useCallback(async () => {
     if (!user || !lang) return;
 
-    // Initialize subscribers array for this language if needed
     if (!subscribersPerLang[lang]) subscribersPerLang[lang] = [];
 
-    // Use cached data if available for this language
+    // If cached, return immediately
     if (cachedDataPerLang[lang]) {
-      setProgramsData(Array.isArray(cachedDataPerLang[lang]) ? cachedDataPerLang[lang] : []);
+      setProgramsData(cachedDataPerLang[lang]);
       setLoading(false);
+      setError(null);
       return;
     }
 
-    // Subscribe if another fetch is in progress for this language
+    // If another fetch is in progress, subscribe to it
     if (cachedLoadingPerLang[lang]) {
       const subscriber = (data, err) => {
-        setProgramsData(Array.isArray(data) ? data : []);
-        setError(err);
+        setProgramsData(data || []);
+        setError(err || null);
         setLoading(false);
       };
       subscribersPerLang[lang].push(subscriber);
+      // cleanup for this subscription if component unmounts
       return () => {
         subscribersPerLang[lang] = subscribersPerLang[lang].filter(
           (s) => s !== subscriber
@@ -54,111 +59,123 @@ export const useAllPrograms = () => {
       };
     }
 
-    // Set the loading state
     cachedLoadingPerLang[lang] = true;
     setLoading(true);
+    setError(null);
 
     const baseUrl = import.meta.env.VITE_API_URL || "";
 
     try {
-      // Step 1: Fetch programs and courses first
-      console.log('[get_courses.js] Fetching programs and courses for lang:', lang);
-      const [programRes, courseRes] = await Promise.all([
-        fetch(`${baseUrl}/api/${lang}/programs`),
-        fetch(`${baseUrl}/api/${lang}/courses`),
-      ]);
+      // Fetch all endpoints in parallel to reduce latency
+      const endpoints = [
+        `${baseUrl}/api/${lang}/programs`,
+        `${baseUrl}/api/${lang}/courses`,
+        `${baseUrl}/api/${lang}/modules`,
+        `${baseUrl}/api/${lang}/final_quiz`,
+      ];
+      const responses = await Promise.all(endpoints.map((u) => fetch(u)));
 
-      if (!programRes.ok) throw new Error("Failed to fetch programs");
-      if (!courseRes.ok) throw new Error("Failed to fetch courses");
+      // Check all responses
+      responses.forEach((res, idx) => {
+        if (!res.ok) {
+          const names = ["programs", "courses", "modules", "final_quiz"];
+          throw new Error(`Failed to fetch ${names[idx]}: HTTP ${res.status}`);
+        }
+      });
 
-      const [programData, courseData] = await Promise.all([
-        programRes.json(),
-        courseRes.json(),
-      ]);
-      console.log('[get_courses.js] Programs:', programData);
-      console.log('[get_courses.js] Courses:', courseData);
+      const [programData, courseData, moduleData, finalQuizData] =
+        await Promise.all(responses.map((r) => r.json()));
 
-      // Step 2: Only after programs and courses are loaded, fetch modules, final quiz, and images
-      console.log('[get_courses.js] Fetching modules, final_quiz, images for lang:', lang);
-      const [moduleRes, finalQuizRes, imagesRes] = await Promise.all([
-        fetch(`${baseUrl}/api/${lang}/modules`),
-        fetch(`${baseUrl}/api/${lang}/final_quiz`),
-        fetch(`${baseUrl}/api/${lang}/images`),
-      ]);
+      const programs = Array.isArray(programData) ? programData : [];
+      const courses = Array.isArray(courseData) ? courseData : [];
+      const modules = Array.isArray(moduleData) ? moduleData : [];
+      const finalQuizzes = Array.isArray(finalQuizData) ? finalQuizData : [];
 
-      if (!moduleRes.ok) throw new Error("Failed to fetch modules");
-      if (!finalQuizRes.ok) throw new Error("Failed to fetch final quizzes");
-      if (!imagesRes.ok) throw new Error("Failed to fetch images");
+      // Build maps for O(1) lookups
+      const coursesById = Object.create(null);
+      for (const c of courses) coursesById[c.uid] = c;
 
-      const [moduleData, finalQuizData, imagesData] = await Promise.all([
-        moduleRes.json(),
-        finalQuizRes.json(),
-        imagesRes.json(),
-      ]);
-      console.log('[get_courses.js] Modules:', moduleData);
-      console.log('[get_courses.js] FinalQuizzes:', finalQuizData);
-      console.log('[get_courses.js] Images:', imagesData);
+      const modulesById = Object.create(null);
+      for (const m of modules) modulesById[m.uid] = m;
 
-      // Assemble programs with modules, quizzes, and images
-      const assembledProgramsWithDetails = Array.isArray(programData) ? programData.map((program) => {
-        const programCourses = Array.isArray(courseData)
-          ? courseData.filter((c) => Object.values(program.courses_ids || {}).includes(c.uid)).sort((a, b) => (a.course_index ?? 0) - (b.course_index ?? 0))
-          : [];
+      const finalQuizById = Object.create(null);
+      for (const q of finalQuizzes) finalQuizById[q.uid] = q;
 
-        const coursesWithModules = programCourses.map((course) => {
-          const courseModules = Array.isArray(moduleData)
-            ? moduleData.filter((m) => Object.values(course.module_ids || {}).includes(m.uid)).sort((a, b) => (a.module_index ?? 0) - (b.module_index ?? 0))
-            : [];
+      const assembledProgramsWithDetails = programs.map((program) => {
+        // normalize course ids array
+        let courseIds = [];
+        if (Array.isArray(program.courses_ids)) {
+          courseIds = program.courses_ids;
+        } else if (program.courses_ids && typeof program.courses_ids === "object") {
+          courseIds = Object.values(program.courses_ids);
+        }
 
-          return {
-            ...course,
-            modules: Array.isArray(courseModules)
-              ? courseModules.map((m) => ({
-                  ...m,
-                  quiz: m.quiz || [],
-                }))
-              : [],
-          };
-        });
+        // Map courseIds to course objects (fast lookup), preserve order by course_index if available
+        const programCourses = courseIds
+          .map((cid) => coursesById[cid])
+          .filter(Boolean)
+          .sort((a, b) => (a.course_index ?? 0) - (b.course_index ?? 0))
+          .map((course) => {
+            // normalize module ids
+            let moduleIds = [];
+            if (Array.isArray(course.module_ids)) {
+              moduleIds = course.module_ids;
+            } else if (course.module_ids && typeof course.module_ids === "object") {
+              moduleIds = Object.values(course.module_ids);
+            }
+
+            const courseModules = moduleIds
+              .map((mid) => modulesById[mid])
+              .filter(Boolean)
+              .sort((a, b) => (a.module_index ?? 0) - (b.module_index ?? 0))
+              .map((m) => ({
+                ...m,
+                quiz: m.quiz || [],
+              }));
+
+            return {
+              ...course,
+              modules: courseModules,
+            };
+          });
 
         const finalQuiz =
-          program.final_quiz_id && Array.isArray(finalQuizData)
-            ? finalQuizData.find((q) => q.uid === program.final_quiz_id)
+          program.final_quiz_id && finalQuizById[program.final_quiz_id]
+            ? finalQuizById[program.final_quiz_id]
             : null;
 
         return {
           ...program,
-          courses: coursesWithModules,
-          final_quiz: finalQuiz || null,
-          images: Array.isArray(imagesData)
-            ? imagesData.map((img) => ({
-                ...img,
-                coverImage: img.coverImage || null,
-              }))
-            : [],
+          courses: programCourses,
+          final_quiz: finalQuiz,
         };
-      }) : [];
-      console.log('[get_courses.js] Assembled programs with details:', assembledProgramsWithDetails);
+      });
 
-      // Cache and update state with detailed programs
+      // Cache and notify
       cachedDataPerLang[lang] = assembledProgramsWithDetails;
+      cachedErrorPerLang[lang] = null;
+      cachedLoadingPerLang[lang] = false;
+
       setProgramsData(assembledProgramsWithDetails);
       setLoading(false);
+      setError(null);
 
-      // Notify subscribers with the assembled programs data
-      subscribersPerLang[lang].forEach((subscriber) => subscriber(assembledProgramsWithDetails, null));
+      (subscribersPerLang[lang] || []).forEach((subscriber) =>
+        subscriber(assembledProgramsWithDetails, null)
+      );
       subscribersPerLang[lang] = [];
     } catch (err) {
-      console.error('[get_courses.js] Fetch or assembly error:', err);
+      console.error("[get_courses.js] Fetch or assembly error:", err);
       cachedErrorPerLang[lang] = err;
+      cachedLoadingPerLang[lang] = false;
+
       setError(err);
       setLoading(false);
 
-      // Notify any subscribers about the error
-      subscribersPerLang[lang].forEach((subscriber) => subscriber([], err));
+      (subscribersPerLang[lang] || []).forEach((subscriber) =>
+        subscriber([], err)
+      );
       subscribersPerLang[lang] = [];
-    } finally {
-      cachedLoadingPerLang[lang] = false;
     }
   }, [user, lang]);
 
@@ -167,4 +184,4 @@ export const useAllPrograms = () => {
   }, [fetchProgramsAndCourses]);
 
   return { programsData, loading, error };
-}
+};

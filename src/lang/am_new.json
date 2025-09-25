@@ -47,7 +47,7 @@
   "course_not_found": "ስልጠናው አልተገኘም ",
   "no_content_yet_for": "እስካሁን በገጹ ላይ የሚታይ መረጃ የለም ",
   "hi": "ሰላም ",
-  "welcome_message_home": "ዛሬ?",
+  "welcome_message_home": "አዲስ ነገር ለማማር ዝግጁ ነዎት?",
   "admin_loading_warning": "ሲስተማችን የአስተዳደር መረጃዎችን እየጫነ ነው፡፡ እባክዎን  ትንሽ ጠብቀው በድጋሚ ይሞክሩ፡፡",
   "user_view": "የተጠቃሚ መግቢያ መረጃ",
   "contact_us": "ከዚህ በሚከተለው መንገድ ያግኙን ",
@@ -56,7 +56,7 @@
   "phone_number": "ስልክ ቁጥር ",
   "info": "መረጃ",
   "scores": "የተመዘገቡ ውጤቶች ",
-  "joined": "የተጣመረ ",
+  "joined": "የተመዘገበበት ቀን",
   "role": "ሚና ",
   "user": "ተጠቃሚ ",
   "last_active": "ለመጨረሻ ጊዜ ኦንላይን የነበሩት ",
@@ -129,5 +129,13 @@
   "core_values": "እሴቶቻችን",
   "value_1": "ማሻሻያ",
   "value_2": "ተካትታማነት",
-  "value_3": "ጥራት"
+  "value_3": "ጥራት",
+  "location": "አድራሻ",
+  "gender": "ፆታ"
+  ,
+  "questions": {
+    "title": "ጥያቄዎች",
+    "finish": "ፈተናውን ይጨርሱ",
+    "no_questions": "ጥያቄዎች የሉም"
+  }
 }
