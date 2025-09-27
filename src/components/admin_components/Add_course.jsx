@@ -19,7 +19,7 @@ export default function AddProgramPage() {
   const [loadingSave, setLoadingSave] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false);
   const [error, setError] = useState("");
-  const [language, setLanguage] = useState();
+  const [language, setLanguage] = useState("en");
   const [programTitle, setProgramTitle] = useState("");
   const [courses, setCourses] = useState([]);
   const [programFinalQuiz, setProgramFinalQuiz] = useState({
@@ -227,7 +227,7 @@ export default function AddProgramPage() {
       return;
     }
     try {
-      const langPrefix = `${language.toLowerCase()}`;
+      const langPrefix = (language || "en").toLowerCase();
       const program_id = uuid();
       const courses_ids = {};
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import DeleteConfirmation from "./DeleteConfirmation";
 import styles from "../../pages/admin_pages/EditableDashboard.module.css";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function DeleteItemButton({ uid, type, lang, onDeleted }) {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -47,13 +48,17 @@ export default function DeleteItemButton({ uid, type, lang, onDeleted }) {
       try {
         data = await res.json();
       } catch {
-        // Backend might return empty body (204), treat as success
-        data = { success: true };
+        data = { success: true }; // treat empty body as success
       }
 
-      // Treat 404 as success if item already deleted
       if (data.success || res.status === 404) {
-        onDeleted(uid); // remove from UI
+        // Remove from UI if callback exists
+        if (typeof onDeleted === "function") {
+          onDeleted(uid);
+        }
+
+        // Show success message
+        toast.success(`${type} Deleted successfully! Refresh to see the changes.`);
       } else {
         alert("Deletion failed: " + (data.error || "Unknown error"));
       }
@@ -68,6 +73,7 @@ export default function DeleteItemButton({ uid, type, lang, onDeleted }) {
 
   return (
     <div className={styles.deleteButtonWrapper}>
+      <Toaster position="top-right" /> {/* Toast container */}
       <button
         className={`${styles.btn} ${styles.btnDanger}`}
         onClick={handleDeleteClick}
