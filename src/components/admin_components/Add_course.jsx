@@ -5,16 +5,21 @@ import { v4 as uuid } from "uuid";
 import axios from "axios";
 import { db } from "#/firebase-config.js";
 import { doc, setDoc } from "firebase/firestore";
+import { useTranslation } from "@/utils/useTranslation.js";
+
+
 
 // AddProgramPage: lets admin add a program with multiple courses
 export default function AddProgramPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const api = import.meta.env.VITE_API_URL;
 
   const [loadingSave, setLoadingSave] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false);
   const [error, setError] = useState("");
-  const [language, setLanguage] = useState("EN");
+  const [language, setLanguage] = useState();
   const [programTitle, setProgramTitle] = useState("");
   const [courses, setCourses] = useState([]);
   const [programFinalQuiz, setProgramFinalQuiz] = useState({
@@ -343,7 +348,7 @@ export default function AddProgramPage() {
 
       setLoadingSave(false);
 
-      toast.success(t("program_saved"));
+      toast.success(`${t("program_saved")}`);
       navigate("/courses_admin");
     } catch (err) {
       setLoadingSave(false);

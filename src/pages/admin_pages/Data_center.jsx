@@ -13,6 +13,8 @@ import { Skeleton } from "@mui/material";
 import useAllUsers from "@/hooks/get_all_user.js";
 import "@/style/ag-grid.css";
 import { useAllPrograms } from "@/hooks/get_courses.js";
+import { useUIDMap } from "@/hooks/useUIDMap.js"; // NEW
+
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -21,24 +23,45 @@ export default function UserDashboard() {
   const [showAgeModal, setShowAgeModal] = useState(false);
   const { initDataState } = useTelegramInitData();
   const [exportStatus, setExportStatus] = useState("idle");
-  
 
-  // helper: map a program/course uid to a human-friendly title when possible
-  const idToLabel = (id) => {
-    if (!id || id === "-") return "-";
-    if (programsData && !Array.isArray(programsData)) return id;
-    const p = programsData.find((pr) => pr.uid === id);
-    if (p) return p.title || p.name || id;
-    // search courses inside programs
-    for (const pr of programsData) {
-      if (Array.isArray(pr.courses)) {
-        const c = pr.courses.find((co) => co.uid === id);
-        if (c) return c.title || c.name || id;
-      }
+  const { users, loading, error } = useAllUsers({ includeCourses: true });
+  const { programsData } = useAllPrograms(); // current language programs
+  const { uidMap, loading: uidMapLoading } = useUIDMap();
+
+  // -------------------------------
+  // STEP 1: Build UID → title map
+  // -------------------------------
+  // TODO: Replace these imports/fetches with your actual cross-language data
+  const programsDataEn = []; // import or fetch English programs
+  const programsDataAm = []; // import or fetch Amharic programs
+  const programsDataOr = []; // import or fetch Oromifa programs
+
+  const buildUIDMap = (allProgramsByLang) => {
+    const map = {};
+    for (const langPrograms of Object.values(allProgramsByLang)) {
+      langPrograms.forEach((p) => {
+        if (p.uid) map[p.uid] = p.title || p.name || p.uid;
+        if (Array.isArray(p.courses)) {
+          p.courses.forEach((c) => {
+            if (c.uid) map[c.uid] = c.title || c.name || c.uid;
+            if (Array.isArray(c.modules)) {
+              c.modules.forEach((m) => {
+                if (m.uid) map[m.uid] = m.title || m.name || m.uid;
+              });
+            }
+          });
+        }
+      });
     }
-    return id;
+    return map;
   };
 
+  // helper function to map UID to human-friendly title
+  const idToLabel = (id) => uidMap[id] || id;
+
+  // -------------------------------
+  // STEP 2: Column Definitions
+  // -------------------------------
   const columnDefs = useMemo(
     () => [
       { field: "name", sortable: true, filter: true },
@@ -49,45 +72,38 @@ export default function UserDashboard() {
       { field: "lang", sortable: true, filter: true },
       {
         headerName: "Program Progress",
-          valueGetter: (params) => {
-            const progress = params.data.course_progress || {};
-            const programs = Object.entries(progress);
-            if (programs.length === 0) return "—";
-            return programs
-              .map(([programId, data]) => {
-                // prefer human-friendly program title when available
-                const programObj = programsData &&  Array.isArray(programsData)
-                  ? programsData.find((p) => p.uid === programId)
-                  : undefined;
-                const programLabel = programObj
-                  ? programObj.title || programObj.name || programId
-                  : programId;
-                const status = data.completed
-                  ? "✅ Completed"
-                  : `📘 Course ${data.current_course}`;
-                const score = data.final_quiz_score
-                  ? ` - Score: ${data.final_quiz_score}%`
-                  : "";
-                return `${programLabel}: ${status}${score}`;
-              })
-              .join(" | ");
-          },
+        valueGetter: (params) => {
+          const progress = params.data.course_progress || {};
+          const programs = Object.entries(progress);
+          if (programs.length === 0) return "—";
+          return programs
+            .map(([programId, data]) => {
+              const programLabel = idToLabel(programId);
+              const status = data.completed
+                ? "✅ Completed"
+                : `📘 Course ${data.current_course}`;
+              const score = data.final_quiz_score
+                ? ` - Score: ${data.final_quiz_score}%`
+                : "";
+              return `${programLabel}: ${status}${score}`;
+            })
+            .join(" | ");
+        },
         cellClass: "text-sm text-logo-700 whitespace-pre-wrap",
       },
       { field: "joined", headerName: "Joined Date", sortable: true },
     ],
-    []
+    [uidMap]
   );
 
-  const { users, loading, error } = useAllUsers({ includeCourses: true });
-  const { programsData } = useAllPrograms();
-
+  // -------------------------------
+  // STEP 3: Summary calculation
+  // -------------------------------
   const getSummary = () => {
     const total = users.length;
     const male = users.filter((u) => u.gender === "m").length;
     const female = users.filter((u) => u.gender === "f").length;
 
-    // Calculate mode (most frequent age)
     const ageCounts = {};
     users.forEach((u) => {
       const age = parseInt(u.age);
@@ -138,8 +154,7 @@ export default function UserDashboard() {
           (progress.current_module === 1 && progress.current_section > 1) ||
           progress.current_module > 1;
 
-        if (started)
-          startedCourses[courseId] = (startedCourses[courseId] || 0) + 1;
+        if (started) startedCourses[courseId] = (startedCourses[courseId] || 0) + 1;
         if (progress.final_quiz_score > 75)
           finishedCourses[courseId] = (finishedCourses[courseId] || 0) + 1;
       });
@@ -150,23 +165,22 @@ export default function UserDashboard() {
     const mostFinished =
       Object.entries(finishedCourses).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
 
-    // map uids to friendly labels when possible
-    const mostStartedLabel = idToLabel(mostStarted);
-    const mostFinishedLabel = idToLabel(mostFinished);
-
     return {
       total,
       male,
       female,
       avgAge: mostFrequentAge,
-      mostStarted: mostStartedLabel,
-      mostFinished: mostFinishedLabel,
+      mostStarted: idToLabel(mostStarted),
+      mostFinished: idToLabel(mostFinished),
       ageGroups,
     };
   };
 
   const summary = !loading && getSummary();
 
+  // -------------------------------
+  // STEP 4: Excel Export
+  // -------------------------------
   const exportToExcel = async () => {
     const exportPromise = new Promise(async (resolve, reject) => {
       setExportStatus("loading");
@@ -205,126 +219,37 @@ export default function UserDashboard() {
         XLSX.utils.book_append_sheet(wb, ws, "Users");
         const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
 
-        // Use modern save file picker if available
-        if (window.showSaveFilePicker) {
-          try {
-            const fileHandle = await window.showSaveFilePicker({
-              suggestedName: "users.xlsx",
-              types: [
-                {
-                  description: "Excel Files",
-                  accept: {
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-                      [".xlsx"],
-                  },
-                },
-              ],
-            });
-
-            const writable = await fileHandle.createWritable();
-            await writable.write(buf);
-            await writable.close();
-            setExportStatus("success");
-            resolve(); // success, exit
-            return;
-          } catch (pickerError) {
-            if (pickerError.name !== "AbortError") {
-              reject(pickerError);
-              return;
-            }
-            // else fall through to fallback
-          }
-        }
-
-        // Fallback: prompt user for filename
+        // fallback download
         let filename = prompt("Enter a name for the file:", "users.xlsx");
-        if (!filename) {
-          toast.error("Export cancelled.");
-          return;
-        }
+        if (!filename) filename = "users.xlsx";
         if (!filename.endsWith(".xlsx")) filename += ".xlsx";
 
-        if (initDataState.user) {
-          // Telegram mini app fallback: custom toast with clickable download
-          const fileBlob = new Blob([buf], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          });
-          const url = URL.createObjectURL(fileBlob);
+        const blob = new Blob([buf], { type: "application/octet-stream" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
 
-          resolve(); // resolve here because export is ready for download
-
-          setExportStatus("success");
-
-          toast.dismiss(); // dismiss the promise toast immediately on success
-
-          toast.custom(
-            (t) => (
-              <div
-                style={{
-                  padding: "8px 12px",
-                  backgroundColor: "#333",
-                  color: "white",
-                  borderRadius: 6,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
-                <span>Download your file here:</span>
-                <a
-                  href={url}
-                  download={filename}
-                  style={{
-                    color: "#4ade80",
-                    textDecoration: "underline",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    // Show loading toast on click
-                    toast.loading("Preparing download...", {
-                      id: "download-loading",
-                    });
-                    // Wait a tick and then remove loading toast (simulate download completion)
-                    setTimeout(() => {
-                      toast.dismiss("download-loading");
-                      toast.success("Download started!");
-                      URL.revokeObjectURL(url);
-                      toast.dismiss(t.id); // dismiss this custom toast after click
-                    }, 1500);
-                  }}
-                >
-                  Click to download
-                </a>
-              </div>
-            ),
-            { duration: 10000 }
-          );
-        } else {
-          // Normal fallback - automatic download click
-          const blob = new Blob([buf], { type: "application/octet-stream" });
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          a.download = filename;
-          a.click();
-          URL.revokeObjectURL(a.href);
-
-          setExportStatus("success");
-          resolve();
-        }
+        setExportStatus("success");
+        resolve();
       } catch (err) {
         console.error("Export failed:", err);
         reject(err);
       }
     });
 
-    setExportStatus("idle");
     toast.promise(exportPromise, {
       loading: "Exporting...",
-      success: "", // suppress default success toast since we handle custom toasts
+      success: "Export completed!",
       error: "Something went wrong during export.",
     });
+    setExportStatus("idle");
   };
 
+  // -------------------------------
+  // STEP 5: Render
+  // -------------------------------
   if (loading || !users)
     return (
       <div className="p-6 space-y-6 animate-pulse">
@@ -334,12 +259,7 @@ export default function UserDashboard() {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <Skeleton
-              key={i}
-              variant="rectangular"
-              height={100}
-              className="rounded-xl"
-            />
+            <Skeleton key={i} variant="rectangular" height={100} className="rounded-xl" />
           ))}
         </div>
         <Skeleton variant="rectangular" height={500} className="rounded-xl" />
@@ -370,64 +290,28 @@ export default function UserDashboard() {
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <SummaryCard label="Total Users" value={summary.total} />
-        <SummaryCard
-          label="Male %"
-          value={`${((summary.male / summary.total) * 100).toFixed(1)}%`}
-        />
-        <SummaryCard
-          label="Female %"
-          value={`${((summary.female / summary.total) * 100).toFixed(1)}%`}
-        />
-        <SummaryCard
-          label="Frequent Age"
-          value={summary.avgAge}
-          onClick={() => setShowAgeModal(true)}
-          isClickable
-        />
+        <SummaryCard label="Male %" value={`${((summary.male / summary.total) * 100).toFixed(1)}%`} />
+        <SummaryCard label="Female %" value={`${((summary.female / summary.total) * 100).toFixed(1)}%`} />
+        <SummaryCard label="Frequent Age" value={summary.avgAge} onClick={() => setShowAgeModal(true)} isClickable />
         <SummaryCard label="Most Started" value={summary.mostStarted} />
         <SummaryCard label="Most Finished" value={summary.mostFinished} />
       </div>
 
-      <div
-        className="rounded-xl border border-gray-200 overflow-hidden shadow"
-        style={{ height: 500 }}
-      >
-        <AgGridReact
-          rowData={users}
-          columnDefs={columnDefs}
-          pagination={true}
-          theme={themeQuartz}
-        />
+      <div className="rounded-xl border border-gray-200 overflow-hidden shadow" style={{ height: 500 }}>
+        <AgGridReact rowData={users} columnDefs={columnDefs} pagination={true} theme={themeQuartz} />
       </div>
 
+      {/* Age Modal */}
       {showAgeModal && (
-        <div
-          className="fixed inset-0 z-50 flex justify-center items-center"
-          onClick={() => setShowAgeModal(false)}
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-xl p-6 w-full max-w-md mx-4 shadow-lg"
-          >
+        <div className="fixed inset-0 z-50 flex justify-center items-center" onClick={() => setShowAgeModal(false)} style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-xl p-6 w-full max-w-md mx-4 shadow-lg">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Age Group Breakdown
-              </h3>
-              <button
-                onClick={() => setShowAgeModal(false)}
-                className="text-xl font-bold text-gray-500"
-              >
-                ×
-              </button>
+              <h3 className="text-lg font-semibold text-gray-800">Age Group Breakdown</h3>
+              <button onClick={() => setShowAgeModal(false)} className="text-xl font-bold text-gray-500">×</button>
             </div>
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
               {Object.entries(summary.ageGroups).map(([range, count]) => (
-                <div
-                  key={range}
-                  className="flex justify-between text-gray-700"
-                  style={{ height: 30 }}
-                >
+                <div key={range} className="flex justify-between text-gray-700" style={{ height: 30 }}>
                   <span>{range}</span>
                   <span className="font-semibold">{count}</span>
                 </div>
@@ -440,7 +324,9 @@ export default function UserDashboard() {
   );
 }
 
+// -------------------------------
 // SummaryCard component
+// -------------------------------
 function SummaryCard({ label, value, onClick, isClickable }) {
   return (
     <div

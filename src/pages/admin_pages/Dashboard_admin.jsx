@@ -259,6 +259,7 @@ function Courses() {
       {programsData && programsData.length != 0 ? (
         <section id="courses">
           {programsData.map((program, pIndex) => {
+            console.log("Program:", programsData);
             const programProgress = progress[program.uid] || {
               current_course: 1,
               current_module: 1,

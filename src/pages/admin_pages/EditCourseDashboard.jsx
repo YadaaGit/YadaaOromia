@@ -1,35 +1,36 @@
 import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
-import "@/style/Dashboard_user.css";
-import "@/style/general.css";
+import styles from "./EditableDashboard.module.css"; // Import the CSS module
 import useUserData from "@/hooks/get_user_data.js";
+import RemoteImage from "@/components/basic_ui/remoteImgDisplay.jsx";
+import DeleteConfirmation from "../../components/admin_components/DeleteConfirmation";
+import DeleteItemButton from "../../components/admin_components/DeleteItemButton";
 
-// Hierarchical editor: programs -> courses -> modules -> contents
-// Props:
-// - initialData: array of programs (each with courses, modules...)
-// - handleCancel: callback when closing
-// - language: language code (EN/AM/OR etc.)
-const EditableDashboard = ({ initialData = [], handleCancel, language }) => {
+const EditableDashboard = ({ initialData = [], handleCancel }) => {
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const { user } = useUserData();
   const [programs, setPrograms] = useState(initialData || []);
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [selectedModule, setSelectedModule] = useState(null);
+  const [selectedModule, setSelectedModule] = useState({
+    uid: null,
+    tab: "content",
+  });
+  const [expandedPrograms, setExpandedPrograms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const api = import.meta.env.VITE_API_URL;
-  const { user } = useUserData();
-
   const [editingQuizFor, setEditingQuizFor] = useState(null);
 
-  // Always use the logged-in user's language. If not available yet, default to 'en'.
-  // (Do NOT use the component `language` prop here — user.lang has priority.)
-  const effectiveLang = useMemo(
-    () => (user?.lang + "").toLowerCase(),
-    [user?.lang]
-  );
+  const toggleProgramExpansion = (programUid) => {
+    setExpandedPrograms((prev) =>
+      prev.includes(programUid)
+        ? prev.filter((id) => id !== programUid)
+        : [...prev, programUid]
+    );
+  };
 
-  // shallow helper to update nested state immutably
   const updatePrograms = (updater) =>
     setPrograms((prev) => {
       const cloned = JSON.parse(JSON.stringify(prev || []));
@@ -37,12 +38,25 @@ const EditableDashboard = ({ initialData = [], handleCancel, language }) => {
       return cloned;
     });
 
-  // When changing titles/descriptions ensure we don't clobber unrelated data
   const setProgramTitle = (programUid, title) => {
     updatePrograms((list) => {
       const p = list.find((x) => x.uid === programUid);
       if (p) p.title = title;
     });
+  };
+
+  const onConfirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    const { type, ids } = deleteTarget;
+
+    if (type === "Program") await handleDeleteProgram(ids.programUid);
+    if (type === "Course")
+      await handleDeleteCourse(ids.programUid, ids.courseUid);
+    if (type === "Module")
+      await handleDeleteModule(ids.programUid, ids.courseUid, ids.moduleUid);
+
+    setDeleteTarget(null);
   };
 
   const setCourseField = (programUid, courseUid, field, value) => {
@@ -67,13 +81,11 @@ const EditableDashboard = ({ initialData = [], handleCancel, language }) => {
     });
   };
 
-  // Final quiz title/description edits must not erase existing questions.
   const setFinalQuizMeta = (programUid, changes) => {
     updatePrograms((list) => {
       const p = list.find((x) => x.uid === programUid);
       if (!p) return;
       p.final_quiz = p.final_quiz || {};
-      // only apply provided fields, preserve questions array if present
       if (typeof changes.quiz_title !== "undefined")
         p.final_quiz.quiz_title = changes.quiz_title;
       if (typeof changes.quiz_description !== "undefined")
@@ -82,50 +94,39 @@ const EditableDashboard = ({ initialData = [], handleCancel, language }) => {
         p.final_quiz.metadata = changes.metadata;
       if (!Array.isArray(p.final_quiz.quiz))
         p.final_quiz.quiz = p.final_quiz.quiz || p.final_quiz.questions || [];
-      // normalize to .quiz for sending later
     });
   };
 
-  // Image replace flow: delete old image, upload new image, and update any references in programs
   const replaceImage = async (oldImageId, file) => {
     if (!file) return null;
     try {
-      // 1) upload new image
       const form = new FormData();
-      form.append("file", file);
-      const uploadRes = await axios.post(`${api}/api/upload`, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      const newImage = uploadRes.data; // assume { id, url }
+      form.append("image", file);
+      const uploadRes = await axios.post(
+        `${api}/api/${user?.lang.toLowerCase()}/images`,
+        form,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      const newImage = uploadRes.data;
 
-      // 2) update any references from oldImageId -> newImage.id in local state
       if (oldImageId) {
-        updatePrograms((list) => {
-          const walk = (obj) => {
-            if (!obj || typeof obj !== "object") return;
-            for (const k of Object.keys(obj)) {
-              const v = obj[k];
-              if (v === oldImageId) obj[k] = newImage.id;
-              else if (Array.isArray(v)) v.forEach((it) => walk(it));
-              else if (typeof v === "object") walk(v);
-            }
-          };
-          walk(list);
-        });
-
-        // 3) delete old image from server
+        // State update for replacement is handled by the calling component
+        // which now has the newImage.id. We just need to delete the old one.
         try {
-          await axios.delete(`${api}/api/images/${oldImageId}`);
+          await axios.delete(
+            `${api}/api/${user?.lang.toLowerCase()}/images/${oldImageId}`
+          );
         } catch (e) {
-          // non-fatal: log and continue
           console.warn(
-            "Failed to delete old image",
+            "Failed to delete old image during replacement",
             oldImageId,
             e?.message || e
           );
         }
       }
-
+      console.log("✅ Upload response:", newImage);
       return newImage;
     } catch (err) {
       console.error("Error replacing image", err);
@@ -133,27 +134,85 @@ const EditableDashboard = ({ initialData = [], handleCancel, language }) => {
     }
   };
 
-  // Fetch image preview URL directly from DB view endpoint (non-destructive)
-  const fetchImageUrl = async (imageId) => {
-    if (!imageId) return null;
+  const handleRemoveImage = async (imageId, onSuccessCallback) => {
+    if (!imageId) return;
+    if (
+      !window.confirm(
+        "Are you sure you want to permanently delete this image? This cannot be undone."
+      )
+    ) {
+      return;
+    }
     try {
-      const res = await axios.get(`${api}/api/images/${imageId}/view`);
-      return res.data?.url || null;
-    } catch (e) {
-      console.warn("Failed to fetch image preview", imageId, e?.message || e);
-      return null;
+      await axios.delete(
+        `${api}/api/${user?.lang.toLowerCase()}/images/${imageId}`
+      );
+      onSuccessCallback(); // Update state to remove image from UI
+    } catch (err) {
+      console.error("Failed to delete image", imageId, err);
+      alert("Error: Could not delete the image from the server.");
     }
   };
 
-  // Save only modified records. We'll iterate over programs and PUT each program/course/module/final_quiz.
+  const handleDeleteProgram = async (programUid) => {
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const userInput = prompt(
+      `Type the following code to confirm deletion (this is permanent): ${code}`
+    );
+    if (userInput !== code) return alert("Code mismatch. Deletion cancelled.");
+
+    updatePrograms((list) => {
+      const idx = list.findIndex((p) => p.uid === programUid);
+      if (idx !== -1) list.splice(idx, 1);
+    });
+    alert("Program deleted permanently.");
+  };
+
+  const handleDeleteCourse = async (programUid, courseUid) => {
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const userInput = prompt(
+      `Type the following code to confirm deletion (this is permanent): ${code}`
+    );
+    if (userInput !== code) return alert("Code mismatch. Deletion cancelled.");
+
+    updatePrograms((list) => {
+      const p = list.find((x) => x.uid === programUid);
+      if (!p || !p.courses) return;
+      const idx = p.courses.findIndex((c) => c.uid === courseUid);
+      if (idx !== -1) p.courses.splice(idx, 1);
+    });
+    alert("Course deleted permanently.");
+  };
+
+  const handleDeleteModule = async (programUid, courseUid, moduleUid) => {
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const userInput = prompt(
+      `Type the following code to confirm deletion (this is permanent): ${code}`
+    );
+    if (userInput !== code) return alert("Code mismatch. Deletion cancelled.");
+
+    updatePrograms((list) => {
+      const p = list.find((x) => x.uid === programUid);
+      const c = p?.courses?.find((cc) => cc.uid === courseUid);
+      if (!c || !c.modules) return;
+      const idx = c.modules.findIndex((m) => m.uid === moduleUid);
+      if (idx !== -1) c.modules.splice(idx, 1);
+    });
+    alert("Module deleted permanently.");
+  };
+
   const handleSave = async () => {
     setLoading(true);
     setError("");
     setSuccess("");
+    setTimeout(() => {
+      setError("");
+      setSuccess("");
+    }, 5000);
+
     try {
-      const langPrefix = effectiveLang;
+      const langPrefix = user?.lang;
       for (const program of programs) {
-        // save program metadata — do not send uids in the body, send human-friendly titles instead
         await axios.put(`${api}/api/${langPrefix}/programs/${program.uid}`, {
           title: program.title,
           final_quiz_title: program.final_quiz?.quiz_title,
@@ -165,6 +224,7 @@ const EditableDashboard = ({ initialData = [], handleCancel, language }) => {
           await axios.put(`${api}/api/${langPrefix}/courses/${course.uid}`, {
             title: course.title,
             description: course.description,
+            cover_img: course.cover_img || null,
             modules: (course.modules || []).map((m) => m.title),
             metadata: course.metadata || {},
           });
@@ -172,14 +232,16 @@ const EditableDashboard = ({ initialData = [], handleCancel, language }) => {
           for (const mod of course.modules || []) {
             await axios.put(`${api}/api/${langPrefix}/modules/${mod.uid}`, {
               title: mod.title,
-              content: mod.content || [],
+              content: (mod.content || []).map((c) => ({
+                ...c,
+                media: c.media || null,
+              })),
               quiz: mod.quiz || [],
               metadata: mod.metadata || {},
             });
           }
         }
 
-        // final quiz: preserve existing questions if we didn't change them
         if (program.final_quiz) {
           const quizPayload = {
             quiz_title: program.final_quiz.quiz_title,
@@ -189,13 +251,15 @@ const EditableDashboard = ({ initialData = [], handleCancel, language }) => {
               : program.final_quiz.questions || [],
             metadata: program.final_quiz.metadata || {},
           };
-          await axios.put(`${api}/api/${langPrefix}/final_quiz/${program.final_quiz.uid}`, quizPayload);
+          await axios.put(
+            `${api}/api/${langPrefix}/final_quiz/${program.final_quiz.uid}`,
+            quizPayload
+          );
         }
       }
-
       setSuccess("✅ Changes saved successfully!");
     } catch (err) {
-      setError("❌ Error saving changes.");
+      setError("❌ Error saving changes. Please check console for details.");
       console.error(
         "Error saving program:",
         err?.response?.data || err.message || err
@@ -207,231 +271,345 @@ const EditableDashboard = ({ initialData = [], handleCancel, language }) => {
 
   const programList = useMemo(() => programs || [], [programs]);
 
-  // UI rendering helpers
-  const renderPrograms = () => (
-    <div style={{ display: "flex", gap: 12 }}>
-      <div
-        style={{ width: 260, borderRight: "1px solid #ddd", paddingRight: 12 }}
-      >
-        <h3>Programs</h3>
-        {programList.map((p) => (
-          <div
-            key={p.uid}
-            style={{
-              padding: 8,
-              cursor: "pointer",
-              background: selectedProgram === p.uid ? "#eef" : "transparent",
-            }}
-            onClick={() => {
-              setSelectedProgram(p.uid);
-              setSelectedCourse(null);
-              setSelectedModule(null);
-            }}
-          >
-            <input
-              value={p.title}
-              onChange={(e) => setProgramTitle(p.uid, e.target.value)}
-              className="input"
-              style={{ width: "100%", border: "1px solid #ccc" }}
-            />
-          </div>
-        ))}
-      </div>
-      <div style={{ flex: 1, paddingLeft: 12 }}>
-        {selectedProgram ? (
-          renderProgramDetails(selectedProgram)
-        ) : (
-          <div>Select a program to edit its courses and final quiz.</div>
-        )}
-      </div>
-    </div>
-  );
-
   const renderProgramDetails = (programUid) => {
-    const program = (programs || []).find((x) => x.uid === programUid);
-    if (!program) return <div>Program not found</div>;
-    return (
-      <div style={{ marginBottom: 80 }}>
-        <h3 style={{ marginTop: 0 }}>{program.title}</h3>
-        <div style={{ display: "flex", gap: 12 }}>
-          <div style={{ flex: 1 }}>
-            <h4>Courses</h4>
-            {(program.courses || []).map((c) => (
-              <div
-                key={c.uid}
-                style={{
-                  padding: 8,
-                  border: "1px solid #eee",
-                  marginBottom: 8,
-                  background: selectedCourse === c.uid ? "#f8fafc" : "#fff",
-                }}
-              >
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <button
-                    className="btn-secondary"
-                    onClick={() => {
-                      setSelectedCourse(c.uid);
-                      setSelectedModule(null);
-                    }}
-                  >
-                    {selectedCourse === c.uid ? "Editing" : "Edit"}
-                  </button>
-                  <input
-                    value={c.title}
-                    onChange={(e) =>
-                      setCourseField(programUid, c.uid, "title", e.target.value)
-                    }
-                    className="input"
-                    style={{ flex: 1 }}
-                  />
-                </div>
-                <div style={{ marginTop: 8 }}>
-                  <label>Cover Image:</label>
-                  <ImageEditor
-                    currentId={c.cover_image}
-                    onReplace={async (file) => {
-                      try {
-                        const newImage = await replaceImage(
-                          c.cover_image,
-                          file
-                        );
-                        // set the new id on the course
-                        setCourseField(
-                          programUid,
-                          c.uid,
-                          "cover_image",
-                          newImage?.id ||
-                            newImage?._id ||
-                            newImage?.url ||
-                            newImage
-                        );
-                      } catch (e) {
-                        console.error(e);
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+    const program = programList.find((x) => x.uid === programUid);
+    if (!program)
+      return <div className={styles.placeholder}>Program not found</div>;
 
-          <div style={{ flex: 1 }}>
-            <h4>Final Quiz</h4>
-            <div style={{ padding: 8, border: "1px solid #eee", background: "#fff" }}>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <div style={{ flex: 1 }}>
-                  <label>Title</label>
-                  <input className='input' value={program.final_quiz?.quiz_title || ''} onChange={(e) => setFinalQuizMeta(program.uid, { quiz_title: e.target.value })} />
-                  <label style={{ marginTop: 8 }}>Description</label>
-                  <textarea className='textarea' value={program.final_quiz?.quiz_description || ''} onChange={(e) => setFinalQuizMeta(program.uid, { quiz_description: e.target.value })} />
-                </div>
-                <div>
-                  <button className='btn-primary' onClick={() => setEditingQuizFor(program.uid)}>{editingQuizFor === program.uid ? 'Close Quiz Editor' : 'Edit Quiz'}</button>
-                </div>
-              </div>
-              <div style={{ marginTop: 8 }}>
-                <small>Use the quiz editor to modify questions. Questions are preserved unless removed.</small>
+    const isExpanded = expandedPrograms.includes(program.uid);
+
+    return (
+      <div className={styles.buttonGroup}>
+        <div className={styles.programHeader}>
+        <h2 className={styles.sectionHeader}>
+          {program.title}
+            <button
+              className={`${styles.btn} ${styles.btnSecondary}`}
+              onClick={() => toggleProgramExpansion(program.uid)}
+            >
+              {isExpanded ? "Collapse" : "Expand"}
+            </button>
+            <DeleteItemButton
+              type="Program"
+              onClick={() =>
+                setDeleteTarget({
+                  type: "Program",
+                  ids: { programUid: program.uid },
+                })
+              }
+            />
+        </h2>
+
+          </div>
+        {isExpanded && (
+          <div className={styles.detailsGrid}>
+            <div>
+              <h3 className={styles.sectionHeader}>Courses</h3>
+              <div className={styles.courseGrid}>
+                {(program.courses || []).map((c) => (
+                  <CourseCard
+                    key={c.uid}
+                    programUid={program.uid}
+                    course={c}
+                    selectedCourse={selectedCourse}
+                    setSelectedCourse={setSelectedCourse}
+                    replaceImage={replaceImage}
+                    handleRemoveImage={handleRemoveImage}
+                    setCourseField={setCourseField}
+                  />
+                ))}
               </div>
             </div>
-            {editingQuizFor === program.uid && (
-              <div style={{ marginTop: 12 }}>
-                <QuizEditor program={program} onChange={(updatedQuiz) => {
-                  updatePrograms((list) => {
-                    const p = list.find((x) => x.uid === program.uid);
-                    if (!p) return; p.final_quiz = p.final_quiz || {}; p.final_quiz.quiz = updatedQuiz;
-                  });
-                }} fetcher={fetchImageUrl} />
+            <div>
+              <h3 className={styles.sectionHeader}>Final Quiz</h3>
+              <div className={styles.card}>
+                <div className={styles.inputGroup}>
+                  <label
+                    className={styles.label}
+                    htmlFor={`quiz-title-${program.uid}`}
+                  >
+                    Title
+                  </label>
+                  <input
+                    id={`quiz-title-${program.uid}`}
+                    className={styles.input}
+                    value={program.final_quiz?.quiz_title || ""}
+                    onChange={(e) =>
+                      setFinalQuizMeta(program.uid, {
+                        quiz_title: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className={`${styles.inputGroup} mt-4`}>
+                  <label
+                    className={styles.label}
+                    htmlFor={`quiz-desc-${program.uid}`}
+                  >
+                    Description
+                  </label>
+                  <textarea
+                    id={`quiz-desc-${program.uid}`}
+                    className={styles.textarea}
+                    value={program.final_quiz?.quiz_description || ""}
+                    onChange={(e) =>
+                      setFinalQuizMeta(program.uid, {
+                        quiz_description: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <button
+                  className={`${styles.btn} ${styles.btnPrimary} mt-4 w-full`}
+                  onClick={() =>
+                    setEditingQuizFor(
+                      editingQuizFor === program.uid ? null : program.uid
+                    )
+                  }
+                >
+                  {editingQuizFor === program.uid
+                    ? "Close Quiz Editor"
+                    : "Edit Quiz Questions"}
+                </button>
               </div>
-            )}
+              {editingQuizFor === program.uid && (
+                <FinalQuizEditor
+                  program={program}
+                  onChange={(updatedQuiz) => {
+                    updatePrograms((list) => {
+                      const p = list.find((x) => x.uid === program.uid);
+                      if (p) {
+                        p.final_quiz = p.final_quiz || {};
+                        p.final_quiz.quiz = updatedQuiz;
+                      }
+                    });
+                  }}
+                />
+              )}
+            </div>
           </div>
-        </div>
-
-        {selectedCourse && renderCourseDetails(programUid, selectedCourse)}
+        )}
+        {isExpanded &&
+          selectedCourse &&
+          renderCourseDetails(programUid, selectedCourse)}
       </div>
     );
   };
 
   const renderCourseDetails = (programUid, courseUid) => {
-    const program = (programs || []).find((x) => x.uid === programUid);
+    const program = programList.find((x) => x.uid === programUid);
     const course = (program?.courses || []).find((c) => c.uid === courseUid);
-    if (!course) return <div>Course not found</div>;
+    if (!course) return null;
     return (
-      <div style={{ marginTop: 12 }}>
-        <h4>Modules for {course.title}</h4>
-        {(course.modules || []).map((m) => (
-          <div
-            key={m.uid}
-            style={{
-              padding: 8,
-              border: "1px solid #eee",
-              marginBottom: 8,
-              background: selectedModule === m.uid ? "#f7f7ff" : "#fff",
-            }}
-          >
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <button
-                className="btn-secondary"
-                onClick={() => setSelectedModule(m.uid)}
+      <div className={"mt-6 col-span-full"}>
+        <h3 className={styles.sectionHeader}>Modules for {course.title}</h3>
+        <div className={styles.moduleList}>
+          {(course.modules || []).map((m) => (
+            <div
+              key={m.uid}
+              className={`${styles.moduleItemCard} ${
+                selectedModule.uid === m.uid ? styles.moduleItemSelected : ""
+              }`}
+            >
+              <div
+                className={`${styles.moduleItemHeader} ${styles.buttonGroup}`}
               >
-                {selectedModule === m.uid ? "Editing" : "Edit"}
-              </button>
-              <input
-                value={m.title}
-                onChange={(e) =>
-                  setModuleField(
-                    programUid,
-                    courseUid,
-                    m.uid,
-                    "title",
-                    e.target.value
-                  )
-                }
-                className="input"
-                style={{ flex: 1 }}
-              />
+                <input
+                  value={m.title}
+                  onChange={(e) =>
+                    setModuleField(
+                      programUid,
+                      courseUid,
+                      m.uid,
+                      "title",
+                      e.target.value
+                    )
+                  }
+                  className={styles.input}
+                />
+                <button
+                  className={`${styles.btn} ${styles.btnSecondary}`}
+                  onClick={() =>
+                    setSelectedModule((prev) => ({
+                      ...prev,
+                      uid: prev.uid === m.uid ? null : m.uid,
+                    }))
+                  }
+                >
+                  {selectedModule.uid === m.uid ? "Close" : "Edit"}
+                </button>
+                <DeleteItemButton
+                  type="Module"
+                  onClick={() =>
+                    setDeleteTarget({
+                      type: "Module",
+                      ids: { programUid, courseUid, moduleUid: m.uid },
+                    })
+                  }
+                />
+              </div>
+              {selectedModule.uid === m.uid && (
+                <>
+                  <div className={styles.moduleEditorTabs}>
+                    <button
+                      className={`${styles.tabButton} ${
+                        selectedModule.tab === "content"
+                          ? styles.tabButtonActive
+                          : ""
+                      }`}
+                      onClick={() =>
+                        setSelectedModule((prev) => ({
+                          ...prev,
+                          tab: "content",
+                        }))
+                      }
+                    >
+                      Content
+                    </button>
+                    <button
+                      className={`${styles.tabButton} ${
+                        selectedModule.tab === "quiz"
+                          ? styles.tabButtonActive
+                          : ""
+                      }`}
+                      onClick={() =>
+                        setSelectedModule((prev) => ({ ...prev, tab: "quiz" }))
+                      }
+                    >
+                      Quiz
+                    </button>
+                  </div>
+                  <div className={styles.moduleContentEditor}>
+                    {selectedModule.tab === "content" &&
+                      renderModuleContents(programUid, courseUid, m.uid)}
+                    {selectedModule.tab === "quiz" && (
+                      <ModuleQuizEditor
+                        module={m}
+                        programUid={programUid}
+                        courseUid={courseUid}
+                        setModuleField={setModuleField}
+                      />
+                    )}
+                  </div>
+                </>
+              )}
             </div>
-            {selectedModule === m.uid &&
-              renderModuleContents(programUid, courseUid, m.uid)}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     );
   };
 
   const renderModuleContents = (programUid, courseUid, moduleUid) => {
-    const program = (programs || []).find((x) => x.uid === programUid);
+    const program = programList.find((x) => x.uid === programUid);
     const course = (program?.courses || []).find((c) => c.uid === courseUid);
     const mod = (course?.modules || []).find((mm) => mm.uid === moduleUid);
-    if (!mod) return <div>Module not found</div>;
+    if (!mod) return null;
     return (
-      <div style={{ marginTop: 8, padding: 8 }}>
+      <div>
         {(mod.content || []).map((ct, idx) => (
-          <div key={idx} style={{ border: '1px dashed #ddd', padding: 8, marginBottom: 8, display: 'flex', gap: 12 }}>
-            <div style={{ flex: 1 }}>
-              <label>Header</label>
-              <input value={ct.header} onChange={(e) => setModuleField(programUid, courseUid, moduleUid, 'content', (mod.content || []).map((cct, i) => i===idx?{...cct, header: e.target.value}:cct))} className='input' />
-              <label style={{ marginTop: 6 }}>Text</label>
-              <textarea value={ct.text} onChange={(e) => setModuleField(programUid, courseUid, moduleUid, 'content', (mod.content || []).map((cct, i) => i===idx?{...cct, text: e.target.value}:cct))} className='textarea' />
-
-              <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
-                <label style={{ marginRight: 6 }}>Breaker</label>
-                <input type='checkbox' checked={!!ct.breaker} onChange={(e) => setModuleField(programUid, courseUid, moduleUid, 'content', (mod.content || []).map((cct, i) => i===idx?{...cct, breaker: e.target.checked}:cct))} />
+          <div key={idx} className={styles.contentBlock}>
+            <div className={styles.inputGroup}>
+              <div className={styles.inputGroup}>
+                <label className={styles.label}>Header</label>
+                <input
+                  value={ct.header || ""}
+                  onChange={(e) =>
+                    setModuleField(
+                      programUid,
+                      courseUid,
+                      moduleUid,
+                      "content",
+                      (mod.content || []).map((c, i) =>
+                        i === idx ? { ...c, header: e.target.value } : c
+                      )
+                    )
+                  }
+                  className={styles.input}
+                />
+              </div>
+              <div className={`${styles.inputGroup} mt-4`}>
+                <label className={styles.label}>Text</label>
+                <textarea
+                  value={ct.text || ""}
+                  onChange={(e) =>
+                    setModuleField(
+                      programUid,
+                      courseUid,
+                      moduleUid,
+                      "content",
+                      (mod.content || []).map((c, i) =>
+                        i === idx ? { ...c, text: e.target.value } : c
+                      )
+                    )
+                  }
+                  className={styles.textarea}
+                />
+              </div>
+              <div className={styles.checkboxGroup}>
+                <input
+                  type="checkbox"
+                  id={`breaker-${moduleUid}-${idx}`}
+                  checked={!!ct.breaker}
+                  onChange={(e) =>
+                    setModuleField(
+                      programUid,
+                      courseUid,
+                      moduleUid,
+                      "content",
+                      (mod.content || []).map((c, i) =>
+                        i === idx ? { ...c, breaker: e.target.checked } : c
+                      )
+                    )
+                  }
+                />
+                <label
+                  htmlFor={`breaker-${moduleUid}-${idx}`}
+                  className={styles.label}
+                >
+                  Is a page breaker?
+                </label>
               </div>
             </div>
-
-            <div style={{ width: 220 }}>
-              <label>Media</label>
-              <ImagePreview id={ct.media} fetcher={fetchImageUrl} width={200} height={120} />
-              <div style={{ marginTop: 6 }}>
-                <input type='file' accept='image/*,video/*' onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
+            <div className={"w-full md:w-64 flex-shrink-0"}>
+              <label className={styles.label}>Media</label>
+              <ImageEditor
+                currentId={ct.media}
+                onReplace={async (file) => {
                   try {
                     const newImage = await replaceImage(ct.media, file);
-                    setModuleField(programUid, courseUid, moduleUid, 'content', (mod.content || []).map((cct, i) => i===idx?{...cct, media: newImage?.id || newImage?._id || newImage?.url || newImage}:cct));
-                  } catch (err) { console.error(err); }
-                }} />
-              </div>
+                    setModuleField(
+                      programUid,
+                      courseUid,
+                      moduleUid,
+                      "content",
+                      (mod.content || []).map((c, i) =>
+                        i === idx
+                          ? {
+                              ...c,
+                              media: newImage?.uid || null,
+                            }
+                          : c
+                      )
+                    );
+                  } catch (err) {
+                    console.error(err);
+                  }
+                }}
+                onRemove={() =>
+                  handleRemoveImage(ct.media, () => {
+                    setModuleField(
+                      programUid,
+                      courseUid,
+                      moduleUid,
+                      "content",
+                      (mod.content || []).map((c, i) =>
+                        i === idx ? { ...c, media: null } : c
+                      )
+                    );
+                  })
+                }
+              />
             </div>
           </div>
         ))}
@@ -439,134 +617,366 @@ const EditableDashboard = ({ initialData = [], handleCancel, language }) => {
     );
   };
 
-  const handleClose = () => handleCancel(false);
-
   return (
-    <div>
-      <h1 style={{ fontWeight: "bold", fontSize: 28 }}>Admin: Edit Courses</h1>
-      {renderPrograms()}
-
-      <div
-        style={{
-          position: "fixed",
-          bottom: 65,
-          left: 0,
-          right: 0,
-          padding: 20,
-          background: "#f3f4f6",
-        }}
-      >
-        <button onClick={handleSave} className="btn-primary" disabled={loading}>
-          {loading ? "Saving..." : "Save Changes"}
+    <div className={styles.dashboardContainer}>
+      <h1 className={styles.header}>Admin: Edit Programs & Courses</h1>
+      <div className={styles.mainLayout}>
+        <aside className={styles.sidebar}>
+          <h2 className={styles.sidebarHeader}>Programs</h2>
+          <div className={styles.programList}>
+            {programList.map((p) => (
+              <div
+                key={p.uid}
+                className={`${styles.programItem} ${
+                  selectedProgram === p.uid ? styles.programItemSelected : ""
+                }`}
+                onClick={() => {
+                  setSelectedProgram(p.uid);
+                  if (!expandedPrograms.includes(p.uid)) {
+                    toggleProgramExpansion(p.uid);
+                  }
+                  setSelectedCourse(null);
+                  setSelectedModule({ uid: null, tab: "content" });
+                }}
+              >
+                <input
+                  value={p.title}
+                  onChange={(e) => setProgramTitle(p.uid, e.target.value)}
+                  className={styles.input}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            ))}
+          </div>
+        </aside>
+        <main className={styles.contentArea}>
+          {selectedProgram ? (
+            renderProgramDetails(selectedProgram)
+          ) : (
+            <div className={styles.placeholder}>
+              <p>Select a program from the left panel to begin editing.</p>
+            </div>
+          )}
+        </main>
+      </div>
+      <footer className={styles.floatingFooter}>
+        <button
+          onClick={handleSave}
+          className={`${styles.btn} ${styles.btnPrimary}`}
+          disabled={loading}
+        >
+          {loading ? "Saving..." : "Save All Changes"}
         </button>
         <button
-          onClick={handleClose}
-          className="btn-secondary"
-          style={{ marginLeft: 12 }}
+          onClick={() => handleCancel(false)}
+          className={`${styles.btn} ${styles.btnSecondary}`}
           disabled={loading}
         >
           Close
         </button>
-      </div>
-
-      {loading && <div className="text-gray-600">Saving...</div>}
-      {error && <div className="text-red-600">{error}</div>}
-      {success && <div className="text-green-600">{success}</div>}
+        <div className={styles.statusMessage}>
+          {loading && <span>Saving...</span>}
+          {error && <span className={styles.error}>{error}</span>}
+          {success && <span className={styles.success}>{success}</span>}
+        </div>
+      </footer>
+      {deleteTarget && (
+        <DeleteConfirmation
+          type={deleteTarget.type}
+          onConfirm={onConfirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   );
 };
 
-export default EditableDashboard;
+// ====== Helper component for rendering a course card ======
+function CourseCard({
+  programUid,
+  course,
+  selectedCourse,
+  setSelectedCourse,
+  replaceImage,
+  handleRemoveImage,
+  setCourseField,
+}) {
+  return (
+    <div className={styles.card}>
+      <div className={styles.courseCardHeader}>
+        <div className={styles.buttonGroup}>
+          <input
+            value={course.title}
+            onChange={(e) =>
+              setCourseField(programUid, course.uid, "title", e.target.value)
+            }
+            className={styles.input}
+          />
+          <button
+            className={`${styles.btn} ${styles.btnSecondary}`}
+            onClick={() =>
+              setSelectedCourse(
+                selectedCourse === course.uid ? null : course.uid
+              )
+            }
+          >
+            {selectedCourse === course.uid ? "Collapse" : "Expand"}
+          </button>
+          <DeleteItemButton
+            type="Course"
+            onClick={() =>
+              setDeleteTarget({
+                type: "Course",
+                ids: { programUid, courseUid: course.uid },
+              })
+            }
+          />
+        </div>
+      </div>
+      {selectedCourse === course.uid && (
+        <>
+          <div className={`${styles.inputGroup} mt-4`}>
+            <label className={styles.label}>Description</label>
+            <textarea
+              value={course.description || ""}
+              onChange={(e) =>
+                setCourseField(
+                  programUid,
+                  course.uid,
+                  "description",
+                  e.target.value
+                )
+              }
+              className={styles.textarea}
+            />
+          </div>
+          <div className={`${styles.inputGroup} mt-4`}>
+            <label className={styles.label}>Cover Image</label>
+            <ImageEditor
+              currentId={course.cover_img}
+              onReplace={async (file) => {
+                try {
+                  const newImage = await replaceImage(course.cover_img, file);
+                  const newId = newImage?.uid || null;
+                  setCourseField(programUid, course.uid, "cover_img", newId);
+                } catch (e) {
+                  console.error(e);
+                }
+              }}
+              onRemove={() =>
+                handleRemoveImage(course.cover_img, () => {
+                  setCourseField(programUid, course.uid, "cover_img", null);
+                })
+              }
+            />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
-// Small inline ImageEditor component so the file remains self-contained
-function ImageEditor({ currentId, onReplace }) {
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+// ====== Helper component for image editing and preview ======
+function ImageEditor({ currentId, onReplace, onRemove }) {
+  const { user } = useUserData();
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files?.[0] || null;
+    if (selectedFile) {
+      onReplace(selectedFile);
+    }
+    e.target.value = null; // Reset file input
+  };
+  return (
+    <div className={styles.imageEditor}>
+      <div className={styles.imagePreviewContainer}>
+        {currentId ? (
+          <RemoteImage
+            key={currentId}
+            uid={currentId}
+            lang={user?.lang}
+            alt="Current media"
+            className={styles.imagePreview}
+          />
+        ) : (
+          <span>No media</span>
+        )}
+      </div>
+      <div className={styles.imageActions}>
+        <label
+          className={`${styles.btn} ${styles.btnSecondary}`}
+          style={{ cursor: "pointer" }}
+        >
+          Replace
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </label>
+        {currentId && (
+          <button
+            onClick={onRemove}
+            className={`${styles.btn} ${styles.btnDangerOutline}`}
+          >
+            Remove
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ====== Base Quiz Editor for reusability ======
+function QuizEditorBase({ quizData, onQuizChange, title }) {
+  const [localQuiz, setLocalQuiz] = useState(
+    JSON.parse(JSON.stringify(quizData || []))
+  );
+
   useEffect(() => {
-    let cancelled = false;
-    if (!currentId) { setPreview(null); return; }
-    fetchImageUrl(currentId).then((u) => { if (!cancelled) setPreview(u); }).catch(() => { if (!cancelled) setPreview(null); });
-    return () => { cancelled = true; };
-  }, [currentId]);
+    setLocalQuiz(JSON.parse(JSON.stringify(quizData || [])));
+  }, [quizData]);
+
+  const updateQuestion = (idx, field, value) => {
+    setLocalQuiz((prev) =>
+      prev.map((q, i) => (i === idx ? { ...q, [field]: value } : q))
+    );
+  };
+
+  const addQuestion = () =>
+    setLocalQuiz((prev) => [
+      ...prev,
+      { question: "", options: ["", "", "", ""], answer: 0, explanation: "" },
+    ]);
+
+  const removeQuestion = (idx) => {
+    if (window.confirm("Are you sure you want to delete this question?")) {
+      setLocalQuiz((prev) => prev.filter((_, i) => i !== idx));
+    }
+  };
 
   return (
     <div>
-      <div style={{ marginBottom: 6 }}>
-        {preview ? <img src={preview} alt='preview' style={{ width: 120, height: 80, objectFit: 'cover', borderRadius: 6 }} /> : <div style={{ width: 120, height: 80, background: '#fafafa', border: '1px dashed #ccc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>No image</div>}
-      </div>
-      <input type='file' accept='image/*' onChange={(e) => setFile(e.target.files?.[0] || null)} />
-      <button className='btn-primary' onClick={async () => {
-        if (!file) return; try { await onReplace(file); setFile(null); } catch (e) { alert('Image upload failed'); }
-      }} style={{ marginLeft: 8 }}>Replace</button>
-    </div>
-  );
-}
-
-// Inline ImagePreview: fetches preview URL from backend and shows thumbnail
-function ImagePreview({ id, fetcher, width = 120, height = 80 }) {
-  const [url, setUrl] = useState(null);
-  useEffect(() => {
-    let cancelled = false;
-    if (!id) { setUrl(null); return; }
-    fetcher(id).then((u) => { if (!cancelled) setUrl(u); }).catch(() => { if (!cancelled) setUrl(null); });
-    return () => { cancelled = true; };
-  }, [id, fetcher]);
-
-  if (!id) return <div style={{ width, height, background: '#fafafa', border: '1px dashed #ccc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>No media</div>;
-  return (
-    <div style={{ width, height, border: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-      {url ? <img src={url} alt='preview' style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ fontSize: 12 }}>Preview unavailable</div>}
-    </div>
-  );
-}
-
-// Quick QuizEditor: edit program.final_quiz.quiz array in-place (questions with options, answer, explanation)
-function QuizEditor({ program, onChange, fetcher }) {
-  const quiz = (program.final_quiz && (program.final_quiz.quiz || program.final_quiz.questions)) || [];
-  const [local, setLocal] = useState(JSON.parse(JSON.stringify(quiz)));
-
-  useEffect(() => { setLocal(JSON.parse(JSON.stringify(quiz || []))); }, [program.uid]);
-
-  const setQuestion = (idx, field, value) => {
-    setLocal((prev) => prev.map((q, i) => i===idx ? ({ ...q, [field]: value }) : q));
-  };
-
-  const addQuestion = () => setLocal((prev) => [...prev, { question: '', options: ['', '', '', ''], answer: 0, explanation: '' }]);
-  const removeQuestion = (idx) => setLocal((prev) => prev.filter((_, i) => i !== idx));
-
-  return (
-    <div style={{ border: '1px solid #ddd', padding: 8, background: '#fff' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h4 style={{ margin: 0 }}>Quiz Editor</h4>
-        <div>
-          <button className='btn-secondary' onClick={() => onChange(local)}>Save Quiz</button>
-          <button className='btn-secondary' style={{ marginLeft: 8 }} onClick={() => setLocal(JSON.parse(JSON.stringify(quiz || [])))}>Reset</button>
-          <button className='btn-primary' style={{ marginLeft: 8 }} onClick={addQuestion}>Add Question</button>
+      <div className={styles.quizHeader}>
+        <h4 className={styles.sectionHeader} style={{ marginBottom: 0 }}>
+          {title}
+        </h4>
+        <div className={"flex gap-2"}>
+          <button
+            className={`${styles.btn} ${styles.btnSecondary}`}
+            onClick={() => onQuizChange(localQuiz)}
+          >
+            Apply Changes
+          </button>
+          <button
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            onClick={addQuestion}
+          >
+            Add Question
+          </button>
         </div>
       </div>
-      <div style={{ marginTop: 8 }}>
-        {local.map((q, qi) => (
-          <div key={qi} style={{ border: '1px solid #eee', padding: 8, marginBottom: 8 }}>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <input value={q.question} onChange={(e) => setQuestion(qi, 'question', e.target.value)} className='input' placeholder='Question text' style={{ flex: 1 }} />
-              <button className='btn-secondary' onClick={() => removeQuestion(qi)}>Remove</button>
+      <div className={styles.quizEditorQuestions}>
+        {localQuiz.map((q, qi) => (
+          <div key={qi} className={styles.quizQuestionCard}>
+            <div className={styles.quizQuestionHeader}>
+              <div className={`${styles.inputGroup} flex-grow`}>
+                <label className={styles.label}>{`Question ${qi + 1}`}</label>
+                <input
+                  value={q.question}
+                  onChange={(e) =>
+                    updateQuestion(qi, "question", e.target.value)
+                  }
+                  className={styles.input}
+                  placeholder="Question text"
+                />
+              </div>
+              <button
+                className={`${styles.btn} ${styles.btnDanger}`}
+                onClick={() => removeQuestion(qi)}
+              >
+                Remove
+              </button>
             </div>
-            <div style={{ marginTop: 8 }}>
-              { (q.options || []).map((opt, oi) => (
-                <div key={oi} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
-                  <input value={opt} onChange={(e) => setQuestion(qi, 'options', (q.options || []).map((o, i) => i===oi?e.target.value:o))} className='input' style={{ flex: 1 }} />
-                  <div>Ans</div>
-                  <input type='number' min={0} max={(q.options||[]).length-1} value={q.answer} onChange={(e) => setQuestion(qi, 'answer', Number(e.target.value))} style={{ width: 60 }} />
+            <div className={styles.quizOptions}>
+              <label className={styles.label}>Options & Correct Answer</label>
+              {(q.options || ["", "", "", ""]).map((opt, oi) => (
+                <div key={oi} className={styles.quizOptionItem}>
+                  <input
+                    value={opt}
+                    onChange={(e) =>
+                      updateQuestion(
+                        qi,
+                        "options",
+                        (q.options || []).map((o, i) =>
+                          i === oi ? e.target.value : o
+                        )
+                      )
+                    }
+                    className={styles.input}
+                    placeholder={`Option ${oi + 1}`}
+                  />
+                  <input
+                    type="radio"
+                    name={`answer-${qi}`}
+                    checked={Number(q.answer) === oi}
+                    onChange={() => updateQuestion(qi, "answer", oi)}
+                  />
                 </div>
-              )) }
+              ))}
             </div>
-            <div>
-              <label>Explanation</label>
-              <textarea value={q.explanation} onChange={(e) => setQuestion(qi, 'explanation', e.target.value)} className='textarea' />
+            <div className={`${styles.inputGroup} mt-4`}>
+              <label className={styles.label}>Explanation</label>
+              <textarea
+                value={q.explanation}
+                onChange={(e) =>
+                  updateQuestion(qi, "explanation", e.target.value)
+                }
+                className={styles.textarea}
+                placeholder="Explanation for the correct answer"
+              />
             </div>
           </div>
         ))}
+        {localQuiz.length === 0 && (
+          <p className="text-center text-gray-500 mt-4">
+            No questions yet. Click "Add Question" to start.
+          </p>
+        )}
       </div>
     </div>
   );
 }
+
+// ====== Quiz Editor for Final Program Quiz ======
+function FinalQuizEditor({ program, onChange }) {
+  const quiz =
+    (program.final_quiz &&
+      (program.final_quiz.quiz || program.final_quiz.questions)) ||
+    [];
+  return (
+    <div className={styles.quizEditorContainer}>
+      <QuizEditorBase
+        quizData={quiz}
+        onQuizChange={onChange}
+        title="Final Quiz Questions"
+      />
+    </div>
+  );
+}
+
+// ====== Quiz Editor for individual Modules ======
+function ModuleQuizEditor({ module, programUid, courseUid, setModuleField }) {
+  const handleQuizChange = (updatedQuiz) => {
+    setModuleField(programUid, courseUid, module.uid, "quiz", updatedQuiz);
+  };
+  return (
+    <QuizEditorBase
+      quizData={module.quiz}
+      onQuizChange={handleQuizChange}
+      title="Module Quiz Questions"
+    />
+  );
+}
+
+export default EditableDashboard;

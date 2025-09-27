@@ -40,12 +40,27 @@ export default function SectionViewer({
     scrollRef?.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentIndex]);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentIndex < modules.length - 1) {
       const nextModule = modules[currentIndex + 1];
       navigate(`/courses/${programId}/${courseId}/${nextModule.uid}`);
       setCurrentIndex((prev) => prev + 1);
       setPassedQuiz(false);
+      try {
+              console.log("Updating progress for module:", currentIndex + 1);
+
+      await handleUpdateProgress({
+        programId,
+        courseId,
+        moduleIndex: currentIndex + 1, // 1-based index in DB
+        setError: setError_int,
+        setLoading: setLoading_int,
+        programsData,
+      });
+      console.log("Progress updated successfully!"); 
+    } catch (err) {
+      console.error("Failed to update progress on next module:", err);
+    }
     } else if (currentIndex === modules.length - 1) {
       navigate(`/courses`, {
         state: {
