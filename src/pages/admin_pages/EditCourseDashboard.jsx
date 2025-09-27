@@ -281,8 +281,8 @@ const EditableDashboard = ({ initialData = [], handleCancel }) => {
     return (
       <div className={styles.buttonGroup}>
         <div className={styles.programHeader}>
-        <h2 className={styles.sectionHeader}>
-          {program.title}
+          <h2 className={styles.sectionHeader}>
+            {program.title}
             <button
               className={`${styles.btn} ${styles.btnSecondary}`}
               onClick={() => toggleProgramExpansion(program.uid)}
@@ -290,7 +290,9 @@ const EditableDashboard = ({ initialData = [], handleCancel }) => {
               {isExpanded ? "Collapse" : "Expand"}
             </button>
             <DeleteItemButton
+              uid={program.uid}
               type="Program"
+              lang={user?.lang || "en"}
               onClick={() =>
                 setDeleteTarget({
                   type: "Program",
@@ -298,9 +300,8 @@ const EditableDashboard = ({ initialData = [], handleCancel }) => {
                 })
               }
             />
-        </h2>
-
-          </div>
+          </h2>
+        </div>
         {isExpanded && (
           <div className={styles.detailsGrid}>
             <div>
@@ -439,6 +440,8 @@ const EditableDashboard = ({ initialData = [], handleCancel }) => {
                   {selectedModule.uid === m.uid ? "Close" : "Edit"}
                 </button>
                 <DeleteItemButton
+                  uid={m.uid}
+                  lang={user?.lang || "en"}
                   type="Module"
                   onClick={() =>
                     setDeleteTarget({
@@ -723,6 +726,8 @@ function CourseCard({
             {selectedCourse === course.uid ? "Collapse" : "Expand"}
           </button>
           <DeleteItemButton
+            uid={course.uid}
+            lang={"en"}
             type="Course"
             onClick={() =>
               setDeleteTarget({
